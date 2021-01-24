@@ -2,7 +2,7 @@ package dev.drzepka.smarthome.logger.connector.base
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import dev.drzepka.smarthome.logger.model.config.SourceConfig
+import dev.drzepka.smarthome.logger.model.config.source.SourceConfig
 import dev.drzepka.smarthome.logger.util.NoopX509TrustManager
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
 import org.apache.http.client.HttpClient
@@ -13,13 +13,13 @@ import org.apache.http.impl.client.HttpClients
 import java.net.URI
 
 
-abstract class HttpConnector : Connector {
+abstract class HttpConnector(private val config: SourceConfig) : Connector {
     protected open val skipCertificateCheck = false
 
     private lateinit var httpClient: HttpClient
     private lateinit var requestConfig: RequestConfig
 
-    override fun initialize(config: SourceConfig) {
+    override fun initialize() {
         httpClient = if (skipCertificateCheck) certificateIgnoringHttpClient else standardHttpClient
 
         requestConfig = RequestConfig.custom()
@@ -29,8 +29,8 @@ abstract class HttpConnector : Connector {
                 .build()
     }
 
-    final override fun getData(config: SourceConfig, dataType: DataType, silent: Boolean): VendorData? {
-        val uri = URI(getUrl(config, dataType))
+    final override fun getData(dataType: DataType, silent: Boolean): VendorData? {
+        val uri = URI(getUrl(dataType))
 
         val get = HttpGet(uri)
         get.config = requestConfig

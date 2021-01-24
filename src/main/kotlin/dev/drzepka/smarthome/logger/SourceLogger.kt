@@ -1,16 +1,17 @@
 package dev.drzepka.smarthome.logger
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import dev.drzepka.smarthome.common.pvstats.model.PutDataRequest
+import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
 import dev.drzepka.smarthome.logger.connector.SMAConnector
 import dev.drzepka.smarthome.logger.connector.SofarConnector
 import dev.drzepka.smarthome.logger.connector.base.Connector
 import dev.drzepka.smarthome.logger.connector.base.DataType
 import dev.drzepka.smarthome.logger.model.config.PvStatsConfig
-import dev.drzepka.smarthome.logger.model.config.SourceConfig
+import dev.drzepka.smarthome.logger.model.config.source.SMAConfig
+import dev.drzepka.smarthome.logger.model.config.source.SofarConfig
+import dev.drzepka.smarthome.logger.model.config.source.SourceConfig
 import dev.drzepka.smarthome.logger.util.Logger
-import dev.drzepka.smarthome.common.pvstats.model.PutDataRequest
-import dev.drzepka.smarthome.common.pvstats.model.vendor.DeviceType
-import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
@@ -68,13 +69,13 @@ class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceC
     }
 
     private fun getConnector(sourceConfig: SourceConfig): Connector {
-        val connector = when (sourceConfig.type) {
-            DeviceType.SMA -> SMAConnector()
-            DeviceType.SOFAR -> SofarConnector()
-            DeviceType.GENERIC -> throw IllegalStateException("Generic device type is not meant to be used as a source")
+        val connector = when (sourceConfig) {
+            is SMAConfig -> SMAConnector(sourceConfig)
+            is SofarConfig -> SofarConnector(sourceConfig)
+            else -> throw IllegalStateException("Unsupported source config type: ${sourceConfig.type}")
         }
 
-        connector.initialize(sourceConfig)
+        connector.initialize()
         return connector
     }
 
@@ -114,7 +115,7 @@ class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceC
     }
 
     private fun sendData(dataType: DataType): Boolean {
-        val data = connector.getData(sourceConfig, dataType, throttlingCountdown > 0) ?: return false
+        val data = connector.getData(dataType, throttlingCountdown > 0) ?: return false
         sendData(data)
         return true
     }

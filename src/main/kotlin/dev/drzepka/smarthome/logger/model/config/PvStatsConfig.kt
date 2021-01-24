@@ -11,8 +11,8 @@ class PvStatsConfig private constructor(
     companion object {
         fun loadFromProperties(loader: PropertiesLoader): PvStatsConfig {
             return PvStatsConfig(
-                    URI.create(loader.getString("pvstats.url", true)!!),
-                    loader.getInt("pvstats.timeout")!!
+                    URI.create(loader.getValue("pvstats.url", true)!!),
+                    loader.getValue("pvstats.timeout", true)!!.toInt()
             )
         }
     }

@@ -2,7 +2,7 @@ package dev.drzepka.smarthome.logger
 
 import dev.drzepka.smarthome.logger.model.config.MainConfig
 import dev.drzepka.smarthome.logger.model.config.PvStatsConfig
-import dev.drzepka.smarthome.logger.model.config.SourceConfig
+import dev.drzepka.smarthome.logger.model.config.source.SourceConfigFactory
 import dev.drzepka.smarthome.logger.util.Logger
 import dev.drzepka.smarthome.logger.util.PropertiesLoader
 import dev.drzepka.smarthome.logger.util.roundAndGetDelay
@@ -53,10 +53,10 @@ class PVStatsDataLogger {
 
         private fun getSourceLoggers(): List<SourceLogger> {
             val pvStatsConfig = PvStatsConfig.loadFromProperties(loader)
-            val sourceNames = SourceConfig.getAvailableNames(loader)
+            val sourceNames = SourceConfigFactory.getAvailableNames(loader)
 
             return sourceNames.map {
-                val config = SourceConfig.loadFromProperties(it, loader)
+                val config = SourceConfigFactory.createSourceConfig(it, loader)
                 try {
                     SourceLogger(pvStatsConfig, config)
                 } catch (e: Exception) {

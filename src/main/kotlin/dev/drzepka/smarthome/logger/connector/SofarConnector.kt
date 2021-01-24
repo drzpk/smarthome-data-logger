@@ -1,19 +1,19 @@
 package dev.drzepka.smarthome.logger.connector
 
-import dev.drzepka.smarthome.logger.connector.base.DataType
-import dev.drzepka.smarthome.logger.connector.base.SocketConnector
-import dev.drzepka.smarthome.logger.model.config.SourceConfig
 import dev.drzepka.smarthome.common.pvstats.model.vendor.SofarData
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
 import dev.drzepka.smarthome.common.util.hexStringToBytes
+import dev.drzepka.smarthome.logger.connector.base.DataType
+import dev.drzepka.smarthome.logger.connector.base.SocketConnector
+import dev.drzepka.smarthome.logger.model.config.source.SofarConfig
 
 /**
  * Request message source: https://github.com/mcikosos/Inverter-Data-Logger
  */
-class SofarConnector : SocketConnector() {
+class SofarConnector(private val config: SofarConfig) : SocketConnector(config) {
     override val supportedDataTypes = listOf(DataType.METRICS)
 
-    override fun getSocketRequestData(config: SourceConfig): Array<Byte> {
+    override fun getSocketRequestData(): Array<Byte> {
         val snLittleEndian = hexStringToBytes(
                 config.sn!!.toString(16).padStart(8, '0').chunked(2).reversed().joinToString(separator = ""))
         val bytes = ArrayList<Byte>(36)
@@ -30,11 +30,11 @@ class SofarConnector : SocketConnector() {
         return bytes.toTypedArray()
     }
 
-    override fun parseSocketResponseData(config: SourceConfig, response: Array<Byte>): VendorData {
+    override fun parseSocketResponseData(response: Array<Byte>): VendorData {
         return SofarData(response.copyOfRange(27, response.size))
     }
 
-    override fun getUrl(config: SourceConfig, dataType: DataType): String = config.url
+    override fun getUrl(dataType: DataType): String = config.url
 
     companion object {
         private val HEADER = hexStringToBytes("a5170010450000")

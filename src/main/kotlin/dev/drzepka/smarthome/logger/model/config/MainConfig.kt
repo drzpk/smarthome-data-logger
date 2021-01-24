@@ -9,7 +9,7 @@ class MainConfig private constructor(
     companion object {
         fun loadFromProperties(loader: PropertiesLoader): MainConfig {
             return MainConfig(
-                    loader.getString("log_directory")!!
+                    loader.getValue("log_directory", true)!!
             )
         }
     }

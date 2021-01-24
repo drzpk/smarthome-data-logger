@@ -1,37 +1,36 @@
 package dev.drzepka.smarthome.logger.connector.base
 
-import dev.drzepka.smarthome.logger.PVStatsDataLogger
-import dev.drzepka.smarthome.logger.model.config.SourceConfig
-import dev.drzepka.smarthome.logger.util.Logger
 import dev.drzepka.smarthome.common.pvstats.model.vendor.SofarData
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
 import dev.drzepka.smarthome.common.util.hexStringToBytes
+import dev.drzepka.smarthome.logger.PVStatsDataLogger
+import dev.drzepka.smarthome.logger.model.config.source.SourceConfig
+import dev.drzepka.smarthome.logger.util.Logger
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.SocketTimeoutException
 
-abstract class SocketConnector : Connector {
+abstract class SocketConnector(private val config: SourceConfig) : Connector {
 
     private val log by Logger()
 
-    override fun initialize(config: SourceConfig) = Unit
+    override fun initialize() = Unit
 
     @Suppress("ConstantConditionIf")
-    final override fun getData(config: SourceConfig, dataType: DataType, silent: Boolean): VendorData? {
+    final override fun getData(dataType: DataType, silent: Boolean): VendorData? {
         if (PVStatsDataLogger.DEBUG) return getTestVendorData()
 
-        val split = splitSocketUrl(config.url)
+        val split = splitSocketUrl(getUrl(dataType))
         val socket = Socket()
-
         try {
             socket.connect(InetSocketAddress(split.first, split.second), config.timeout * 1000)
         } catch (e: SocketTimeoutException) {
             if (!silent)
-                log.warning("Connection to source ${config.name} timed out (${config.url})")
+                log.warning("Connection to source ${config.name} timed out (${split.first}:${split.second}")
             return null
         }
 
-        socket.getOutputStream().write(getSocketRequestData(config).toByteArray())
+        socket.getOutputStream().write(getSocketRequestData().toByteArray())
         val inputStream = socket.getInputStream()
 
         var responseWaitTime = 0L
@@ -58,12 +57,12 @@ abstract class SocketConnector : Connector {
         }
 
         val byteArray = buffer.toTypedArray()
-        return parseSocketResponseData(config, byteArray)
+        return parseSocketResponseData(byteArray)
     }
 
-    abstract fun getSocketRequestData(config: SourceConfig): Array<Byte>
+    abstract fun getSocketRequestData(): Array<Byte>
 
-    abstract fun parseSocketResponseData(config: SourceConfig, response: Array<Byte>): VendorData
+    abstract fun parseSocketResponseData(response: Array<Byte>): VendorData
 
     private fun splitSocketUrl(url: String): Pair<String, Int> {
         val split = url.split(":")
@@ -81,6 +80,6 @@ abstract class SocketConnector : Connector {
 
     companion object {
         private const val SOCKET_RESPONSE_SLEEP_TIME = 100L
-        
+
     }
 }

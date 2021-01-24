@@ -1,21 +1,21 @@
 package dev.drzepka.smarthome.logger.connector
 
-import dev.drzepka.smarthome.logger.connector.base.DataType
-import dev.drzepka.smarthome.logger.connector.base.HttpConnector
-import dev.drzepka.smarthome.logger.model.config.SourceConfig
 import dev.drzepka.smarthome.common.pvstats.model.sma.SMADashValues
 import dev.drzepka.smarthome.common.pvstats.model.sma.SMAMeasurement
 import dev.drzepka.smarthome.common.pvstats.model.vendor.SMAData
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
+import dev.drzepka.smarthome.logger.connector.base.DataType
+import dev.drzepka.smarthome.logger.connector.base.HttpConnector
+import dev.drzepka.smarthome.logger.model.config.source.SMAConfig
 import java.net.URI
 
 @Suppress("REDUNDANT_ELSE_IN_WHEN")
-class SMAConnector : HttpConnector() {
+class SMAConnector(private val config: SMAConfig) : HttpConnector(config) {
     override val supportedDataTypes = listOf(DataType.METRICS, DataType.MEASUREMENT)
     // SMA's internal server doesn't use a valid certificate
     override val skipCertificateCheck = true
 
-    override fun getUrl(config: SourceConfig, dataType: DataType): String {
+    override fun getUrl(dataType: DataType): String {
         if (!config.url.startsWith("https://"))
             throw IllegalStateException("Expected https connection for SMA device")
 

@@ -1,19 +1,20 @@
 package dev.drzepka.smarthome.logger.connector
 
-import dev.drzepka.smarthome.common.pvstats.model.vendor.DeviceType
 import dev.drzepka.smarthome.common.pvstats.model.vendor.SofarData
 import dev.drzepka.smarthome.common.util.hexStringToBytes
-import dev.drzepka.smarthome.logger.model.config.SourceConfig
+import dev.drzepka.smarthome.logger.model.config.source.SofarConfig
+import dev.drzepka.smarthome.logger.util.PropertiesLoader
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.util.*
 
 
 class SofarConnectorTest {
 
     @Test
     fun `check generating socket request data`() {
-        val connector = SofarConnector()
-        val data = connector.getSocketRequestData(getConfig(1629384756))
+        val connector = SofarConnector(getConfig(1629384756))
+        val data = connector.getSocketRequestData()
         val expected = hexStringToBytes("a517001045000034701e6102000000000000000000000000000001030000002705d09115")
         Assertions.assertArrayEquals(expected, data)
     }
@@ -35,8 +36,8 @@ class SofarConnectorTest {
                 "5e01034e0002000000000000000000000f22027d0317000100f7000000f00041138609890158096901580953015700" +
                 "0000400000002c093302800026003219e00f18031d003c000000010000054d087206cdccad0315")
 
-        val service = SofarConnector()
-        val parsed = service.parseSocketResponseData(getConfig(123), raw) as SofarData
+        val service = SofarConnector(getConfig(123))
+        val parsed = service.parseSocketResponseData(raw) as SofarData
 
         Assertions.assertEquals(23550, parsed.energyToday)
         Assertions.assertEquals(64000, parsed.energyTotal)
@@ -60,5 +61,16 @@ class SofarConnectorTest {
 
     }
 
-    private fun getConfig(sn: Int): SourceConfig = SourceConfig("name", DeviceType.SOFAR, "localhost", "user", "password", sn, 3, 60, null)
+    private fun getConfig(sn: Int): SofarConfig {
+        val properties = Properties()
+        properties.setProperty("source.name.type", "SOFAR")
+        properties.setProperty("source.name.url", "localhost")
+        properties.setProperty("source.name.user", "user")
+        properties.setProperty("source.name.password", "password")
+        properties.setProperty("source.name.sn", sn.toString())
+        properties.setProperty("source.name.timeout", "1")
+
+        val loader = PropertiesLoader(properties)
+        return SofarConfig("name", loader)
+    }
 }
