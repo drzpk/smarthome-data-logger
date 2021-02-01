@@ -1,11 +1,11 @@
 package dev.drzepka.smarthome.logger.model.config.source
 
-import dev.drzepka.smarthome.common.pvstats.model.vendor.DeviceType
+import dev.drzepka.smarthome.logger.model.config.SourceType
 import dev.drzepka.smarthome.logger.util.PropertiesLoader
 import kotlin.reflect.KClass
 
 abstract class SourceConfig internal constructor(
-        val type: DeviceType,
+        val type: SourceType,
         val name: String,
         protected val loader: PropertiesLoader
 ) {

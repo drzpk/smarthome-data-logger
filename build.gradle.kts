@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "dev.drzepka.smarthome"
-version = "1.2.0"
+version = "1.3.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 val compileKotlin: KotlinCompile by tasks
@@ -40,6 +40,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
     implementation("org.apache.httpcomponents:httpclient:4.5.12")
+    implementation("com.intelligt.modbus:jlibmodbus:1.2.9.7")
 
     testImplementation("org.junit.platform:junit-platform-launcher:1.6.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.6.2")

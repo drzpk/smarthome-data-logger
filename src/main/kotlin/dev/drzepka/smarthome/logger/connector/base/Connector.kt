@@ -10,5 +10,4 @@ interface Connector {
 
     fun initialize()
     fun getData(dataType: DataType, silent: Boolean): VendorData?
-    fun getUrl(dataType: DataType): String
 }

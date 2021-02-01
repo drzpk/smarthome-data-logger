@@ -45,6 +45,8 @@ abstract class HttpConnector(private val config: SourceConfig) : Connector {
         return parseResponseData(dataType, bytes)
     }
 
+    abstract fun getUrl(dataType: DataType): String
+
     abstract fun parseResponseData(dataType: DataType, bytes: ByteArray): VendorData
 
     companion object {

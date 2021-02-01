@@ -2,6 +2,7 @@ package dev.drzepka.smarthome.logger.util
 
 import java.io.File
 import java.io.FileInputStream
+import java.lang.IllegalStateException
 import java.util.*
 
 class PropertiesLoader(properties: Properties? = null) {
@@ -25,7 +26,7 @@ class PropertiesLoader(properties: Properties? = null) {
         val stream = if (file.isFile)
             FileInputStream(file)
         else
-            javaClass.classLoader.getResourceAsStream("default.properties")!!
+            throw IllegalStateException("config.properties file wasn't found")
 
         properties.load(stream)
         stream.close()

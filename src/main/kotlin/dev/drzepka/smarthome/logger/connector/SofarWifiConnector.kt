@@ -5,12 +5,12 @@ import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
 import dev.drzepka.smarthome.common.util.hexStringToBytes
 import dev.drzepka.smarthome.logger.connector.base.DataType
 import dev.drzepka.smarthome.logger.connector.base.SocketConnector
-import dev.drzepka.smarthome.logger.model.config.source.SofarConfig
+import dev.drzepka.smarthome.logger.model.config.source.SofarWifiConfig
 
 /**
  * Request message source: https://github.com/mcikosos/Inverter-Data-Logger
  */
-class SofarConnector(private val config: SofarConfig) : SocketConnector(config) {
+class SofarWifiConnector(private val config: SofarWifiConfig) : SocketConnector(config) {
     override val supportedDataTypes = listOf(DataType.METRICS)
 
     override fun getSocketRequestData(): Array<Byte> {

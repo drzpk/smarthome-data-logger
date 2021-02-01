@@ -1,6 +1,6 @@
 package dev.drzepka.smarthome.logger.model.config.source
 
-import dev.drzepka.smarthome.common.pvstats.model.vendor.DeviceType
+import dev.drzepka.smarthome.logger.model.config.SourceType
 import dev.drzepka.smarthome.logger.util.PropertiesLoader
 
 object SourceConfigFactory {
@@ -21,10 +21,16 @@ object SourceConfigFactory {
     fun createSourceConfig(sourceName: String, loader: PropertiesLoader): SourceConfig {
         val typeString = loader.getValue("source.$sourceName.type", true)!!
 
-        return when(DeviceType.valueOf(typeString)) {
-            DeviceType.SMA -> SMAConfig(sourceName, loader)
-            DeviceType.SOFAR -> SofarConfig(sourceName, loader)
-            DeviceType.GENERIC -> throw IllegalArgumentException("Cannot create logger for generic device from source: $sourceName")
+        val typeValue = try {
+            SourceType.valueOf(typeString)
+        } catch (e: Exception) {
+            throw IllegalStateException("Error while loading source '$sourceName'", e)
+        }
+
+        return when(typeValue) {
+            SourceType.SMA -> SMAConfig(sourceName, loader)
+            SourceType.SOFAR_WIFI -> SofarWifiConfig(sourceName, loader)
+            SourceType.SOFAR_MODBUS -> SofarModbusConfig(sourceName, loader)
         }
     }
 }

@@ -60,6 +60,8 @@ abstract class SocketConnector(private val config: SourceConfig) : Connector {
         return parseSocketResponseData(byteArray)
     }
 
+    abstract fun getUrl(dataType: DataType): String
+
     abstract fun getSocketRequestData(): Array<Byte>
 
     abstract fun parseSocketResponseData(response: Array<Byte>): VendorData

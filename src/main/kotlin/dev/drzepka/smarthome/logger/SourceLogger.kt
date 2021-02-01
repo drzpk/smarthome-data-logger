@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import dev.drzepka.smarthome.common.pvstats.model.PutDataRequest
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
 import dev.drzepka.smarthome.logger.connector.SMAConnector
-import dev.drzepka.smarthome.logger.connector.SofarConnector
+import dev.drzepka.smarthome.logger.connector.SofarModbusConnector
+import dev.drzepka.smarthome.logger.connector.SofarWifiConnector
 import dev.drzepka.smarthome.logger.connector.base.Connector
 import dev.drzepka.smarthome.logger.connector.base.DataType
 import dev.drzepka.smarthome.logger.model.config.PvStatsConfig
 import dev.drzepka.smarthome.logger.model.config.source.SMAConfig
-import dev.drzepka.smarthome.logger.model.config.source.SofarConfig
+import dev.drzepka.smarthome.logger.model.config.source.SofarModbusConfig
+import dev.drzepka.smarthome.logger.model.config.source.SofarWifiConfig
 import dev.drzepka.smarthome.logger.model.config.source.SourceConfig
 import dev.drzepka.smarthome.logger.util.Logger
 import java.io.OutputStreamWriter
@@ -71,10 +73,12 @@ class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceC
     private fun getConnector(sourceConfig: SourceConfig): Connector {
         val connector = when (sourceConfig) {
             is SMAConfig -> SMAConnector(sourceConfig)
-            is SofarConfig -> SofarConnector(sourceConfig)
+            is SofarWifiConfig -> SofarWifiConnector(sourceConfig)
+            is SofarModbusConfig -> SofarModbusConnector(sourceConfig)
             else -> throw IllegalStateException("Unsupported source config type: ${sourceConfig.type}")
         }
 
+        log.info("Initializing source '${sourceConfig.name}'")
         connector.initialize()
         return connector
     }
@@ -140,7 +144,7 @@ class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceC
 
     private fun prepareRequest(data: VendorData): String {
         val request = PutDataRequest()
-        request.type = sourceConfig.type
+        request.type = sourceConfig.type.deviceType
         request.data = data.serialize()
         return objectMapper.writeValueAsString(request)
     }

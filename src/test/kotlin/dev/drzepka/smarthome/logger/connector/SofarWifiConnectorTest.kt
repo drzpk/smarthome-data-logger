@@ -2,18 +2,18 @@ package dev.drzepka.smarthome.logger.connector
 
 import dev.drzepka.smarthome.common.pvstats.model.vendor.SofarData
 import dev.drzepka.smarthome.common.util.hexStringToBytes
-import dev.drzepka.smarthome.logger.model.config.source.SofarConfig
+import dev.drzepka.smarthome.logger.model.config.source.SofarWifiConfig
 import dev.drzepka.smarthome.logger.util.PropertiesLoader
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.util.*
 
 
-class SofarConnectorTest {
+class SofarWifiConnectorTest {
 
     @Test
     fun `check generating socket request data`() {
-        val connector = SofarConnector(getConfig(1629384756))
+        val connector = SofarWifiConnector(getConfig(1629384756))
         val data = connector.getSocketRequestData()
         val expected = hexStringToBytes("a517001045000034701e6102000000000000000000000000000001030000002705d09115")
         Assertions.assertArrayEquals(expected, data)
@@ -36,7 +36,7 @@ class SofarConnectorTest {
                 "5e01034e0002000000000000000000000f22027d0317000100f7000000f00041138609890158096901580953015700" +
                 "0000400000002c093302800026003219e00f18031d003c000000010000054d087206cdccad0315")
 
-        val service = SofarConnector(getConfig(123))
+        val service = SofarWifiConnector(getConfig(123))
         val parsed = service.parseSocketResponseData(raw) as SofarData
 
         Assertions.assertEquals(23550, parsed.energyToday)
@@ -61,7 +61,7 @@ class SofarConnectorTest {
 
     }
 
-    private fun getConfig(sn: Int): SofarConfig {
+    private fun getConfig(sn: Int): SofarWifiConfig {
         val properties = Properties()
         properties.setProperty("source.name.type", "SOFAR")
         properties.setProperty("source.name.url", "localhost")
@@ -71,6 +71,6 @@ class SofarConnectorTest {
         properties.setProperty("source.name.timeout", "1")
 
         val loader = PropertiesLoader(properties)
-        return SofarConfig("name", loader)
+        return SofarWifiConfig("name", loader)
     }
 }
