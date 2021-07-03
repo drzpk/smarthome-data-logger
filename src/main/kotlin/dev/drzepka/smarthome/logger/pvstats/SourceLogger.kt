@@ -3,6 +3,7 @@ package dev.drzepka.smarthome.logger.pvstats
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.drzepka.smarthome.common.pvstats.model.PutDataRequest
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
+import dev.drzepka.smarthome.logger.core.util.Logger
 import dev.drzepka.smarthome.logger.pvstats.connector.SMAConnector
 import dev.drzepka.smarthome.logger.pvstats.connector.SofarModbusConnector
 import dev.drzepka.smarthome.logger.pvstats.connector.SofarWifiConnector
@@ -13,12 +14,10 @@ import dev.drzepka.smarthome.logger.pvstats.model.config.source.SMAConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SofarModbusConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SofarWifiConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfig
-import dev.drzepka.smarthome.logger.core.util.Logger
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
-import java.util.logging.Level
 import kotlin.math.floor
 import kotlin.system.exitProcess
 
@@ -63,9 +62,9 @@ class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceC
         try {
             doExecute(dataType)
         } catch (e: Exception) {
-            log.log(Level.SEVERE, "Unexpected exception caught during execution of logger for source {${sourceConfig.name}", e)
+            log.error("Unexpected exception caught during execution of logger for source {}", sourceConfig.name, e)
         } catch (t: Throwable) {
-            log.log(Level.SEVERE, "Unrecoverable exception caught", t)
+            log.error("Unrecoverable exception caught", t)
             exitProcess(1)
         }
     }
@@ -95,14 +94,14 @@ class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceC
             sendData(dataType)
         } catch (e: Exception) {
             if (!throttle)
-                log.log(Level.SEVERE, "Error while collecting data for source ${sourceConfig.name}", e)
+                log.error("Error while collecting data for source {}", sourceConfig.name, e)
             false
         }
 
         if (!dataSent) {
             connectorErrorCount++
             if (connectorErrorCount == 3) {
-                log.warning("Inverter responded with error 3 times in a row, increasing request interval")
+                log.warn("Inverter responded with error 3 times in a row, increasing request interval")
                 log.info("Subsequent inverter connection errors won't be logged")
                 throttle = true
                 throttlingCountdown = connectorThrottling
@@ -139,7 +138,7 @@ class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceC
         writer.close()
 
         if (connection.responseCode != 201)
-            log.warning("Data sent failed: server returned with HTTP code ${connection.responseCode}")
+            log.warn("Data sent failed: server returned with HTTP code {}", connection.responseCode)
     }
 
     private fun prepareRequest(data: VendorData): String {

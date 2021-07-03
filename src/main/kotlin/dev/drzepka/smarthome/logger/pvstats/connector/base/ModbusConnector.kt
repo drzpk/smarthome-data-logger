@@ -55,7 +55,7 @@ abstract class ModbusConnector(private val config: SourceConfig) : Connector {
         when (platform.toLowerCase()) {
             "linux" -> checkSerialDeviceLinux(device)
             "windows" -> checkSerialDeviceWindows(device)
-            else -> log.warning("Skipping checking serial device on unknown platform: $platform")
+            else -> log.warn("Skipping checking serial device on unknown platform: {}", platform)
         }
     }
 

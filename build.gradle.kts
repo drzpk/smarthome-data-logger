@@ -41,6 +41,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
     implementation("org.apache.httpcomponents:httpclient:4.5.12")
     implementation("com.intelligt.modbus:jlibmodbus:1.2.9.7")
+    implementation("ch.qos.logback:logback-classic:1.2.1")
 
     testImplementation("org.junit.platform:junit-platform-launcher:1.6.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.6.2")

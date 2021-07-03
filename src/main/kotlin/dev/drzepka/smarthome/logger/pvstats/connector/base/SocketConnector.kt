@@ -26,7 +26,7 @@ abstract class SocketConnector(private val config: SourceConfig) : Connector {
             socket.connect(InetSocketAddress(split.first, split.second), config.timeout * 1000)
         } catch (e: SocketTimeoutException) {
             if (!silent)
-                log.warning("Connection to source ${config.name} timed out (${split.first}:${split.second}")
+                log.warn("Connection to source {} timed out ({}:{}", config.name, split.first, split.second)
             return null
         }
 
@@ -37,7 +37,7 @@ abstract class SocketConnector(private val config: SourceConfig) : Connector {
         while (inputStream.available() == 0) {
             Thread.sleep(SOCKET_RESPONSE_SLEEP_TIME)
             if (responseWaitTime > config.timeout * 1000L) {
-                log.warning("Timeout occurred while waiting for source ${config.name} response data")
+                log.warn("Timeout occurred while waiting for source {} response data", config.name)
                 socket.close()
                 return null
             }
@@ -51,8 +51,8 @@ abstract class SocketConnector(private val config: SourceConfig) : Connector {
 
         if (buffer.size != 110) {
             if (!silent)
-                log.warning("Response from source ${config.name} does not appear to contain inverter data. " +
-                        "Did you supplied correct SN?")
+                log.warn("Response from source {} does not appear to contain inverter data. " +
+                        "Did you supplied correct SN?", config.name)
             return null
         }
 
