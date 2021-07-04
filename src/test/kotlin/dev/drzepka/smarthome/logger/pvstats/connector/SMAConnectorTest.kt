@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.pvstats.connector
 
 import dev.drzepka.smarthome.common.pvstats.model.vendor.SMAData
-import dev.drzepka.smarthome.logger.pvstats.PVStatsLogger
+import dev.drzepka.smarthome.logger.pvstats.PVStatsModule
 import dev.drzepka.smarthome.logger.pvstats.connector.base.DataType
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SMAConfig
 import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
@@ -60,7 +60,7 @@ class SMAConnectorTest {
     }
 
     private fun getBytes(filename: String): ByteArray {
-        val stream = PVStatsLogger::class.java.classLoader.getResourceAsStream(filename)!!
+        val stream = PVStatsModule::class.java.classLoader.getResourceAsStream(filename)!!
         val bytes = stream.readBytes()
         stream.close()
         return bytes

@@ -6,8 +6,8 @@ import com.intelligt.modbus.jlibmodbus.serial.SerialParameters
 import com.intelligt.modbus.jlibmodbus.serial.SerialPortFactoryJSSC
 import com.intelligt.modbus.jlibmodbus.serial.SerialUtils
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
+import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfig
-import dev.drzepka.smarthome.logger.core.util.Logger
 import jssc.SerialPortList
 import java.io.File
 

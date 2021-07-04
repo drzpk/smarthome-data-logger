@@ -13,7 +13,7 @@ class SofarWifiConnectorTest {
 
     @Test
     fun `check generating socket request data`() {
-        val connector = SofarWifiConnector(getConfig(1629384756))
+        val connector = SofarWifiConnector(getConfig(1629384756), false)
         val data = connector.getSocketRequestData()
         val expected = hexStringToBytes("a517001045000034701e6102000000000000000000000000000001030000002705d09115")
         Assertions.assertArrayEquals(expected, data)
@@ -36,7 +36,7 @@ class SofarWifiConnectorTest {
                 "5e01034e0002000000000000000000000f22027d0317000100f7000000f00041138609890158096901580953015700" +
                 "0000400000002c093302800026003219e00f18031d003c000000010000054d087206cdccad0315")
 
-        val service = SofarWifiConnector(getConfig(123))
+        val service = SofarWifiConnector(getConfig(123), false)
         val parsed = service.parseSocketResponseData(raw) as SofarData
 
         Assertions.assertEquals(23550, parsed.energyToday)

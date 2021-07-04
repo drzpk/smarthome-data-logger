@@ -2,15 +2,14 @@ package dev.drzepka.smarthome.logger.pvstats.connector.base
 
 import dev.drzepka.smarthome.common.pvstats.model.vendor.SofarData
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
+import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.common.util.hexStringToBytes
-import dev.drzepka.smarthome.logger.pvstats.PVStatsLogger
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfig
-import dev.drzepka.smarthome.logger.core.util.Logger
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.SocketTimeoutException
 
-abstract class SocketConnector(private val config: SourceConfig) : Connector {
+abstract class SocketConnector(private val config: SourceConfig, private val testMode: Boolean) : Connector {
 
     private val log by Logger()
 
@@ -18,7 +17,7 @@ abstract class SocketConnector(private val config: SourceConfig) : Connector {
 
     @Suppress("ConstantConditionIf")
     final override fun getData(dataType: DataType, silent: Boolean): VendorData? {
-        if (PVStatsLogger.DEBUG) return getTestVendorData()
+        if (testMode) return getTestVendorData()
 
         val split = splitSocketUrl(getUrl(dataType))
         val socket = Socket()
@@ -26,7 +25,7 @@ abstract class SocketConnector(private val config: SourceConfig) : Connector {
             socket.connect(InetSocketAddress(split.first, split.second), config.timeout * 1000)
         } catch (e: SocketTimeoutException) {
             if (!silent)
-                log.warn("Connection to source {} timed out ({}:{}", config.name, split.first, split.second)
+                log.warn("Connection to source {} timed out ({}:{})", config.name, split.first, split.second)
             return null
         }
 

@@ -3,7 +3,7 @@ package dev.drzepka.smarthome.logger.pvstats
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.drzepka.smarthome.common.pvstats.model.PutDataRequest
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
-import dev.drzepka.smarthome.logger.core.util.Logger
+import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.pvstats.connector.SMAConnector
 import dev.drzepka.smarthome.logger.pvstats.connector.SofarModbusConnector
 import dev.drzepka.smarthome.logger.pvstats.connector.SofarWifiConnector
@@ -21,7 +21,14 @@ import java.util.*
 import kotlin.math.floor
 import kotlin.system.exitProcess
 
-class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceConfig: SourceConfig) {
+class SourceLogger(
+    private val pvStatsConfig: PvStatsConfig,
+    private val sourceConfig: SourceConfig,
+    private val testMode: Boolean
+) {
+
+    val name: String
+        get() = sourceConfig.name
 
     private val log by Logger()
     private val objectMapper = ObjectMapper()
@@ -48,15 +55,17 @@ class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceC
         connectorThrottling = floor(throttledInterval.toFloat() / minInterval).toInt()
     }
 
-    fun getIntervals(): Map<DataType, Int> = connector.supportedDataTypes.map {
+    fun getIntervals(): Map<DataType, Int> = connector.supportedDataTypes.associateWith {
         val interval = when (it) {
             DataType.METRICS -> sourceConfig.metricsInterval
             DataType.MEASUREMENT -> sourceConfig.measurementInterval
-        } ?: throw IllegalArgumentException("interval of type $it" +
-                " is required by device ${sourceConfig.type} but is missing")
+        } ?: throw IllegalArgumentException(
+            "interval of type $it" +
+                    " is required by device ${sourceConfig.type} but is missing"
+        )
 
-        Pair(it, interval)
-    }.toMap()
+        interval
+    }
 
     fun execute(dataType: DataType) {
         try {
@@ -72,7 +81,7 @@ class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceC
     private fun getConnector(sourceConfig: SourceConfig): Connector {
         val connector = when (sourceConfig) {
             is SMAConfig -> SMAConnector(sourceConfig)
-            is SofarWifiConfig -> SofarWifiConnector(sourceConfig)
+            is SofarWifiConfig -> SofarWifiConnector(sourceConfig, testMode)
             is SofarModbusConfig -> SofarModbusConnector(sourceConfig)
             else -> throw IllegalStateException("Unsupported source config type: ${sourceConfig.type}")
         }
@@ -123,6 +132,7 @@ class SourceLogger(private val pvStatsConfig: PvStatsConfig, private val sourceC
         return true
     }
 
+    // todo: use ktor client
     private fun sendData(data: VendorData) {
         val url = URL(endpointUrl)
         val connection = url.openConnection() as HttpURLConnection

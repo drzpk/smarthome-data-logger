@@ -34,8 +34,9 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("dev.drzepka.smarthome:common:1.0.+")
+    implementation("dev.drzepka.smarthome:common:1.1.+")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
     implementation("com.fasterxml.jackson.core:jackson-core:2.11.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")

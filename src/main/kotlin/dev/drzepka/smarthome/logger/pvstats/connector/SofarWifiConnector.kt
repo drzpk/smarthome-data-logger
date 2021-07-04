@@ -10,7 +10,7 @@ import dev.drzepka.smarthome.logger.pvstats.model.config.source.SofarWifiConfig
 /**
  * Request message source: https://github.com/mcikosos/Inverter-Data-Logger
  */
-class SofarWifiConnector(private val config: SofarWifiConfig) : SocketConnector(config) {
+class SofarWifiConnector(private val config: SofarWifiConfig, testMode: Boolean) : SocketConnector(config, testMode) {
     override val supportedDataTypes = listOf(DataType.METRICS)
 
     override fun getSocketRequestData(): Array<Byte> {
