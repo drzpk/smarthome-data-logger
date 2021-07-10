@@ -16,11 +16,29 @@ class ConfigurationLoader(properties: Properties? = null) {
         this.properties = properties ?: loadProperties()
     }
 
+    fun getInt(name: String, required: Boolean): Int? {
+        val value = getValue(name, required)
+        return if (required) value!!.toInt() else null
+    }
+
     fun getValue(name: String, required: Boolean): String? {
         val value = properties.getProperty(name)
         if (value == null && required)
             throw IllegalArgumentException("Property $name is required but wasn't found")
         return value
+    }
+
+    fun containsKey(name: String): Boolean {
+        fun split(input: String): List<String> = input.split(".")
+
+        val splitName = split(name)
+        fun matches(input: Collection<String>): Boolean = splitName
+            .zip(input)
+            .all { it.first == it.second }
+
+        return properties.keys
+            .map { split(it as String) }
+            .any { matches(it) }
     }
 
     private fun loadProperties(): Properties {

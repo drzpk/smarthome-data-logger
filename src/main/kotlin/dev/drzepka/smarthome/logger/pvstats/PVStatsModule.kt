@@ -17,7 +17,12 @@ class PVStatsModule(configurationLoader: ConfigurationLoader, scheduler: TaskSch
     private val log by Logger()
     private val sourceLoggers = ArrayList<SourceLogger>()
 
-    override fun initialize(): Boolean {
+    override suspend fun initialize(): Boolean {
+        if (!configurationLoader.containsKey("pvstats")) {
+            log.info("No pv-stats configuration was found")
+            return false
+        }
+
         loadSourceLoggers()
         if (sourceLoggers.isEmpty()) {
             log.info("No pv-stats sources were found in configuration file")
@@ -27,7 +32,7 @@ class PVStatsModule(configurationLoader: ConfigurationLoader, scheduler: TaskSch
         return true
     }
 
-    override fun start() {
+    override suspend fun start() {
         sourceLoggers.forEach { logger ->
             logger.getIntervals().forEach { interval ->
                 val duration = Duration.ofSeconds(interval.value.toLong())
@@ -39,7 +44,7 @@ class PVStatsModule(configurationLoader: ConfigurationLoader, scheduler: TaskSch
         }
     }
 
-    override fun stop() {
+    override suspend fun stop() {
         // Nothing here
     }
 

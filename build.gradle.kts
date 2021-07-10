@@ -1,7 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.71"
+    kotlin("jvm") version "1.4.20"
+    kotlin("plugin.allopen") version "1.4.20"
     id("java-library")
 
     maven
@@ -36,9 +37,13 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("dev.drzepka.smarthome:common:1.1.+")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
-    implementation("com.fasterxml.jackson.core:jackson-core:2.11.0")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.11.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
+    implementation("io.ktor:ktor-client-core:1.4.3")
+    implementation("io.ktor:ktor-client-apache:1.4.3")
+    implementation("io.ktor:ktor-client-jackson:1.4.3")
+
+    //implementation("com.fasterxml.jackson.core:jackson-core:2.11.0")
+    //implementation("com.fasterxml.jackson.core:jackson-databind:2.11.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
     implementation("org.apache.httpcomponents:httpclient:4.5.12")
     implementation("com.intelligt.modbus:jlibmodbus:1.2.9.7")
@@ -46,6 +51,15 @@ dependencies {
 
     testImplementation("org.junit.platform:junit-platform-launcher:1.6.2")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+    testImplementation("org.assertj:assertj-core:3.19.0")
+    testImplementation("org.mockito:mockito-core:3.9.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:3.9.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:3.1.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
+}
+
+allOpen {
+    annotation("dev.drzepka.smarthome.common.util.Mockable")
 }
 
 tasks.withType<Test> {

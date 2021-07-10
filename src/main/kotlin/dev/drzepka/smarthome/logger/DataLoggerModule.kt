@@ -17,9 +17,9 @@ abstract class DataLoggerModule(
      * Initializes this module.
      * @return whether module should be started.
      */
-    abstract fun initialize(): Boolean
+    abstract suspend fun initialize(): Boolean
 
-    abstract fun start()
+    abstract suspend fun start()
 
-    abstract fun stop()
+    abstract suspend fun stop()
 }
