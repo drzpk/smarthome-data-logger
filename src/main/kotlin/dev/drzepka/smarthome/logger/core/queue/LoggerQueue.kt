@@ -27,47 +27,12 @@ class LoggerQueue<T>(private val maxBatchSize: Int, private val maxAge: Duration
         queue.add(QueueItem(item))
     }
 
-    @Synchronized
-    suspend fun processQueue(handler: (suspend (batch: Collection<QueueItem<T>>) -> ProcessingResult)) {
-        do {
-            val batch = getBatch()
-            if (batch.isEmpty())
-                break
-
-            val result = processItem(handler, batch)
-            var continueProcessing = result.`continue`
-
-            when (result.status) {
-                ProcessingResult.Status.OK -> {
-                    // The AbstractCollection.removeAll() method uses the Collection.contains() method under the hood.
-                    // That's why the getBatch() method generates a set.
-                    queue.removeAll(batch)
-                }
-                ProcessingResult.Status.SERVER_UNAVAILABLE -> {
-                    log.error(
-                        "Processing of batch ({}; {}) finished with SERVER_UNAVAILABLE error",
-                        batch.first().createdAt,
-                        batch.size
-                    )
-
-                    // Continuation doesn't have any sense when server is unavailable because the following
-                    // batches are likely to finish with exactly the same status.
-                    continueProcessing = false
-                }
-            }
-
-            if (!continueProcessing)
-                break
-
-        } while (batch.isNotEmpty())
-    }
-
-    private fun getBatch(): Collection<QueueItem<T>> {
+    fun getBatch(): QueueBatch<T> {
         val batchSize = minOf(queue.size, maxBatchSize)
-        val batch = LinkedHashSet<QueueItem<T>>(batchSize)
+        val batchItems = LinkedHashSet<QueueItem<T>>(batchSize)
 
         val iterator = queue.iterator()
-        while (batch.size < batchSize && iterator.hasNext()) {
+        while (batchItems.size < batchSize && iterator.hasNext()) {
             val current = iterator.next()
 
             if (isExpired(current)) {
@@ -76,22 +41,15 @@ class LoggerQueue<T>(private val maxBatchSize: Int, private val maxAge: Duration
                 continue
             }
 
-            batch.add(current)
+            batchItems.add(current)
         }
 
-        return batch
+        return QueueBatch(batchItems)
+    }
+
+    fun removeBatch(batch: QueueBatch<T>) {
+        queue.removeAll(batch.items)
     }
 
     private fun isExpired(item: QueueItem<T>): Boolean = item.createdAt.plus(maxAge).isBefore(Instant.now())
-
-    private suspend fun processItem(
-        handler: (suspend (batch: Collection<QueueItem<T>>) -> ProcessingResult),
-        batch: Collection<QueueItem<T>>
-    ): ProcessingResult {
-        return try {
-            handler.invoke(batch)
-        } catch (e: Exception) {
-            throw IllegalStateException("Unhandled exception while processing batch", e)
-        }
-    }
 }

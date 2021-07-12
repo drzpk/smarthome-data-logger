@@ -75,7 +75,7 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Jar> {
     manifest {
-        attributes["Main-Class"] = "dev.drzepka.smarthome.logger.PVStatsDataLogger"
+        attributes["Main-Class"] = "dev.drzepka.smarthome.logger.DataLogger"
         attributes["Implementation-Version"] = project.version.toString()
         attributes["Implementation-Title"] = "Smart Home data logger"
     }

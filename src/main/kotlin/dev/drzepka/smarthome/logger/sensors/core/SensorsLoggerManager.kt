@@ -3,16 +3,15 @@ package dev.drzepka.smarthome.logger.sensors.core
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.common.util.Mockable
 import dev.drzepka.smarthome.logger.core.executor.ConnectionException
-import dev.drzepka.smarthome.logger.core.executor.ResponseException
+import dev.drzepka.smarthome.logger.core.queue.LoggerQueue
+import dev.drzepka.smarthome.logger.core.queue.QueueBatch
+import dev.drzepka.smarthome.logger.core.queue.QueueItem
+import dev.drzepka.smarthome.logger.core.util.StopWatch
 import dev.drzepka.smarthome.logger.sensors.converter.BluetoothServiceDataToMeasurementConverter
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsRequest
 import dev.drzepka.smarthome.logger.sensors.model.server.Device
-import dev.drzepka.smarthome.logger.core.queue.LoggerQueue
-import dev.drzepka.smarthome.logger.core.util.StopWatch
-import dev.drzepka.smarthome.logger.core.queue.ProcessingResult
-import dev.drzepka.smarthome.logger.core.queue.QueueItem
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -49,54 +48,51 @@ class SensorsLoggerManager(
         queue.enqueue(request)
     }
 
-    suspend fun sendMeasurementsToServer(timeLimit: Duration): Status {
+    suspend fun sendMeasurementsToServer(timeLimit: Duration) {
         val stopWatch = StopWatch(true)
-
-        var hasServerUnavailableError = false
         var timeLimitExceeded = false
+
+        var iterationNo = 0
         while (queue.size() > 0 && !timeLimitExceeded) {
-            queue.processQueue {
 
-                log.trace("Processing {} items starting at {}", it.size, it.firstOrNull()?.createdAt)
-                val status = sendMeasurements(it)
-                if (status == ProcessingResult.Status.SERVER_UNAVAILABLE)
-                    hasServerUnavailableError = true
+            if (++iterationNo > SEND_ITERATION_LIMIT) {
+                log.warn("Iteration limit has been reached, force-stopping the loop")
+                break
+            }
 
-                val `continue` = if (stopWatch.current() > timeLimit) {
-                    stopWatch.stop()
-                    log.warn(
-                        "Some measurements ({}) couldn't be sent. Sending took {}, but time limit is {}",
-                        queue.size(), stopWatch.elapsed(), timeLimit
-                    )
-                    false
-                } else {
-                    true
-                }
+            val batch = queue.getBatch()
+            log.trace("Processing {} items starting at {}", batch.size, batch.items.firstOrNull()?.createdAt)
 
-                timeLimitExceeded = !`continue`
-                ProcessingResult(`continue` && !hasServerUnavailableError, status)
+            processBatch(batch)
+            if (stopWatch.current() > timeLimit) {
+                stopWatch.stop()
+                timeLimitExceeded = true
+
+                log.warn(
+                    "Some measurements ({}) couldn't be sent. Sending took {}, but time limit is {}",
+                    queue.size(), stopWatch.elapsed(), timeLimit
+                )
             }
         }
-
-        return Status(hasServerUnavailableError)
     }
 
-    private suspend fun sendMeasurements(items: Collection<QueueItem<CreateMeasurementsRequest.Measurement>>): ProcessingResult.Status {
-        return try {
-            doSendMeasurements(items)
-        } catch (e: ConnectionException) {
-            log.error("Connection exception", e)
-            ProcessingResult.Status.SERVER_UNAVAILABLE
-        } catch (e: ResponseException) {
-            log.error(
-                "Error while sending {} measurements starting at {}",
-                items.size, items.firstOrNull()?.createdAt, e
-            )
-            ProcessingResult.Status.OK
+    private suspend fun processBatch(batch: QueueBatch<CreateMeasurementsRequest.Measurement>) {
+        val result = runCatching {
+            sendMeasurements(batch.items)
         }
+
+        // Don't remove batch because of connection failure.
+        val exception = result.exceptionOrNull()
+        if (exception is ConnectionException) {
+            log.error("Cannot send {} measurements because of connection failure", batch.size)
+        } else {
+            queue.removeBatch(batch)
+        }
+
+        exception?.let { throw it }
     }
 
-    private suspend fun doSendMeasurements(items: Collection<QueueItem<CreateMeasurementsRequest.Measurement>>): ProcessingResult.Status {
+    private suspend fun sendMeasurements(items: Collection<QueueItem<CreateMeasurementsRequest.Measurement>>) {
         log.debug("Sending {} measurements to server", items.size)
         val measurements = items.map {
             val measurement = it.content
@@ -108,8 +104,9 @@ class SensorsLoggerManager(
             this.measurements.addAll(measurements)
         }
         executor.sendMeasurements(request)
-        return ProcessingResult.Status.OK
     }
 
-    data class Status(val serverUnavailable: Boolean)
+    companion object {
+        private const val SEND_ITERATION_LIMIT = 30
+    }
 }

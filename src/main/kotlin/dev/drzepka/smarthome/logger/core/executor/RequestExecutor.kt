@@ -46,7 +46,6 @@ abstract class RequestExecutor(val baseUrl: String, private val timeoutSeconds: 
     ): Res {
         try {
             return doExecuteRequest(method, url, requestBody)
-            // todo: verify ktor exceptions
         } catch (e: ConnectException) {
             throw ConnectionException(url, e)
         } catch (e: Exception) { // todo: don't assume it's a response exception, create dedicated catch block

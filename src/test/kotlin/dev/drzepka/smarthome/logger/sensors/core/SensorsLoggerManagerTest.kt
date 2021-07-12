@@ -1,14 +1,17 @@
 package dev.drzepka.smarthome.logger.sensors.core
 
+import dev.drzepka.smarthome.logger.core.executor.ConnectionException
 import dev.drzepka.smarthome.logger.core.queue.LoggerQueue
-import dev.drzepka.smarthome.logger.core.queue.ProcessingResult
+import dev.drzepka.smarthome.logger.core.queue.QueueBatch
 import dev.drzepka.smarthome.logger.core.queue.QueueItem
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsRequest
+import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsResponse
 import dev.drzepka.smarthome.logger.sensors.model.server.Device
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.data.Offset
 import org.junit.jupiter.api.Test
@@ -45,20 +48,16 @@ internal class SensorsLoggerManagerTest {
 
         val queueItem1 = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(3))
         val queueItem2 = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(2))
+        val queueBatch1 = QueueBatch(listOf(queueItem1))
+        val queueBatch2 = QueueBatch(listOf(queueItem2))
 
         var processingNo = 0
-        whenever(queue.processQueue(any())).doSuspendableAnswer {
-            val handler: (suspend (batch: Collection<QueueItem<CreateMeasurementsRequest.Measurement>>) -> ProcessingResult) =
-                it.getArgument(0)
-
+        whenever(queue.getBatch()).doAnswer {
             if (processingNo++ == 0)
-                handler.invoke(listOf(queueItem1))
+                return@doAnswer queueBatch1
             else
-                handler.invoke(listOf(queueItem2))
-
-            Unit
+                return@doAnswer queueBatch2
         }
-
         whenever(queue.size()).thenAnswer {
             2 - processingNo
         }
@@ -86,7 +85,8 @@ internal class SensorsLoggerManagerTest {
         then(requests[1].measurements).hasSize(1)
         then(requests[1].measurements[0].timestampOffsetMillis).isCloseTo(item2Offset, itemOffsetUncertainty)
 
-        Unit
+        verify(queue).removeBatch(same(queueBatch1))
+        verify(queue).removeBatch(same(queueBatch2))
     }
 
     @Test
@@ -98,19 +98,13 @@ internal class SensorsLoggerManagerTest {
         val queueItem2 = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(2))
 
         var processingNo = 0
-        whenever(queue.processQueue(any())).doSuspendableAnswer {
-            val handler: (suspend (batch: Collection<QueueItem<CreateMeasurementsRequest.Measurement>>) -> ProcessingResult) =
-                it.getArgument(0)
-
-            delay(100)
+        whenever(queue.getBatch()).doAnswer {
+            Thread.sleep(100)
             if (processingNo++ == 0)
-                handler.invoke(listOf(queueItem1))
+                return@doAnswer QueueBatch(listOf(queueItem1))
             else
-                handler.invoke(listOf(queueItem2))
-
-            Unit
+                return@doAnswer QueueBatch(listOf(queueItem2))
         }
-
         whenever(queue.size()).thenAnswer {
             2 - processingNo
         }
@@ -123,6 +117,83 @@ internal class SensorsLoggerManagerTest {
         manager.sendMeasurementsToServer(Duration.ofMillis(100))
 
         then(processingNo).isEqualTo(1)
+
+        Unit
+    }
+
+    @Test
+    fun `should not remove batch on connection exception`() = runBlocking{
+        val device = createDevice("dev")
+        whenever(executor.getDevices()).doReturn(listOf(device))
+
+        val exception = ConnectionException("url", IllegalArgumentException("test"))
+        whenever(executor.sendMeasurements(any())).thenThrow(exception)
+
+        val manager = getManager()
+        manager.refreshDevices()
+
+        val item = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(2))
+        val batch = QueueBatch(listOf(item))
+        whenever(queue.getBatch()).thenReturn(batch)
+        whenever(queue.size()).thenReturn(1)
+
+        val caught = kotlin.runCatching {
+            manager.sendMeasurementsToServer(Duration.ofSeconds(3))
+        }
+
+        then(caught.exceptionOrNull()).isSameAs(exception)
+        verify(queue, times(0)).removeBatch(same(batch))
+    }
+
+    @Test
+    fun `should remove batch on exception`() = runBlocking{
+        val device = createDevice("dev")
+        whenever(executor.getDevices()).doReturn(listOf(device))
+
+        val exception = IllegalStateException("something wrong happened")
+        whenever(executor.sendMeasurements(any())).thenThrow(exception)
+
+        val manager = getManager()
+        manager.refreshDevices()
+
+        val item = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(2))
+        val batch = QueueBatch(listOf(item))
+        whenever(queue.getBatch()).thenReturn(batch)
+        whenever(queue.size()).thenReturn(1)
+
+        val caught = kotlin.runCatching {
+            manager.sendMeasurementsToServer(Duration.ofSeconds(3))
+        }
+
+        then(caught.exceptionOrNull()).isSameAs(exception)
+        verify(queue).removeBatch(same(batch))
+    }
+
+    @Test
+    fun `should prevent infinite loop when sending measurements`() = runBlocking{
+        val device = createDevice("dev")
+        whenever(executor.getDevices()).doReturn(listOf(device))
+
+        val item = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(2))
+        val batch = QueueBatch(listOf(item))
+        whenever(queue.getBatch()).thenReturn(batch)
+        whenever(queue.size()).thenReturn(1) // Always return 1 - cause infinite loop
+
+        whenever(executor.sendMeasurements(any())).doSuspendableAnswer {
+            delay(1) // Create suspension point - required for withTimeout to work
+            CreateMeasurementsResponse()
+        }
+
+        val manager = getManager()
+        manager.refreshDevices()
+
+        val result = runCatching {
+            withTimeout(1000) {
+                manager.sendMeasurementsToServer(Duration.ofSeconds(30))
+            }
+        }
+
+        then(result.isSuccess).isTrue
 
         Unit
     }
