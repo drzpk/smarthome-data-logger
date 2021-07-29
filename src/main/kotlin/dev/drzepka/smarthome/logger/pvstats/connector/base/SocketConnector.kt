@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.pvstats.connector.base
 
-import dev.drzepka.smarthome.common.pvstats.model.vendor.SofarData
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
+import dev.drzepka.smarthome.common.pvstats.model.vendor.sofar.SofarDataImpl
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.common.util.hexStringToBytes
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfig
@@ -76,7 +76,7 @@ abstract class SocketConnector(private val config: SourceConfig, private val tes
                 "5e01034e0002000000000000000000000f22027d0317000100f7000000f00041138609890158096901580953015700" +
                 "0000400000002c093302800026003219e00f18031d003c000000010000054d087206cdccad0315")
 
-        return SofarData(bytes.copyOfRange(27, bytes.size))
+        return SofarDataImpl(bytes.copyOfRange(27, bytes.size))
     }
 
     companion object {

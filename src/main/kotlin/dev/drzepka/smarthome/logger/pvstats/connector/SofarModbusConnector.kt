@@ -2,8 +2,8 @@ package dev.drzepka.smarthome.logger.pvstats.connector
 
 import com.intelligt.modbus.jlibmodbus.serial.SerialParameters
 import com.intelligt.modbus.jlibmodbus.serial.SerialPort
-import dev.drzepka.smarthome.common.pvstats.model.vendor.SofarData
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
+import dev.drzepka.smarthome.common.pvstats.model.vendor.sofar.SofarDataImpl
 import dev.drzepka.smarthome.logger.pvstats.connector.base.DataType
 import dev.drzepka.smarthome.logger.pvstats.connector.base.ModbusConnector
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SofarModbusConfig
@@ -38,6 +38,6 @@ class SofarModbusConnector(config: SofarModbusConfig) : ModbusConnector(config) 
         val mutableRaw = raw.toMutableList()
         mutableRaw.add(0, 0)
 
-        return SofarData(mutableRaw.toTypedArray())
+        return SofarDataImpl(mutableRaw.toTypedArray())
     }
 }

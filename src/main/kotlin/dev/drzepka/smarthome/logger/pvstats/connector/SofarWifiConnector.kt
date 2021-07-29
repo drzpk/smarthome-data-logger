@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.pvstats.connector
 
-import dev.drzepka.smarthome.common.pvstats.model.vendor.SofarData
 import dev.drzepka.smarthome.common.pvstats.model.vendor.VendorData
+import dev.drzepka.smarthome.common.pvstats.model.vendor.sofar.SofarDataImpl
 import dev.drzepka.smarthome.common.util.hexStringToBytes
 import dev.drzepka.smarthome.logger.pvstats.connector.base.DataType
 import dev.drzepka.smarthome.logger.pvstats.connector.base.SocketConnector
@@ -31,7 +31,7 @@ class SofarWifiConnector(private val config: SofarWifiConfig, testMode: Boolean)
     }
 
     override fun parseSocketResponseData(response: Array<Byte>): VendorData {
-        return SofarData(response.copyOfRange(27, response.size))
+        return SofarDataImpl(response.copyOfRange(27, response.size))
     }
 
     override fun getUrl(dataType: DataType): String = config.url

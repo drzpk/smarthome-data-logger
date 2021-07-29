@@ -1,6 +1,6 @@
 package dev.drzepka.smarthome.logger.pvstats.connector
 
-import dev.drzepka.smarthome.common.pvstats.model.vendor.SofarData
+import dev.drzepka.smarthome.common.pvstats.model.vendor.sofar.SofarData
 import dev.drzepka.smarthome.common.util.hexStringToBytes
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SofarWifiConfig
 import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
