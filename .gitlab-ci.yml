@@ -1,6 +1,7 @@
 image: openjdk:8-jdk-slim
 
 stages:
+  - test
   - publish
 
 before_script:
@@ -11,8 +12,16 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
-test and publish:
+test:
   stage: publish
   script:
     - chmod +x gradlew
-    - ./gradlew test publish
+    - ./gradlew test
+
+publish:
+  stage: publish
+  script:
+    - chmod +x gradlew
+    - ./gradlew publish
+  only:
+    - tags
