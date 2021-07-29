@@ -1,5 +1,6 @@
 package dev.drzepka.smarthome.logger.core.queue
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
@@ -52,7 +53,7 @@ internal class LoggerQueueTest {
     fun `should not process expired elements`() = runBlocking {
         val queue = LoggerQueue<String>(1, Duration.ofMillis(300))
         queue.enqueue("first")
-        Thread.sleep(300)
+        delay(350)
         queue.enqueue("second")
 
         val batch = queue.getBatch()

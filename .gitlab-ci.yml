@@ -13,7 +13,7 @@ cache:
     - .gradle/caches
 
 test:
-  stage: publish
+  stage: test
   script:
     - chmod +x gradlew
     - ./gradlew test
