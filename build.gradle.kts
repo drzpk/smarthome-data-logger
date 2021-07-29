@@ -36,6 +36,8 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("dev.drzepka.smarthome:common:1.1.+")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.20")
+
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
     implementation("io.ktor:ktor-client-core:1.4.3")
