@@ -51,7 +51,7 @@ class SourceLogger(
         // Consecutive error responses will cause connector to throttle fetch request frequency.
         // Throttling is meant to be used for requests with high frequency (more frequent than throttledInterval),
         // those with lower frequency won't be throttled at all
-        val minInterval = getIntervals().map { it.value }.min()!!
+        val minInterval = getIntervals().map { it.value }.minOrNull()!!
         connectorThrottling = floor(throttledInterval.toFloat() / minInterval).toInt()
     }
 
@@ -110,14 +110,17 @@ class SourceLogger(
         if (!dataSent) {
             connectorErrorCount++
             if (connectorErrorCount == 3) {
-                log.warn("Inverter responded with error 3 times in a row, increasing request interval")
+                log.warn("Inverter {} responded with error 3 times in a row, increasing request interval", name)
                 log.info("Subsequent inverter connection errors won't be logged")
                 throttle = true
                 throttlingCountdown = connectorThrottling
             }
         } else {
             if (connectorErrorCount > 2) {
-                log.info("Inverter responded normally after $connectorErrorCount errors, restoring normal request interval")
+                log.info(
+                    "Inverter {} responded normally after {} errors, restoring normal request interval",
+                    name, connectorErrorCount
+                )
                 throttle = false
                 throttlingCountdown = 0
             }
