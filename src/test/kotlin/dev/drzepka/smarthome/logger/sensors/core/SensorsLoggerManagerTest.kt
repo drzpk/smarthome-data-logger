@@ -9,6 +9,7 @@ import dev.drzepka.smarthome.logger.sensors.model.bluetooth.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsRequest
 import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsResponse
 import dev.drzepka.smarthome.logger.sensors.model.server.Device
+import dev.drzepka.smarthome.logger.sensors.model.server.Measurement
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -26,7 +27,7 @@ import java.time.temporal.ChronoUnit
 internal class SensorsLoggerManagerTest {
 
     private val executor = mock<SensorsRequestExecutor>()
-    private val queue = mock<LoggerQueue<CreateMeasurementsRequest.Measurement>>()
+    private val queue = mock<LoggerQueue<Measurement>>()
 
     @Test
     fun `should enqueue request created from known device's bluetooth data`() = runBlocking {
@@ -46,8 +47,8 @@ internal class SensorsLoggerManagerTest {
         val device = createDevice("dev")
         whenever(executor.getDevices()).doReturn(listOf(device))
 
-        val queueItem1 = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(3))
-        val queueItem2 = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(2))
+        val queueItem1 = QueueItem(Measurement(), Instant.now().minusSeconds(3))
+        val queueItem2 = QueueItem(Measurement(), Instant.now().minusSeconds(2))
         val queueBatch1 = QueueBatch(listOf(queueItem1))
         val queueBatch2 = QueueBatch(listOf(queueItem2))
 
@@ -94,8 +95,8 @@ internal class SensorsLoggerManagerTest {
         val device = createDevice("dev")
         whenever(executor.getDevices()).doReturn(listOf(device))
 
-        val queueItem1 = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(3))
-        val queueItem2 = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(2))
+        val queueItem1 = QueueItem(Measurement(), Instant.now().minusSeconds(3))
+        val queueItem2 = QueueItem(Measurement(), Instant.now().minusSeconds(2))
 
         var processingNo = 0
         whenever(queue.getBatch()).doAnswer {
@@ -132,7 +133,7 @@ internal class SensorsLoggerManagerTest {
         val manager = getManager()
         manager.refreshDevices()
 
-        val item = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(2))
+        val item = QueueItem(Measurement(), Instant.now().minusSeconds(2))
         val batch = QueueBatch(listOf(item))
         whenever(queue.getBatch()).thenReturn(batch)
         whenever(queue.size()).thenReturn(1)
@@ -156,7 +157,7 @@ internal class SensorsLoggerManagerTest {
         val manager = getManager()
         manager.refreshDevices()
 
-        val item = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(2))
+        val item = QueueItem(Measurement(), Instant.now().minusSeconds(2))
         val batch = QueueBatch(listOf(item))
         whenever(queue.getBatch()).thenReturn(batch)
         whenever(queue.size()).thenReturn(1)
@@ -174,7 +175,7 @@ internal class SensorsLoggerManagerTest {
         val device = createDevice("dev")
         whenever(executor.getDevices()).doReturn(listOf(device))
 
-        val item = QueueItem(CreateMeasurementsRequest.Measurement(), Instant.now().minusSeconds(2))
+        val item = QueueItem(Measurement(), Instant.now().minusSeconds(2))
         val batch = QueueBatch(listOf(item))
         whenever(queue.getBatch()).thenReturn(batch)
         whenever(queue.size()).thenReturn(1) // Always return 1 - cause infinite loop

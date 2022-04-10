@@ -12,6 +12,7 @@ import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsRequest
 import dev.drzepka.smarthome.logger.sensors.model.server.Device
+import dev.drzepka.smarthome.logger.sensors.model.server.Measurement
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -19,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap
 @Mockable
 class SensorsLoggerManager(
     private val executor: SensorsRequestExecutor,
-    private val queue: LoggerQueue<CreateMeasurementsRequest.Measurement>
+    private val queue: LoggerQueue<Measurement>
 ) {
 
     private val log by Logger()
@@ -76,7 +77,7 @@ class SensorsLoggerManager(
         }
     }
 
-    private suspend fun processBatch(batch: QueueBatch<CreateMeasurementsRequest.Measurement>) {
+    private suspend fun processBatch(batch: QueueBatch<Measurement>) {
         val result = runCatching {
             sendMeasurements(batch.items)
         }
@@ -92,7 +93,7 @@ class SensorsLoggerManager(
         exception?.let { throw it }
     }
 
-    private suspend fun sendMeasurements(items: Collection<QueueItem<CreateMeasurementsRequest.Measurement>>) {
+    private suspend fun sendMeasurements(items: Collection<QueueItem<Measurement>>) {
         log.debug("Sending {} measurements to server", items.size)
         val measurements = items.map {
             val measurement = it.content

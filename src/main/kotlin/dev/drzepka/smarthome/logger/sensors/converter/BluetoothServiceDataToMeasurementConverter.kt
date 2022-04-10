@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.sensors.converter
 
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
-import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsRequest
+import dev.drzepka.smarthome.logger.sensors.model.server.Measurement
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -14,9 +14,9 @@ object BluetoothServiceDataToMeasurementConverter {
      * Converts bluetooth data to measurement using
      * [custom format](https://github.com/pvvx/ATC_MiThermometer#custom-format-all-data-little-endian)
      */
-    fun convertCustomFormat(input: BluetoothServiceData): CreateMeasurementsRequest.Measurement {
+    fun convertCustomFormat(input: BluetoothServiceData): Measurement {
         val bin = input.data
-        return CreateMeasurementsRequest.Measurement().apply {
+        return Measurement().apply {
             temperature = intLittleEndianToInt(
                 bin,
                 6,
