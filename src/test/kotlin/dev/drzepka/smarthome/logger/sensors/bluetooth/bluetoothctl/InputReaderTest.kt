@@ -1,11 +1,12 @@
 package dev.drzepka.smarthome.logger.sensors.bluetooth.bluetoothctl
 
+import dev.drzepka.smarthome.logger.sensors.pipeline.listener.bluetooth.InputReader
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
-import java.util.ArrayDeque
+import java.util.*
 
 class InputReaderTest {
 

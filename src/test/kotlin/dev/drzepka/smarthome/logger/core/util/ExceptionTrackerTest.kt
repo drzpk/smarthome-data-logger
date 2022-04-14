@@ -11,20 +11,20 @@ internal class ExceptionTrackerTest {
         val cause2 = NullPointerException("null2")
         val exception2 = IllegalArgumentException("message1", cause2)
 
-        val tracker = ExceptionTracker()
+        val tracker = ExceptionTracker("test")
 
         tracker.setLastException(exception1)
         tracker.setLastException(exception1)
         then(tracker.exceptionCount).isEqualTo(2)
-        then(tracker.exceptionChanged).isFalse()
+        then(tracker.exceptionChanged).isFalse
 
         tracker.setLastException(exception2)
         then(tracker.exceptionCount).isEqualTo(1)
-        then(tracker.exceptionChanged).isTrue()
+        then(tracker.exceptionChanged).isTrue
 
         tracker.reset()
         then(tracker.exceptionCount).isEqualTo(0)
-        then(tracker.exceptionChanged).isFalse()
+        then(tracker.exceptionChanged).isFalse
     }
 
     @Test
@@ -34,15 +34,15 @@ internal class ExceptionTrackerTest {
         val cause2 = IllegalStateException("cause")
         val exception2 = IllegalArgumentException("argument", cause2)
 
-        val tracker = ExceptionTracker()
+        val tracker = ExceptionTracker("test")
 
         tracker.setLastException(exception1)
         tracker.setLastException(exception1)
         then(tracker.exceptionCount).isEqualTo(2)
-        then(tracker.exceptionChanged).isFalse()
+        then(tracker.exceptionChanged).isFalse
 
         tracker.setLastException(exception2)
         then(tracker.exceptionCount).isEqualTo(1)
-        then(tracker.exceptionChanged).isTrue()
+        then(tracker.exceptionChanged).isTrue
     }
 }

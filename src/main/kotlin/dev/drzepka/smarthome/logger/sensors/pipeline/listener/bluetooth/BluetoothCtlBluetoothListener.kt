@@ -1,24 +1,21 @@
-package dev.drzepka.smarthome.logger.sensors.bluetooth.bluetoothctl
+package dev.drzepka.smarthome.logger.sensors.pipeline.listener.bluetooth
 
 import dev.drzepka.smarthome.common.util.Logger
-import dev.drzepka.smarthome.logger.sensors.bluetooth.BluetoothException
-import dev.drzepka.smarthome.logger.sensors.bluetooth.BluetoothFacade
-import dev.drzepka.smarthome.logger.sensors.bluetooth.BroadcastListener
+import dev.drzepka.smarthome.logger.core.pipeline.component.DataListener
+import dev.drzepka.smarthome.logger.sensors.exception.BluetoothException
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothData
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
 import java.util.concurrent.atomic.AtomicBoolean
 
-class BluetoothCtlBluetoothFacade : BluetoothFacade {
-
+class BluetoothCtlBluetoothListener : DataListener<BluetoothServiceData>() {
     private val log by Logger()
-    private val broadcastListeners = ArrayList<BroadcastListener>()
 
     private val started = AtomicBoolean(false)
     private var worker: Worker? = null
     private var process: Process? = null
     private var inputReader: InputReader? = null
 
-    override fun startListening() {
+    override fun start() {
         log.info("Starting listening for broadcasts")
 
         synchronized(this) {
@@ -31,7 +28,7 @@ class BluetoothCtlBluetoothFacade : BluetoothFacade {
         }
     }
 
-    override fun stopListening() {
+    override fun stop() {
         log.info("Stopping listening for broadcasts")
 
         synchronized(this) {
@@ -41,12 +38,6 @@ class BluetoothCtlBluetoothFacade : BluetoothFacade {
             started.set(false)
             disableScan()
             stopProcess()
-        }
-    }
-
-    override fun addBroadcastListener(listener: BroadcastListener) {
-        synchronized(broadcastListeners) {
-            broadcastListeners.add(listener)
         }
     }
 
@@ -153,15 +144,9 @@ class BluetoothCtlBluetoothFacade : BluetoothFacade {
         private fun handleData(data: BluetoothData) {
             try {
                 if (data is BluetoothServiceData)
-                    handleBluetoothServiceData(data)
+                    onDataReceived(data)
             } catch (e: Exception) {
                 log.error("Error while handling ${data::class.java.simpleName}", e)
-            }
-        }
-
-        private fun handleBluetoothServiceData(data: BluetoothServiceData) {
-            synchronized(broadcastListeners) {
-                broadcastListeners.forEach { it.onDataReceived(data) }
             }
         }
     }

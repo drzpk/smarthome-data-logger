@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.logger.sensors.bluetooth.bluetoothctl
+package dev.drzepka.smarthome.logger.sensors.pipeline.listener.bluetooth
 
 import dev.drzepka.smarthome.common.util.Logger
 import java.io.ByteArrayOutputStream

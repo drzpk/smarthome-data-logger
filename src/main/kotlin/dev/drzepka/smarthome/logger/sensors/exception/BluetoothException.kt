@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.logger.sensors.bluetooth
+package dev.drzepka.smarthome.logger.sensors.exception
 
 class BluetoothException : RuntimeException {
     constructor(message: String) : super(message)

@@ -4,11 +4,13 @@ import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.DataLoggerModule
 import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
-import dev.drzepka.smarthome.logger.core.queue.LoggerQueue
-import dev.drzepka.smarthome.logger.sensors.core.SensorsLoggerManager
-import dev.drzepka.smarthome.logger.sensors.core.SensorsLoggerOrchestrator
+import dev.drzepka.smarthome.logger.core.pipeline.Pipeline
+import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
+import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
 import dev.drzepka.smarthome.logger.sensors.core.SensorsRequestExecutor
 import dev.drzepka.smarthome.logger.sensors.model.config.SensorsConfig
+import dev.drzepka.smarthome.logger.sensors.pipeline.BluetoothDataSource
+import dev.drzepka.smarthome.logger.sensors.pipeline.SensorsDataSender
 import java.time.Duration
 
 class SensorsModule(configurationLoader: ConfigurationLoader, scheduler: TaskScheduler) :
@@ -19,8 +21,7 @@ class SensorsModule(configurationLoader: ConfigurationLoader, scheduler: TaskSch
     private val log by Logger()
 
     private lateinit var sensorsConfig: SensorsConfig
-    private lateinit var requestExecutor: SensorsRequestExecutor
-    private lateinit var orchestrator: SensorsLoggerOrchestrator
+    private lateinit var pipelineManager: PipelineManager
 
     override suspend fun initialize(): Boolean {
         val config = SensorsConfig.load(configurationLoader)
@@ -34,14 +35,26 @@ class SensorsModule(configurationLoader: ConfigurationLoader, scheduler: TaskSch
     }
 
     override suspend fun start() {
-        requestExecutor = SensorsRequestExecutor(sensorsConfig, 3)
+        log.info("Starting sensors module")
 
-        val manager = SensorsLoggerManager(requestExecutor, LoggerQueue(30, Duration.ofHours(24)))
-        orchestrator = SensorsLoggerOrchestrator(manager, scheduler, testMode)
-        orchestrator.start()
+        pipelineManager = PipelineManager(scheduler)
+        pipelineManager.start()
+
+        val requestExecutor = SensorsRequestExecutor(sensorsConfig, 3)
+        val sender = SensorsDataSender(requestExecutor)
+
+        val deviceManager = DeviceManager(requestExecutor)
+        deviceManager.initialize()
+
+        val sensorsPipeline = Pipeline("sensors", Duration.ofSeconds(30), sender)
+        val bluetoothDataSource = BluetoothDataSource(deviceManager)
+
+        sensorsPipeline.addDataSource(bluetoothDataSource)
+        pipelineManager.addPipeline(sensorsPipeline)
     }
 
     override suspend fun stop() {
-        orchestrator.stop()
+        log.info("Stopping sensors module")
+        pipelineManager.stop()
     }
 }

@@ -57,6 +57,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:3.9.0")
     testImplementation("org.mockito:mockito-junit-jupiter:3.9.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.1.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 }
 
@@ -70,7 +71,7 @@ tasks.withType<Test> {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
+        freeCompilerArgs = listOf("-Xjsr305=strict -opt-in=kotlin.RequiresOptIn")
         jvmTarget = "1.8"
     }
 }

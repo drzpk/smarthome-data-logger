@@ -1,9 +1,13 @@
 package dev.drzepka.smarthome.logger.core.util
 
+import dev.drzepka.smarthome.common.util.Logger
+
 /**
  * Tracks consecutive occurrences of the same exception chain.
  */
-class ExceptionTracker {
+class ExceptionTracker(val name: String) {
+    private val log by Logger()
+
     var exceptionCount = 0
         private set
     var exceptionChanged = false
@@ -12,6 +16,9 @@ class ExceptionTracker {
     private var lastSignature: String? = null
 
     fun reset() {
+        if (exceptionCount > 0)
+            log.info("{}: success after {} exceptions", name, exceptionCount)
+
         exceptionCount = 0
         exceptionChanged = false
         lastSignature = null
@@ -38,7 +45,7 @@ class ExceptionTracker {
             builder.append(currentException.javaClass.canonicalName)
             builder.append('=')
             builder.append(currentException.message)
-            builder.appendln()
+            builder.appendLine()
 
             currentException = currentException.cause
         }
