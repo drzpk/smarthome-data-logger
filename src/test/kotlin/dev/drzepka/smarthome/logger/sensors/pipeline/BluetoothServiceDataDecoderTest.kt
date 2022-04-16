@@ -3,6 +3,7 @@ package dev.drzepka.smarthome.logger.sensors.pipeline
 import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.MacAddress
+import dev.drzepka.smarthome.logger.sensors.pipeline.decoder.BluetoothServiceDataDecoder
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

@@ -9,8 +9,8 @@ import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
 import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
 import dev.drzepka.smarthome.logger.sensors.core.SensorsRequestExecutor
 import dev.drzepka.smarthome.logger.sensors.model.config.SensorsConfig
-import dev.drzepka.smarthome.logger.sensors.pipeline.BluetoothDataSource
 import dev.drzepka.smarthome.logger.sensors.pipeline.SensorsDataSender
+import dev.drzepka.smarthome.logger.sensors.pipeline.datasource.BluetoothDataSource
 import java.time.Duration
 
 class SensorsModule(configurationLoader: ConfigurationLoader, scheduler: TaskScheduler) :

@@ -3,6 +3,7 @@ package dev.drzepka.smarthome.logger.sensors.pipeline
 import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
 import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
+import dev.drzepka.smarthome.logger.sensors.pipeline.datasource.BluetoothDataSource
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension

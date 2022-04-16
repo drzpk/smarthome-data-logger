@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.logger.sensors.pipeline
+package dev.drzepka.smarthome.logger.sensors.pipeline.decoder
 
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
