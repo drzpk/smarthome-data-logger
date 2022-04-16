@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.pvstats.model.config.source
 
-import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
 import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
 import kotlin.reflect.KClass
 
 abstract class SourceConfig internal constructor(
@@ -16,13 +16,13 @@ abstract class SourceConfig internal constructor(
     val measurementInterval: Int? = loadOptionalProperty("measurement_interval")
 
     protected inline fun <reified T : Any> loadProperty(configPath: String): T {
-        val fullPath = "source.$name.$configPath"
+        val fullPath = "$CONFIG_PREFIX.$name.$configPath"
         val value = loader.getValue(fullPath, true)!!
         return convertToRequiredType(value, T::class)
     }
 
     protected inline fun <reified T : Any> loadOptionalProperty(configPath: String): T? {
-        val fullPath = "source.$name.$configPath"
+        val fullPath = "$CONFIG_PREFIX.$name.$configPath"
         val value = loader.getValue(fullPath, false)
         return value?.let { convertToRequiredType(it, T::class) }
     }
@@ -34,5 +34,9 @@ abstract class SourceConfig internal constructor(
             String::class -> input
             else -> throw IllegalArgumentException("No converter found for input string '$input' to target type ${targetType.java.simpleName}")
         } as T
+    }
+
+    companion object {
+        const val CONFIG_PREFIX = "pvstats.source"
     }
 }

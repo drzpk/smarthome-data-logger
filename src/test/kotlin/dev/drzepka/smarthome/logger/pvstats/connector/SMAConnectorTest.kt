@@ -1,10 +1,10 @@
 package dev.drzepka.smarthome.logger.pvstats.connector
 
 import dev.drzepka.smarthome.common.pvstats.model.vendor.SMAData
+import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
 import dev.drzepka.smarthome.logger.pvstats.PVStatsModule
 import dev.drzepka.smarthome.logger.pvstats.connector.base.DataType
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SMAConfig
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -50,10 +50,10 @@ class SMAConnectorTest {
 
     private fun getConnector(): SMAConnector {
         val properties = Properties()
-        properties.setProperty("source.test.url", "localhost")
-        properties.setProperty("source.test.user", "user")
-        properties.setProperty("source.test.password", "password")
-        properties.setProperty("source.test.timeout", "1")
+        properties.setProperty("pvstats.source.test.url", "localhost")
+        properties.setProperty("pvstats.source.test.user", "user")
+        properties.setProperty("pvstats.source.test.password", "password")
+        properties.setProperty("pvstats.source.test.timeout", "1")
 
         val config = SMAConfig("test", ConfigurationLoader(properties))
         return SMAConnector(config)
