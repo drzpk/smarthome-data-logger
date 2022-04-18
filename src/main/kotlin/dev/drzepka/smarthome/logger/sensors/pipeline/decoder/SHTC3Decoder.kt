@@ -2,6 +2,8 @@ package dev.drzepka.smarthome.logger.sensors.pipeline.decoder
 
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
+import dev.drzepka.smarthome.logger.sensors.model.LocalMeasurement
+import dev.drzepka.smarthome.logger.sensors.model.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.server.Measurement
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -13,12 +15,12 @@ import kotlin.math.pow
 /**
  * Datasheet: [link](https://dfimg.dfrobot.com/nobody/wiki/b37f8a2ff795acc7446c8defbb957054.PDF).
  */
-object SHTC3Decoder : DataDecoder<ByteArray, Measurement> {
+object SHTC3Decoder : DataDecoder<Pair<MacAddress, ByteArray>, LocalMeasurement> {
     private val log by Logger()
 
-    override fun decode(data: ByteArray): List<Measurement> {
-        val buffer = ByteBuffer.wrap(data)
-        if (!checkCrc(data))
+    override fun decode(data: Pair<MacAddress, ByteArray>): List<LocalMeasurement> {
+        val buffer = ByteBuffer.wrap(data.second)
+        if (!checkCrc(data.second))
             return emptyList()
 
         val temperatureNumber = -45 + 175 * buffer.getShort(0) / 2.0.pow(16)
@@ -33,7 +35,8 @@ object SHTC3Decoder : DataDecoder<ByteArray, Measurement> {
             this.humidity = humidity
         }
 
-        return listOf(measurement)
+        val localmeasurement = LocalMeasurement(data.first, measurement)
+        return listOf(localmeasurement)
     }
 
     private fun checkCrc(array: ByteArray): Boolean {

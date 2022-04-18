@@ -3,7 +3,7 @@ package dev.drzepka.smarthome.logger.core.config
 import dev.drzepka.smarthome.common.util.Logger
 import java.io.File
 import java.io.FileInputStream
-import java.lang.IllegalStateException
+import java.io.InputStream
 import java.util.*
 
 class ConfigurationLoader(properties: Properties? = null) {
@@ -43,17 +43,26 @@ class ConfigurationLoader(properties: Properties? = null) {
 
     private fun loadProperties(): Properties {
         val properties = Properties()
-        val filename = getPropertiesName()
-        val file = File(filename)
-        val stream = if (file.isFile)
-            FileInputStream(file)
-        else
-            throw IllegalStateException("$filename file wasn't found")
-
+        val stream = tryLoadingInternalProperties() ?: loadExternalProperties()
         properties.load(stream)
         stream.close()
 
         return properties
+    }
+
+    private fun tryLoadingInternalProperties(): InputStream? {
+        return System.getProperty(INTERNAL_PROPERTIES_FILE_SYSTEM_PROPERTY).let {
+            javaClass.classLoader.getResourceAsStream(it)
+        }
+    }
+
+    private fun loadExternalProperties(): InputStream {
+        val filename = getPropertiesName()
+        val file = File(filename)
+        if (!file.isFile)
+            throw IllegalStateException("$filename file wasn't found")
+
+        return FileInputStream(file)
     }
 
     private fun getPropertiesName(): String {
@@ -68,6 +77,7 @@ class ConfigurationLoader(properties: Properties? = null) {
 
     companion object {
         private const val PROPERTIES_FILE_NAME_SYSTEM_PROPERTY = "LOGGER_PROPERTIES"
+        private const val INTERNAL_PROPERTIES_FILE_SYSTEM_PROPERTY = "INTERNAL_PROPERTIES"
         private const val DEFAULT_PROPERTIES_FILE_NAME = "config.properties"
     }
 }
