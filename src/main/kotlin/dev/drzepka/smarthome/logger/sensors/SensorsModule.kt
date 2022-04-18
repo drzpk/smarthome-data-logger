@@ -10,7 +10,7 @@ import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
 import dev.drzepka.smarthome.logger.sensors.core.SensorsRequestExecutor
 import dev.drzepka.smarthome.logger.sensors.model.config.SensorsConfig
 import dev.drzepka.smarthome.logger.sensors.pipeline.SensorsDataSender
-import dev.drzepka.smarthome.logger.sensors.pipeline.datasource.BluetoothDataSource
+import dev.drzepka.smarthome.logger.sensors.pipeline.filter.DeviceFilter
 import java.time.Duration
 
 class SensorsModule(configurationLoader: ConfigurationLoader, scheduler: TaskScheduler) :
@@ -47,9 +47,11 @@ class SensorsModule(configurationLoader: ConfigurationLoader, scheduler: TaskSch
         deviceManager.initialize()
 
         val sensorsPipeline = Pipeline("sensors", Duration.ofSeconds(30), sender)
-        val bluetoothDataSource = BluetoothDataSource(deviceManager)
+        sensorsPipeline.addFilter(DeviceFilter(deviceManager))
 
-        sensorsPipeline.addDataSource(bluetoothDataSource)
+        val dataSources = DataSourceFactory(deviceManager, testMode).createDataSources()
+        dataSources.forEach { sensorsPipeline.addDataSource(it) }
+
         pipelineManager.addPipeline(sensorsPipeline)
     }
 

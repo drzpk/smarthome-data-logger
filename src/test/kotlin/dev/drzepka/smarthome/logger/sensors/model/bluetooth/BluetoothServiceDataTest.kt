@@ -1,5 +1,6 @@
 package dev.drzepka.smarthome.logger.sensors.model.bluetooth
 
+import dev.drzepka.smarthome.logger.sensors.model.MacAddress
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 

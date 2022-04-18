@@ -1,5 +1,7 @@
 package dev.drzepka.smarthome.logger.sensors.model.bluetooth
 
+import dev.drzepka.smarthome.logger.sensors.model.MacAddress
+
 class BluetoothServiceData(val mac: MacAddress, hex: String) : BluetoothData {
     val data: ByteArray = hexToByteArray(hex)
 

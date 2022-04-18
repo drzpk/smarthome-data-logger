@@ -3,8 +3,8 @@ package dev.drzepka.smarthome.logger.sensors.pipeline.listener.bluetooth
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataListener
 import dev.drzepka.smarthome.logger.sensors.converter.LittleEndianHexConverter
+import dev.drzepka.smarthome.logger.sensors.model.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
-import dev.drzepka.smarthome.logger.sensors.model.bluetooth.MacAddress
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random

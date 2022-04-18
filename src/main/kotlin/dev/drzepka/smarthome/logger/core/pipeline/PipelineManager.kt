@@ -11,7 +11,7 @@ class PipelineManager(private val scheduler: TaskScheduler) {
     private var running = false
 
     fun addPipeline(pipeline: Pipeline<*>) {
-        log.info("Adding pipeline {}", pipeline.name)
+        log.info("Adding pipeline '{}'", pipeline.name)
         val added = pipelines.add(pipeline)
 
         if (added && running)

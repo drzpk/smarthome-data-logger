@@ -5,7 +5,7 @@ import dev.drzepka.smarthome.common.util.Mockable
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
 import dev.drzepka.smarthome.logger.core.util.ExceptionTracker
 import dev.drzepka.smarthome.logger.core.util.suspendRunCatching
-import dev.drzepka.smarthome.logger.sensors.model.bluetooth.MacAddress
+import dev.drzepka.smarthome.logger.sensors.model.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.server.Device
 import kotlinx.coroutines.delay
 import java.time.Duration
@@ -37,6 +37,8 @@ class DeviceManager(private val executor: SensorsRequestExecutor) {
     fun stop(context: PipelineContext) {
         context.scheduler.cancel(TASK_NAME)
     }
+
+    fun getDevices(): Map<MacAddress, Device> = devices.toMap()
 
     fun getDeviceId(mac: MacAddress): Int? = devices[mac]?.id
 

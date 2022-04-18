@@ -1,26 +1,23 @@
 package dev.drzepka.smarthome.logger.sensors.pipeline.decoder
 
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
-import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
+import dev.drzepka.smarthome.logger.sensors.model.LocalMeasurement
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
 import dev.drzepka.smarthome.logger.sensors.model.server.Measurement
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class BluetoothServiceDataDecoder(private val deviceManager: DeviceManager) :
-    DataDecoder<BluetoothServiceData, Measurement> {
+object BluetoothServiceDataDecoder : DataDecoder<BluetoothServiceData, LocalMeasurement> {
 
-    private val log by Logger()
+    private val HUNDRED = BigDecimal("100")
+    private val THOUSAND = BigDecimal("1000")
 
     /**
      * Decodes bluetooth data to measurement using
      * [custom format](https://github.com/pvvx/ATC_MiThermometer#custom-format-all-data-little-endian)
      */
-    override fun decode(data: BluetoothServiceData): List<Measurement> {
-        val deviceId = getDeviceId(data) ?: return emptyList()
+    override fun decode(data: BluetoothServiceData): List<LocalMeasurement> {
         val bin = data.data
-
         val measurement = Measurement().apply {
             temperature = intLittleEndianToInt(
                 bin,
@@ -41,18 +38,9 @@ class BluetoothServiceDataDecoder(private val deviceManager: DeviceManager) :
             ).toBigDecimal().divide(THOUSAND, 3, RoundingMode.UNNECESSARY)
 
             batteryLevel = bin[12].toInt()
-            this.deviceId = deviceId
         }
 
-        return listOf(measurement)
-    }
-
-    private fun getDeviceId(data: BluetoothServiceData): Int? {
-        val id = deviceManager.getDeviceId(data.mac)
-        if (id == null)
-            log.trace("Received bluetooth service data for unknown mac {}", data.mac.value)
-
-        return id
+        return listOf(LocalMeasurement(data.mac, measurement))
     }
 
     @Suppress("SameParameterValue")
@@ -76,10 +64,5 @@ class BluetoothServiceDataDecoder(private val deviceManager: DeviceManager) :
         }
 
         return result
-    }
-
-    companion object {
-        private val HUNDRED = BigDecimal("100")
-        private val THOUSAND = BigDecimal("1000")
     }
 }

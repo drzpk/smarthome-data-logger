@@ -2,6 +2,8 @@ package dev.drzepka.smarthome.logger.sensors.pipeline
 
 import dev.drzepka.smarthome.logger.core.queue.QueueItem
 import dev.drzepka.smarthome.logger.sensors.core.SensorsRequestExecutor
+import dev.drzepka.smarthome.logger.sensors.model.LocalMeasurement
+import dev.drzepka.smarthome.logger.sensors.model.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsRequest
 import dev.drzepka.smarthome.logger.sensors.model.server.Measurement
 import kotlinx.coroutines.runBlocking
@@ -25,8 +27,8 @@ internal class SensorsDataSenderTest {
 
     @Test
     fun `should send items`() = runBlocking {
-        val item1 = QueueItem(Measurement(), createdAt = getTime(10))
-        val item2 = QueueItem(Measurement(), createdAt = getTime(20))
+        val item1 = QueueItem(LocalMeasurement(MacAddress("1"), Measurement()), createdAt = getTime(10))
+        val item2 = QueueItem(LocalMeasurement(MacAddress("2"), Measurement()), createdAt = getTime(20))
 
         SensorsDataSender(executor).send(listOf(item1, item2))
 

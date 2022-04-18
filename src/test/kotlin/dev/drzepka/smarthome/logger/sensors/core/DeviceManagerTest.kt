@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.sensors.core
 
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
-import dev.drzepka.smarthome.logger.sensors.model.bluetooth.MacAddress
+import dev.drzepka.smarthome.logger.sensors.model.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.server.Device
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
