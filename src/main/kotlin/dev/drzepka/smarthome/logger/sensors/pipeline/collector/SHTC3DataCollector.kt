@@ -45,12 +45,6 @@ class SHTC3DataCollector(private val device: I2CDeviceInterface, private val mac
         private val COMMAND_SLEEP = createCommand(0xB098)
         private val COMMAND_MEASURE = createCommand(0x7CA2)
 
-        init {
-            // Not sure what this does, but with the default value ("true") there are some errors in the log,
-            // they don't affect I2C functionality, though.
-            System.setProperty("diozero.gpio.chardev", "false")
-        }
-
         private fun createCommand(raw: Int): ByteArray {
             val buffer = ByteBuffer.allocate(2)
             buffer.putShort(raw.toShort())

@@ -70,6 +70,10 @@ class DataSourceFactory(private val deviceManager: DeviceManager, private val us
     }
 
     private fun createSHTC3i2cDevice(mac: String): I2CDeviceInterface? {
+        // Not sure what this does, but with the default value ("true") there are some errors in the log,
+        // they don't affect I2C functionality, though.
+        System.setProperty("diozero.gpio.chardev", "false")
+
         val pattern = Pattern.compile("^(\\d):([A-Za-z0-9]{2})\$")
         val matcher = pattern.matcher(mac)
         if (!matcher.matches()) {
