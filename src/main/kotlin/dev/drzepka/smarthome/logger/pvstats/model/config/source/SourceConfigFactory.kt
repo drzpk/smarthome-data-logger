@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.pvstats.model.config.source
 
-import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
 import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
 
 object SourceConfigFactory {
 
@@ -19,7 +19,7 @@ object SourceConfigFactory {
     }
 
     fun createSourceConfig(sourceName: String, loader: ConfigurationLoader): SourceConfig {
-        val typeString = loader.getValue("source.$sourceName.type", true)!!
+        val typeString = loader.getValue("pvstats.source.$sourceName.type", true)!!
 
         val typeValue = try {
             SourceType.valueOf(typeString)

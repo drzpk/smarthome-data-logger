@@ -51,7 +51,7 @@ class ConfigurationLoader(properties: Properties? = null) {
     }
 
     private fun tryLoadingInternalProperties(): InputStream? {
-        return System.getProperty(INTERNAL_PROPERTIES_FILE_SYSTEM_PROPERTY).let {
+        return System.getProperty(INTERNAL_PROPERTIES_FILE_SYSTEM_PROPERTY)?.let {
             javaClass.classLoader.getResourceAsStream(it)
         }
     }

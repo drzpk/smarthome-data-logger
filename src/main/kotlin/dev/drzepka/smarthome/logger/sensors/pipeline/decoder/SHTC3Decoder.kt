@@ -24,7 +24,12 @@ object SHTC3Decoder : DataDecoder<Pair<MacAddress, ByteArray>, LocalMeasurement>
             return emptyList()
 
         val temperatureNumber = -45 + 175 * buffer.getShort(0) / 2.0.pow(16)
-        val humidityNumber = 100 * buffer.getShort(3) / 2.0.pow(16)
+        var humidityNumber = 100 * buffer.getShort(3) / 2.0.pow(16)
+
+        if (humidityNumber !in 0.0..100.0) {
+            log.warn("Humidity value ({}) is outside the allowed range", humidityNumber)
+            humidityNumber = humidityNumber.coerceIn(0.0..100.0)
+        }
 
         // Set scale based on accuracy defined in the datasheet
         val temperature = BigDecimal.valueOf(temperatureNumber).setScale(1, RoundingMode.HALF_UP)

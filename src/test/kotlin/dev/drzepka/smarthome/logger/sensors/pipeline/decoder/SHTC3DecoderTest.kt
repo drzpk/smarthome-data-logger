@@ -27,4 +27,14 @@ internal class SHTC3DecoderTest {
 
         then(decoded).isEmpty()
     }
+
+    @Test
+    fun `should narrow down humidity to range 0-100`() {
+        val mac = MacAddress("mac")
+        val raw = intArrayOf(0x4c, 0x37, 0xee, 0x90, 0x72, 0x56).map { it.toByte() }.toByteArray()
+        val decoded = SHTC3Decoder.decode(Pair(mac, raw))
+
+        then(decoded).hasSize(1)
+        then(decoded.first().measurement.humidity).isZero
+    }
 }
