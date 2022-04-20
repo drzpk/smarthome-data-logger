@@ -101,6 +101,7 @@ Sensors module collects data from different types of sensors and stores in
 the [server](https://gitlab.com/smart-home-dr/sensors).
 
 To enable this module, define the following configuration properties:
+
 ```properties
 # URL of the Sensors server
 sensors.serverUrl=http://localhost:8080
@@ -109,14 +110,43 @@ sensors.loggerId=1
 sensors.loggerSecret=secret
 ```
 
-In order for a device to be recognized by the data logger, it must be first defined in the sensors server.
+In order for a device to be recognized by the data logger, it must be first defined in the sensors server with a correct
+type.
 
 #### Bluetooth thermometers
+
+Device type: `LYWSD03MMC`.
 
 The sensors module collects data from Xiaomi Mijia LYWSD03MMC devices. They must be running
 [this](https://github.com/pvvx/ATC_MiThermometer) firmware and their beacon format must be set to *custom*.
 
 Bluetooth may be blocked by default on some machines, and it must be enabled first:
+
 ```shell
 sudo rfkill unblock bluetooth
+```
+
+#### I2C devices
+
+##### SHTC3
+
+Temperature and humidity
+sensor ([datasheet](https://dfimg.dfrobot.com/nobody/wiki/b37f8a2ff795acc7446c8defbb957054.PDF)). MAC address must match
+the following pattern: *<i2c_bus>:<i2c_address_hex>*, for example: *1:70*.
+
+If running on Raspberry PI, I2C interface must
+be [enabled](https://www.mathworks.com/help/supportpkg/raspberrypiio/ref/enablei2c.html) first. 
+After that, I2C bus can be detected with this command:
+
+```shell
+$ ls -l /dev/*i2c*
+crw-rw---- 1 root i2c 89, 1 kwi 16 23:17 /dev/i2c-1
+```
+
+The above command returned bus number `1`. I2C address can be found by running this command: `i2cdetect -y 1`.
+
+Note that user running the data logger must be first added to the group that owns the I2C device:
+
+```shell
+sudo usermod -a -G i2c <user running the data-logger>
 ```
