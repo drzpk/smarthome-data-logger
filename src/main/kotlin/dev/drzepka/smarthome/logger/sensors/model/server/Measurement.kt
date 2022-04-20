@@ -7,7 +7,7 @@ class Measurement : Serializable {
     var deviceId = 0
     var temperature: BigDecimal = BigDecimal.ZERO
     var humidity: BigDecimal = BigDecimal.ZERO
-    var batteryVoltage: BigDecimal = BigDecimal.ZERO
-    var batteryLevel = 0
+    var batteryVoltage: BigDecimal? = null
+    var batteryLevel: Int? = null
     var timestampOffsetMillis: Long? = null
 }
