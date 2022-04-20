@@ -24,26 +24,52 @@ class SHTC3DataCollector(private val device: I2CDeviceInterface, private val mac
     private val log by Logger()
 
     override fun getData(): Collection<Pair<MacAddress, ByteArray>> {
-        device.writeBytes(*COMMAND_WAKE_UP)
+        executeCommand(COMMAND_WAKE_UP)
         Thread.sleep(1) // Wait for the device to wake up
-        device.writeBytes(*COMMAND_MEASURE)
+        executeCommand(COMMAND_MEASURE)
 
         val array = ByteArray(6)
         device.readBytes(array)
         val str = array.map { (it.toInt() and 0xff).toString(16) }
-        log.info("Received data from SHTC3: $str") // todo: change to trace
+        log.trace("Received data from SHTC3: $str")
 
-        device.writeBytes(*COMMAND_SLEEP)
-
-        // todo: if there's something wrong with reading measurements, try to soft-reset the device
+        executeCommand(COMMAND_SLEEP)
 
         return listOf(Pair(mac, array))
+    }
+
+    private fun executeCommand(cmd: ByteArray) {
+        val result = runCatching { device.writeBytes(*cmd) }
+        if (result.isSuccess)
+            return
+
+        val exception = result.exceptionOrNull()!!
+        log.error("Command {} failed: {}, attempting to soft-reset the device", cmd, exception.message)
+
+        if (!softReset())
+            throw exception
+
+        log.info("Soft reset successful, retrying the command")
+        device.writeBytes(*cmd)
+    }
+
+    private fun softReset(): Boolean {
+        return try {
+            Thread.sleep(1)
+            device.writeBytes(*COMMAND_SOFT_RESET)
+            Thread.sleep(1)
+            true
+        } catch (e: Exception) {
+            log.error("Soft reset failed: {}", e.message)
+            false
+        }
     }
 
     companion object {
         private val COMMAND_WAKE_UP = createCommand(0x3517)
         private val COMMAND_SLEEP = createCommand(0xB098)
         private val COMMAND_MEASURE = createCommand(0x7CA2)
+        private val COMMAND_SOFT_RESET = createCommand(0x805D)
 
         private fun createCommand(raw: Int): ByteArray {
             val buffer = ByteBuffer.allocate(2)
