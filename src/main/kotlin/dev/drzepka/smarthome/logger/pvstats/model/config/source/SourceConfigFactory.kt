@@ -6,7 +6,7 @@ import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
 object SourceConfigFactory {
 
     fun getAvailableNames(loader: ConfigurationLoader): List<String> {
-        val regex = Regex("^source\\.([a-zA-Z_-]+)\\..*$")
+        val regex = Regex("^pvstats\\.source\\.([a-zA-Z_-]+)\\..*$")
 
         val names = ArrayList<String>()
         loader.properties.keys.forEach {
