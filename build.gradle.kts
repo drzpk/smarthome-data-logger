@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "dev.drzepka.smarthome"
-version = "1.5.1"
+version = "1.5.2"
 
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 val compileKotlin: KotlinCompile by tasks

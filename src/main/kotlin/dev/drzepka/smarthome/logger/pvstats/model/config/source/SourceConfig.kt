@@ -27,10 +27,11 @@ abstract class SourceConfig internal constructor(
         return value?.let { convertToRequiredType(it, T::class) }
     }
 
-    @Suppress("UNCHECKED_CAST", "IMPLICIT_CAST_TO_ANY")
+    @Suppress("UNCHECKED_CAST")
     protected fun <T : Any> convertToRequiredType(input: String, targetType: KClass<T>): T {
         return when (targetType) {
-            Int::class -> Integer.parseInt(input)
+            Int::class -> input.toInt()
+            Long::class -> input.toLong()
             String::class -> input
             else -> throw IllegalArgumentException("No converter found for input string '$input' to target type ${targetType.java.simpleName}")
         } as T
