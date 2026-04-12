@@ -29,24 +29,24 @@ object DataLogger {
         val activeModules = initializeModules(allModules, testMode)
         if (activeModules.isEmpty()) {
             log.info("No active modules, stopping the application")
+            stopKoin()
             return@runBlocking
         }
 
         startModules(activeModules)
         log.info("All modules have been started")
 
-        var running = true
+        val shutdown = CompletableDeferred<Unit>()
         Runtime.getRuntime().addShutdownHook(thread(false) {
             log.info("Received shutdown hook")
-            running = false
+            shutdown.complete(Unit)
         })
 
-        while (running) {
-            Thread.sleep(1000)
-        }
+        shutdown.await()
 
         log.info("Stopping modules")
         stopModules(activeModules)
+        stopKoin()
     }
 
     private suspend fun initializeModules(

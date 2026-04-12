@@ -39,6 +39,7 @@ dependencies {
     implementation("com.intelligt.modbus:jlibmodbus:1.2.9.11")
     implementation("com.diozero:diozero-core:1.3.2")
     implementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("io.insert-koin:koin-core:3.5.6")
 
     testImplementation("org.junit.platform:junit-platform-launcher:1.11.4")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.4")

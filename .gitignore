@@ -8,3 +8,5 @@ out
 .idea/
 
 /*.log
+
+/.claude/settings.local.json
