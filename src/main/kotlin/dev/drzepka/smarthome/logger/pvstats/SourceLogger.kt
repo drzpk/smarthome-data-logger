@@ -16,7 +16,7 @@ import dev.drzepka.smarthome.logger.pvstats.model.config.source.SofarWifiConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfig
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 import java.util.*
 import kotlin.math.floor
 import kotlin.system.exitProcess
@@ -137,7 +137,7 @@ class SourceLogger(
 
     // todo: use ktor client
     private fun sendData(data: VendorData) {
-        val url = URL(endpointUrl)
+        val url = URI.create(endpointUrl).toURL()
         val connection = url.openConnection() as HttpURLConnection
         connection.connectTimeout = pvStatsConfig.timeout * 1000
         connection.readTimeout = pvStatsConfig.timeout * 1000

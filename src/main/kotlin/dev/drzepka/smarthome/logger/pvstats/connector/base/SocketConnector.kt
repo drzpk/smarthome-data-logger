@@ -15,7 +15,6 @@ abstract class SocketConnector(private val config: SourceConfig, private val tes
 
     override fun initialize() = Unit
 
-    @Suppress("ConstantConditionIf")
     final override fun getData(dataType: DataType, silent: Boolean): VendorData? {
         if (testMode) return getTestVendorData()
 
@@ -23,7 +22,7 @@ abstract class SocketConnector(private val config: SourceConfig, private val tes
         val socket = Socket()
         try {
             socket.connect(InetSocketAddress(split.first, split.second), config.timeout * 1000)
-        } catch (e: SocketTimeoutException) {
+        } catch (_: SocketTimeoutException) {
             if (!silent)
                 log.warn("Connection to source {} timed out ({}:{})", config.name, split.first, split.second)
             return null
@@ -50,8 +49,11 @@ abstract class SocketConnector(private val config: SourceConfig, private val tes
 
         if (buffer.size != 110) {
             if (!silent)
-                log.warn("Response from source {} does not appear to contain inverter data. " +
-                        "Did you supplied correct SN?", config.name)
+                log.warn(
+                    "Response from source {} does not appear to contain inverter data. " +
+                            "Did you supplied correct SN?", config.name
+                )
+
             return null
         }
 
@@ -72,9 +74,11 @@ abstract class SocketConnector(private val config: SourceConfig, private val tes
     }
 
     private fun getTestVendorData(): VendorData {
-        val bytes = hexStringToBytes("a5610010150072f3a0386602018e8002009c2400006232b4" +
-                "5e01034e0002000000000000000000000f22027d0317000100f7000000f00041138609890158096901580953015700" +
-                "0000400000002c093302800026003219e00f18031d003c000000010000054d087206cdccad0315")
+        val bytes = hexStringToBytes(
+            "a5610010150072f3a0386602018e8002009c2400006232b4" +
+                    "5e01034e0002000000000000000000000f22027d0317000100f7000000f00041138609890158096901580953015700" +
+                    "0000400000002c093302800026003219e00f18031d003c000000010000054d087206cdccad0315"
+        )
 
         return SofarDataImpl(bytes.copyOfRange(27, bytes.size))
     }

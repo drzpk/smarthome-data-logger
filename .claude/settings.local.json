@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew test:*)",
+      "Bash(./gradlew --no-daemon test --tests \"*.ModbusFrameTest\" --tests \"*.ModbusDataFrameTest\")",
+      "Bash(./gradlew compileKotlin)",
+      "mcp__ide__getDiagnostics",
+      "Bash(JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jdk-11.0.11\" ./gradlew test)",
+      "Bash(JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jdk-11.0.11\" ./gradlew test --info)",
+      "Bash(JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jdk-11.0.11\" ./gradlew compileKotlin)",
+      "Bash(JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jdk-11.0.11\" ./gradlew compileTestKotlin)",
+      "Bash(./gradlew jar:*)",
+      "Bash(./gradlew compileTestKotlin)"
+    ]
+  }
+}

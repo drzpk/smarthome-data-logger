@@ -10,7 +10,7 @@ import kotlin.random.Random
 
 object MockSHTC3DataCollector : DataCollector<LocalMeasurement> {
 
-    override fun getData(): Collection<LocalMeasurement> {
+    override suspend fun getData(): Collection<LocalMeasurement> {
         val temperature = Random.nextDouble(15.0, 25.0)
         val humidity = Random.nextDouble(10.0, 100.0)
 

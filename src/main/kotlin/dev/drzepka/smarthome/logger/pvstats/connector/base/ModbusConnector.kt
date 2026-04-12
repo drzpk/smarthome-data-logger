@@ -33,7 +33,7 @@ abstract class ModbusConnector(private val config: SourceConfig) : Connector {
         serialParameters.device = device
     }
 
-    final override fun getData(dataType: DataType, silent: Boolean): VendorData? {
+    final override fun getData(dataType: DataType, silent: Boolean): VendorData {
         val rtu = getModbusMasterRTU()
         if (!rtu.isConnected)
             rtu.connect()
@@ -52,7 +52,7 @@ abstract class ModbusConnector(private val config: SourceConfig) : Connector {
 
     private fun checkSerialDevice(device: String) {
         val platform = System.getProperty("os.name")!!
-        when (platform.toLowerCase()) {
+        when (platform.lowercase()) {
             "linux" -> checkSerialDeviceLinux(device)
             "windows" -> checkSerialDeviceWindows(device)
             else -> log.warn("Skipping checking serial device on unknown platform: {}", platform)

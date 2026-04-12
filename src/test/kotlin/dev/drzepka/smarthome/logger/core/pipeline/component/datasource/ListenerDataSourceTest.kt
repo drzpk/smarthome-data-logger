@@ -68,6 +68,6 @@ internal class ListenerDataSourceTest {
     }
 
     private class TestDataDecoder : DataDecoder<String, Int> {
-        override fun decode(data: String): List<Int> = listOf(data.toInt())
+        override fun decode(item: String): Collection<Int> = listOf(item.toInt())
     }
 }

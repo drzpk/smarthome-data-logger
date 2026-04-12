@@ -18,7 +18,8 @@ import kotlin.math.pow
 object SHTC3Decoder : DataDecoder<Pair<MacAddress, ByteArray>, LocalMeasurement> {
     private val log by Logger()
 
-    override fun decode(data: Pair<MacAddress, ByteArray>): List<LocalMeasurement> {
+    override fun decode(item: Pair<MacAddress, ByteArray>): Collection<LocalMeasurement> {
+        val data = item
         val buffer = ByteBuffer.wrap(data.second)
         if (!checkCrc(data.second))
             return emptyList()

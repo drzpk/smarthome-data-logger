@@ -10,7 +10,7 @@ class MacAddress(val value: String) {
     }
 
     override fun hashCode(): Int {
-        return value.toLowerCase().hashCode()
+        return value.lowercase().hashCode()
     }
 
     override fun toString(): String = value

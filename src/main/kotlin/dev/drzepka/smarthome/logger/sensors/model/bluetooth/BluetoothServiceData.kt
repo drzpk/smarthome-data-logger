@@ -15,7 +15,7 @@ class BluetoothServiceData(val mac: MacAddress, hex: String) : BluetoothData {
 
             buffer += char
             if (buffer.length == 2) {
-                byteList.add(hexToByte(buffer.toLowerCase()))
+                byteList.add(hexToByte(buffer.lowercase()))
                 buffer = ""
             }
         }

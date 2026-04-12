@@ -20,16 +20,12 @@ abstract class DataSource<I, O>(val name: String, private val decoder: DataDecod
             log.warn("DataSourceListener is null")
     }
 
-    private fun decodeData(data: Collection<I>): Collection<O> {
-        return data
-            .mapNotNull {
-                try {
-                    decoder.decode(it)
-                } catch (e: Exception) {
-                    log.error("Error while decoding data item", e)
-                    null
-                }
-            }
-            .flatten()
+    private fun decodeData(data: Collection<I>): Collection<O> = data.flatMap { item ->
+        try {
+            decoder.decode(item)
+        } catch (e: Exception) {
+            log.error("Error while decoding data item", e)
+            emptyList()
+        }
     }
 }

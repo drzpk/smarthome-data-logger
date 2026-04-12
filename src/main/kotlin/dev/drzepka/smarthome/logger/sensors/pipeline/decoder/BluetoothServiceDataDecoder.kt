@@ -16,8 +16,8 @@ object BluetoothServiceDataDecoder : DataDecoder<BluetoothServiceData, LocalMeas
      * Decodes bluetooth data to measurement using
      * [custom format](https://github.com/pvvx/ATC_MiThermometer#custom-format-all-data-little-endian)
      */
-    override fun decode(data: BluetoothServiceData): List<LocalMeasurement> {
-        val bin = data.data
+    override fun decode(item: BluetoothServiceData): Collection<LocalMeasurement> {
+        val bin = item.data
         val measurement = Measurement().apply {
             temperature = intLittleEndianToInt(
                 bin,
@@ -40,7 +40,7 @@ object BluetoothServiceDataDecoder : DataDecoder<BluetoothServiceData, LocalMeas
             batteryLevel = bin[12].toInt()
         }
 
-        return listOf(LocalMeasurement(data.mac, measurement))
+        return listOf(LocalMeasurement(item.mac, measurement))
     }
 
     @Suppress("SameParameterValue")

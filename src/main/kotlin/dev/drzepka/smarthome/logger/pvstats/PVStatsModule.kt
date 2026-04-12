@@ -5,6 +5,7 @@ import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.DataLoggerModule
 import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
 import dev.drzepka.smarthome.logger.pvstats.model.config.PvStatsConfig
+import dev.drzepka.smarthome.logger.pvstats.model.config.source.AforeConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfigFactory
 import java.time.Duration
 import kotlin.system.exitProcess
@@ -54,8 +55,11 @@ class PVStatsModule(configurationLoader: ConfigurationLoader, scheduler: TaskSch
         val pvStatsConfig = PvStatsConfig.loadFromProperties(configurationLoader)
         val sourceNames = SourceConfigFactory.getAvailableNames(configurationLoader)
 
-        val foundLoggers = sourceNames.map {
+        val foundLoggers = sourceNames.mapNotNull {
             val config = SourceConfigFactory.createSourceConfig(it, configurationLoader)
+            if (config is AforeConfig)
+                return@mapNotNull null // handled in the new module
+
             try {
                 SourceLogger(pvStatsConfig, config, testMode)
             } catch (e: Exception) {

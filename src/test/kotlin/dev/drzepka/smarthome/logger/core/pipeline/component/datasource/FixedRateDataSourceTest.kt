@@ -55,6 +55,7 @@ internal class FixedRateDataSourceTest {
             }
         }
 
+        whenever(collector.getData()).thenReturn(listOf("1", "2"))
         verify(context.scheduler).schedule(any(), any(), schedulerTaskCaptor.capture())
         schedulerTaskCaptor.firstValue.invoke()
 
@@ -63,6 +64,6 @@ internal class FixedRateDataSourceTest {
     }
 
     private class TestDecoder : DataDecoder<String, Int> {
-        override fun decode(data: String): List<Int> = listOf(data.toInt())
+        override fun decode(item: String): Collection<Int> = listOf(item.toInt())
     }
 }

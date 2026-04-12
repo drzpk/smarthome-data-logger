@@ -162,8 +162,6 @@ internal class PipelineTest {
         taskCaptor.firstValue.invoke()
 
         then(processingNo).isEqualTo(1)
-
-        Unit
     }
 
     @Test
@@ -243,6 +241,6 @@ internal class PipelineTest {
     }
 
     private class NoopDecoder : DataDecoder<String, String> {
-        override fun decode(data: String): List<String> = listOf(data)
+        override fun decode(item: String): Collection<String> = listOf(item)
     }
 }

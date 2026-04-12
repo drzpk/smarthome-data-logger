@@ -12,7 +12,7 @@ object SourceConfigFactory {
         loader.properties.keys.forEach {
             val result = regex.matchEntire(it as String)
             if (result != null)
-                names.add(result.groupValues[1].toLowerCase())
+                names.add(result.groupValues[1].lowercase())
         }
 
         return names.distinct()
@@ -27,10 +27,11 @@ object SourceConfigFactory {
             throw IllegalStateException("Error while loading source '$sourceName'", e)
         }
 
-        return when(typeValue) {
+        return when (typeValue) {
             SourceType.SMA -> SMAConfig(sourceName, loader)
             SourceType.SOFAR_WIFI -> SofarWifiConfig(sourceName, loader)
             SourceType.SOFAR_MODBUS -> SofarModbusConfig(sourceName, loader)
+            SourceType.AFORE_T6 -> AforeConfig(sourceName, loader)
         }
     }
 }

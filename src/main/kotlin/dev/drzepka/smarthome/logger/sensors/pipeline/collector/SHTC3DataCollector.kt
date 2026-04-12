@@ -4,6 +4,7 @@ import com.diozero.api.I2CDeviceInterface
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
 import dev.drzepka.smarthome.logger.sensors.model.MacAddress
+import kotlinx.coroutines.delay
 import java.nio.ByteBuffer
 
 /**
@@ -23,15 +24,15 @@ class SHTC3DataCollector(private val device: I2CDeviceInterface, private val mac
     DataCollector<Pair<MacAddress, ByteArray>> {
     private val log by Logger()
 
-    override fun getData(): Collection<Pair<MacAddress, ByteArray>> {
+    override suspend fun getData(): Collection<Pair<MacAddress, ByteArray>> {
         executeCommand(COMMAND_WAKE_UP)
-        Thread.sleep(1) // Wait for the device to wake up
+        delay(1000) // Wait for the device to wake up
         executeCommand(COMMAND_MEASURE)
 
         val array = ByteArray(6)
         device.readBytes(array)
         val str = array.map { (it.toInt() and 0xff).toString(16) }
-        log.trace("Received data from SHTC3: $str")
+        log.trace("Received data from SHTC3: {}", str)
 
         executeCommand(COMMAND_SLEEP)
 
