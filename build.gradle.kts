@@ -1,65 +1,53 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.20"
-    kotlin("plugin.allopen") version "1.4.20"
+    kotlin("jvm") version "2.1.21"
+    kotlin("plugin.allopen") version "2.1.21"
     id("java-library")
-
-    maven
     id("maven-publish")
 }
 
 group = "dev.drzepka.smarthome"
 version = "1.5.2"
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
-    jcenter()
     mavenCentral()
     mavenLocal()
 
     maven {
         setupSmartHomeRepo("https://gitlab.com/api/v4/projects/21177602/packages/maven", false)
     }
+
+    maven("https://maven.google.com")
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("dev.drzepka.smarthome:common:1.1.+")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.20")
-
+    implementation("dev.drzepka.smarthome:common:1.1.2-SNAPSHOT")
+    implementation(kotlin("reflect"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
     implementation("io.ktor:ktor-client-core:1.4.3")
     implementation("io.ktor:ktor-client-apache:1.4.3")
     implementation("io.ktor:ktor-client-jackson:1.4.3")
 
-    //implementation("com.fasterxml.jackson.core:jackson-core:2.11.0")
-    //implementation("com.fasterxml.jackson.core:jackson-databind:2.11.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
     implementation("org.apache.httpcomponents:httpclient:4.5.12")
-    implementation("com.intelligt.modbus:jlibmodbus:1.2.9.7")
+    implementation("com.intelligt.modbus:jlibmodbus:1.2.9.11")
     implementation("com.diozero:diozero-core:1.3.2")
     implementation("ch.qos.logback:logback-classic:1.2.11")
 
-    testImplementation("org.junit.platform:junit-platform-launcher:1.6.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.6.2")
-    testImplementation("org.assertj:assertj-core:3.19.0")
-    testImplementation("org.mockito:mockito-core:3.9.0")
-    testImplementation("org.mockito:mockito-junit-jupiter:3.9.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:3.1.0")
+    testImplementation("org.junit.platform:junit-platform-launcher:1.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+    testImplementation("org.assertj:assertj-core:3.27.3")
+    testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.11.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
 }
 
 allOpen {
@@ -71,13 +59,14 @@ tasks.withType<Test> {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict -opt-in=kotlin.RequiresOptIn")
-        jvmTarget = "1.8"
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xjsr305=strict", "-opt-in=kotlin.RequiresOptIn")
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
 tasks.withType<Jar> {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes["Main-Class"] = "dev.drzepka.smarthome.logger.DataLogger"
         attributes["Implementation-Version"] = project.version.toString()
@@ -127,5 +116,4 @@ fun MavenArtifactRepository.setupSmartHomeRepo(repoUrl: String, publishing: Bool
     authentication {
         create<HttpHeaderAuthentication>("header")
     }
-
 }
