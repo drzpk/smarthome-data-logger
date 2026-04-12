@@ -1,11 +1,11 @@
 package dev.drzepka.smarthome.logger.pv.model
 
-import java.io.Serializable
+import dev.drzepka.smarthome.logger.core.model.server.Measurement
 import java.math.BigDecimal
 import java.time.Instant
 
 data class PvMeasurement(
-    val deviceId: Int,
+    override val deviceId: Int,
     val time: Instant?,
     val totalPower: Int,
     val energyToday: BigDecimal,
@@ -15,7 +15,7 @@ data class PvMeasurement(
     val phaseC: Phase,
     val pv1: Pv?,
     val pv2: Pv?
-) : Serializable
+) : Measurement
 
 data class Phase(
     val voltage: Float,
