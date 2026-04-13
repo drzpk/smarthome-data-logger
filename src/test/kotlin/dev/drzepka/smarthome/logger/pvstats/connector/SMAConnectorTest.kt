@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.pvstats.connector
 
 import dev.drzepka.smarthome.common.pvstats.model.vendor.SMAData
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.core.config.PropertiesConfigPropertySource
 import dev.drzepka.smarthome.logger.pvstats.PVStatsModule
 import dev.drzepka.smarthome.logger.pvstats.connector.base.DataType
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SMAConfig
@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.*
 
 class SMAConnectorTest {
 
@@ -49,14 +48,15 @@ class SMAConnectorTest {
     }
 
     private fun getConnector(): SMAConnector {
-        val properties = Properties()
-        properties.setProperty("pvstats.source.test.url", "localhost")
-        properties.setProperty("pvstats.source.test.user", "user")
-        properties.setProperty("pvstats.source.test.password", "password")
-        properties.setProperty("pvstats.source.test.timeout", "1")
-
-        val config = SMAConfig("test", ConfigurationLoader(properties))
-        return SMAConnector(config)
+        val source = PropertiesConfigPropertySource(
+            """
+            pvstats.source.test.url=localhost
+            pvstats.source.test.user=user
+            pvstats.source.test.password=password
+            pvstats.source.test.timeout=1
+            """.trimIndent()
+        )
+        return SMAConnector(SMAConfig("test", source))
     }
 
     private fun getBytes(filename: String): ByteArray {

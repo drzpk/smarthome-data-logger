@@ -1,11 +1,14 @@
 package dev.drzepka.smarthome.logger
 
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
-import dev.drzepka.smarthome.logger.pvstats.PVStatsModule
-import dev.drzepka.smarthome.logger.sensors.SensorsModule
+import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
+import dev.drzepka.smarthome.logger.pv.pvModule
+import dev.drzepka.smarthome.logger.pvstats.pvStatsModule
+import dev.drzepka.smarthome.logger.sensors.sensorsModule
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
@@ -15,18 +18,14 @@ object DataLogger {
 
     @JvmStatic
     fun main(args: Array<String>) = runBlocking {
-        val testMode = System.getProperty("TEST") != null
+        val koin = startKoin {
+            modules(appModule, pvStatsModule, sensorsModule, pvModule)
+        }.koin
 
-        val configurationLoader = ConfigurationLoader()
-        val scheduler = TaskScheduler(8)
-
-        val allModules = listOf(
-            PVStatsModule(configurationLoader, scheduler),
-            SensorsModule(configurationLoader, scheduler)
-        )
+        val allModules = koin.getAll<DataLoggerModule>()
 
         log.info("Starting data logger (available modules: {})", allModules.size)
-        val activeModules = initializeModules(allModules, testMode)
+        val activeModules = initializeModules(allModules)
         if (activeModules.isEmpty()) {
             log.info("No active modules, stopping the application")
             stopKoin()
@@ -46,17 +45,14 @@ object DataLogger {
 
         log.info("Stopping modules")
         stopModules(activeModules)
+        koin.get<PipelineManager>().stop()
         stopKoin()
     }
 
-    private suspend fun initializeModules(
-        modules: Collection<DataLoggerModule>,
-        testMode: Boolean
-    ): Collection<DataLoggerModule> {
+    private suspend fun initializeModules(modules: Collection<DataLoggerModule>, ): Collection<DataLoggerModule> {
         return modules.filter { module ->
             val result = cricicalTryCatch("Error while initializing module ${module.name}") {
                 log.info("Initializing module ${module.name}")
-                module.testMode = testMode
                 module.initialize()
             }
 
@@ -79,7 +75,7 @@ object DataLogger {
         modules.forEach {
             try {
                 it.stop()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 log.error("Error wihle stopping module {}", it.name)
             }
         }

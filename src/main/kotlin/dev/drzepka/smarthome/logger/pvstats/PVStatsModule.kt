@@ -3,23 +3,26 @@ package dev.drzepka.smarthome.logger.pvstats
 import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.DataLoggerModule
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.pvstats.model.config.PvStatsConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.AforeConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfigFactory
 import java.time.Duration
 import kotlin.system.exitProcess
 
-class PVStatsModule(configurationLoader: ConfigurationLoader, scheduler: TaskScheduler) :
-    DataLoggerModule(configurationLoader, scheduler) {
+class PVStatsModule(
+    private val configPropertySource: ConfigPropertySource,
+    private val scheduler: TaskScheduler
+) : DataLoggerModule {
 
     override val name: String = "pvstats"
+    override var testMode: Boolean = false
 
     private val log by Logger()
     private val sourceLoggers = ArrayList<SourceLogger>()
 
     override suspend fun initialize(): Boolean {
-        if (!configurationLoader.containsKey("pvstats")) {
+        if (configPropertySource.getKeys("pvstats").isEmpty()) {
             log.info("No pv-stats configuration was found")
             return false
         }
@@ -52,11 +55,11 @@ class PVStatsModule(configurationLoader: ConfigurationLoader, scheduler: TaskSch
     private fun loadSourceLoggers() {
         sourceLoggers.clear()
 
-        val pvStatsConfig = PvStatsConfig.loadFromProperties(configurationLoader)
-        val sourceNames = SourceConfigFactory.getAvailableNames(configurationLoader)
+        val pvStatsConfig = PvStatsConfig.load(configPropertySource)
+        val sourceNames = SourceConfigFactory.getAvailableNames(configPropertySource)
 
         val foundLoggers = sourceNames.mapNotNull {
-            val config = SourceConfigFactory.createSourceConfig(it, configurationLoader)
+            val config = SourceConfigFactory.createSourceConfig(it, configPropertySource)
             if (config is AforeConfig)
                 return@mapNotNull null // handled in the new module
 

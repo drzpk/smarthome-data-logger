@@ -20,6 +20,7 @@ class DeviceManager(private val executor: SensorsRequestExecutor) {
     private var initialized = false
 
     suspend fun initialize() {
+        if (initialized) return
         initializeDevices()
         initialized = true
     }

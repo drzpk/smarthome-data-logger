@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.pv
 
 import dev.drzepka.smarthome.common.util.Logger
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataSource
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.FixedRateDataSource
 import dev.drzepka.smarthome.logger.pv.client.SocketClient
@@ -15,15 +15,15 @@ import java.time.Duration
 
 class PvDataSourceFactory(
     private val deviceManager: DeviceManager,
-    private val configLoader: ConfigurationLoader
+    private val configPropertySource: ConfigPropertySource
 ) {
 
     fun createDataSources(): List<DataSource<*, PvMeasurement>> {
         val dataSources = mutableListOf<DataSource<*, PvMeasurement>>()
 
-        val sourceNames = SourceConfigFactory.getAvailableNames(configLoader)
+        val sourceNames = SourceConfigFactory.getAvailableNames(configPropertySource)
         for (it in sourceNames) {
-            val config = SourceConfigFactory.createSourceConfig(it, configLoader)
+            val config = SourceConfigFactory.createSourceConfig(it, configPropertySource)
             if (config !is AforeConfig)
                 continue
 

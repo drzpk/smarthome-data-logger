@@ -8,7 +8,7 @@ class PipelineManager(private val scheduler: TaskScheduler) {
     private val pipelines = mutableSetOf<Pipeline<*>>()
     private val context = ContextImpl()
 
-    private var running = false
+    private var running = true
 
     fun addPipeline(pipeline: Pipeline<*>) {
         log.info("Adding pipeline '{}'", pipeline.name)
@@ -16,16 +16,6 @@ class PipelineManager(private val scheduler: TaskScheduler) {
 
         if (added && running)
             startPipeline(pipeline)
-    }
-
-    fun start() {
-        if (running)
-            return
-
-        log.info("Starting pipeline manager with {} pipeline(s)", pipelines.size)
-        pipelines.forEach { startPipeline(it) }
-
-        running = true
     }
 
     fun stop() {

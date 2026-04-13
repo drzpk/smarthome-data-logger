@@ -14,11 +14,10 @@ internal class PipelineManagerTest {
     private val scheduler = mock<TaskScheduler>()
 
     @Test
-    fun `should start pipeline after adding when manager is started`() {
+    fun `should start pipeline immediately when added`() {
         val pipeline = TestPipeline()
         val manager = PipelineManager(scheduler)
 
-        manager.start()
         manager.addPipeline(pipeline)
 
         then(pipeline.startCallCount).isEqualTo(1)
@@ -26,16 +25,11 @@ internal class PipelineManagerTest {
     }
 
     @Test
-    fun `should call pipelines when starting and stopping manager`() {
+    fun `should stop all pipelines when manager is stopped`() {
         val pipeline = TestPipeline()
         val manager = PipelineManager(scheduler)
 
         manager.addPipeline(pipeline)
-        manager.start()
-
-        then(pipeline.startCallCount).isEqualTo(1)
-        then(pipeline.stopCallCount).isEqualTo(0)
-
         manager.stop()
 
         then(pipeline.startCallCount).isEqualTo(1)

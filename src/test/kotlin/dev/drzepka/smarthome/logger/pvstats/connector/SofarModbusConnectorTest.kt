@@ -1,11 +1,10 @@
 package dev.drzepka.smarthome.logger.pvstats.connector
 
 import dev.drzepka.smarthome.common.pvstats.model.vendor.sofar.SofarData
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.core.config.PropertiesConfigPropertySource
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SofarModbusConfig
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class SofarModbusConnectorTest {
 
@@ -35,16 +34,15 @@ class SofarModbusConnectorTest {
         Assertions.assertEquals(369 / 60f, sofarData.generationHoursToday, 0.1f)
     }
 
-    private fun getPropertiesLoader(): ConfigurationLoader {
-        val properties = Properties()
-        properties.setProperty("pvstats.source.name.user", "user")
-        properties.setProperty("pvstats.source.name.password", "password")
-        properties.setProperty("pvstats.source.name.timeout", "3")
-        properties.setProperty("pvstats.source.name.devpath", "/dev/ttyUSB0")
-        properties.setProperty("pvstats.source.name.slaveId", "0")
-
-        return ConfigurationLoader(properties)
-    }
+    private fun getPropertiesLoader() = PropertiesConfigPropertySource(
+        """
+        pvstats.source.name.user=user
+        pvstats.source.name.password=password
+        pvstats.source.name.timeout=3
+        pvstats.source.name.devpath=/dev/ttyUSB0
+        pvstats.source.name.slaveId=0
+        """.trimIndent()
+    )
 
     companion object {
 

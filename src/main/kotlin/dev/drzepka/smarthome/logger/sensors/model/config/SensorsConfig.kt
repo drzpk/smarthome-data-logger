@@ -1,6 +1,7 @@
 package dev.drzepka.smarthome.logger.sensors.model.config
 
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
+import dev.drzepka.smarthome.logger.core.config.SensorsProperties
 
 class SensorsConfig private constructor(
     val serverUrl: String,
@@ -8,15 +9,12 @@ class SensorsConfig private constructor(
     val loggerSecret: String
 ) {
     companion object {
-        fun load(configurationLoader: ConfigurationLoader): SensorsConfig? {
-            if (!configurationLoader.containsKey("sensors"))
+        fun load(source: ConfigPropertySource): SensorsConfig? {
+            if (source.getKeys("sensors").isEmpty())
                 return null
 
-            return SensorsConfig(
-                configurationLoader.getValue("sensors.serverUrl", true)!!,
-                configurationLoader.getInt("sensors.loggerId", true)!!,
-                configurationLoader.getValue("sensors.loggerSecret", true)!!
-            )
+            val props = SensorsProperties(source.getChild("sensors"))
+            return SensorsConfig(props.serverUrl, props.loggerId, props.loggerSecret)
         }
     }
 }

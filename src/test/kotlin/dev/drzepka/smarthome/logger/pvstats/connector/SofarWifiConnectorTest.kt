@@ -2,11 +2,10 @@ package dev.drzepka.smarthome.logger.pvstats.connector
 
 import dev.drzepka.smarthome.common.pvstats.model.vendor.sofar.SofarData
 import dev.drzepka.smarthome.common.util.hexStringToBytes
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.core.config.PropertiesConfigPropertySource
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SofarWifiConfig
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.*
 
 
 class SofarWifiConnectorTest {
@@ -62,15 +61,16 @@ class SofarWifiConnectorTest {
     }
 
     private fun getConfig(sn: Int): SofarWifiConfig {
-        val properties = Properties()
-        properties.setProperty("pvstats.source.name.type", "SOFAR")
-        properties.setProperty("pvstats.source.name.url", "localhost")
-        properties.setProperty("pvstats.source.name.user", "user")
-        properties.setProperty("pvstats.source.name.password", "password")
-        properties.setProperty("pvstats.source.name.sn", sn.toString())
-        properties.setProperty("pvstats.source.name.timeout", "1")
-
-        val loader = ConfigurationLoader(properties)
-        return SofarWifiConfig("name", loader)
+        val source = PropertiesConfigPropertySource(
+            """
+            pvstats.source.name.type=SOFAR
+            pvstats.source.name.url=localhost
+            pvstats.source.name.user=user
+            pvstats.source.name.password=password
+            pvstats.source.name.sn=$sn
+            pvstats.source.name.timeout=1
+            """.trimIndent()
+        )
+        return SofarWifiConfig("name", source)
     }
 }

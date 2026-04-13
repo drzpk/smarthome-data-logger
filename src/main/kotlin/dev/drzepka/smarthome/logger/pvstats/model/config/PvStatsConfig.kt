@@ -1,18 +1,17 @@
 package dev.drzepka.smarthome.logger.pvstats.model.config
 
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import java.net.URI
 
 class PvStatsConfig private constructor(
         val url: URI,
         val timeout: Int
 ) {
-
     companion object {
-        fun loadFromProperties(loader: ConfigurationLoader): PvStatsConfig {
+        fun load(source: ConfigPropertySource): PvStatsConfig {
             return PvStatsConfig(
-                    URI.create(loader.getValue("pvstats.url", true)!!),
-                    loader.getValue("pvstats.timeout", true)!!.toInt()
+                    URI.create(source.getString("pvstats.url")),
+                    source.getInt("pvstats.timeout")
             )
         }
     }

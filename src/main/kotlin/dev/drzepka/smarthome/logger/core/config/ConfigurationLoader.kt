@@ -2,52 +2,15 @@ package dev.drzepka.smarthome.logger.core.config
 
 import dev.drzepka.smarthome.common.util.Logger
 import java.io.File
-import java.io.FileInputStream
 import java.io.InputStream
-import java.util.*
 
-class ConfigurationLoader(properties: Properties? = null) {
-
-    val properties: Properties
+class ConfigurationLoader {
 
     private val log by Logger()
 
-    init {
-        this.properties = properties ?: loadProperties()
-    }
-
-    fun getInt(name: String, required: Boolean): Int? {
-        val value = getValue(name, required)
-        return if (required) value!!.toInt() else null
-    }
-
-    fun getValue(name: String, required: Boolean): String? {
-        val value = properties.getProperty(name)
-        if (value == null && required)
-            throw IllegalArgumentException("Property $name is required but wasn't found")
-        return value
-    }
-
-    fun containsKey(name: String): Boolean {
-        fun split(input: String): List<String> = input.split(".")
-
-        val splitName = split(name)
-        fun matches(input: Collection<String>): Boolean = splitName
-            .zip(input)
-            .all { it.first == it.second }
-
-        return properties.keys
-            .map { split(it as String) }
-            .any { matches(it) }
-    }
-
-    private fun loadProperties(): Properties {
-        val properties = Properties()
+    fun loadSource(): PropertiesConfigPropertySource {
         val stream = tryLoadingInternalProperties() ?: loadExternalProperties()
-        properties.load(stream)
-        stream.close()
-
-        return properties
+        return stream.use { PropertiesConfigPropertySource(it.reader().readText()) }
     }
 
     private fun tryLoadingInternalProperties(): InputStream? {
@@ -62,7 +25,7 @@ class ConfigurationLoader(properties: Properties? = null) {
         if (!file.isFile)
             throw IllegalStateException("$filename file wasn't found")
 
-        return FileInputStream(file)
+        return file.inputStream()
     }
 
     private fun getPropertiesName(): String {

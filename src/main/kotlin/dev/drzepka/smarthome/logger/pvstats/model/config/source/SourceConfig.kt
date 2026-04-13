@@ -1,13 +1,13 @@
 package dev.drzepka.smarthome.logger.pvstats.model.config.source
 
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
 import kotlin.reflect.KClass
 
 abstract class SourceConfig internal constructor(
         val type: SourceType,
         val name: String,
-        protected val loader: ConfigurationLoader
+        protected val source: ConfigPropertySource
 ) {
     val user: String = loadProperty("user")
     val password: String = loadProperty("password")
@@ -17,13 +17,13 @@ abstract class SourceConfig internal constructor(
 
     protected inline fun <reified T : Any> loadProperty(configPath: String): T {
         val fullPath = "$CONFIG_PREFIX.$name.$configPath"
-        val value = loader.getValue(fullPath, true)!!
+        val value = source.getString(fullPath)
         return convertToRequiredType(value, T::class)
     }
 
     protected inline fun <reified T : Any> loadOptionalProperty(configPath: String): T? {
         val fullPath = "$CONFIG_PREFIX.$name.$configPath"
-        val value = loader.getValue(fullPath, false)
+        val value = source.getOptionalString(fullPath)
         return value?.let { convertToRequiredType(it, T::class) }
     }
 

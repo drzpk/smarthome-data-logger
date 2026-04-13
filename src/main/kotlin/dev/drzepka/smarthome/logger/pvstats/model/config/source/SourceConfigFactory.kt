@@ -1,25 +1,16 @@
 package dev.drzepka.smarthome.logger.pvstats.model.config.source
 
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
 
 object SourceConfigFactory {
 
-    fun getAvailableNames(loader: ConfigurationLoader): List<String> {
-        val regex = Regex("^pvstats\\.source\\.([a-zA-Z0-9_-]+)\\..*$")
-
-        val names = ArrayList<String>()
-        loader.properties.keys.forEach {
-            val result = regex.matchEntire(it as String)
-            if (result != null)
-                names.add(result.groupValues[1].lowercase())
-        }
-
-        return names.distinct()
+    fun getAvailableNames(source: ConfigPropertySource): List<String> {
+        return source.getKeys("pvstats.source")
     }
 
-    fun createSourceConfig(sourceName: String, loader: ConfigurationLoader): SourceConfig {
-        val typeString = loader.getValue("pvstats.source.$sourceName.type", true)!!
+    fun createSourceConfig(sourceName: String, source: ConfigPropertySource): SourceConfig {
+        val typeString = source.getString("pvstats.source.$sourceName.type")
 
         val typeValue = try {
             SourceType.valueOf(typeString)
@@ -28,10 +19,10 @@ object SourceConfigFactory {
         }
 
         return when (typeValue) {
-            SourceType.SMA -> SMAConfig(sourceName, loader)
-            SourceType.SOFAR_WIFI -> SofarWifiConfig(sourceName, loader)
-            SourceType.SOFAR_MODBUS -> SofarModbusConfig(sourceName, loader)
-            SourceType.AFORE_T6 -> AforeConfig(sourceName, loader)
+            SourceType.SMA -> SMAConfig(sourceName, source)
+            SourceType.SOFAR_WIFI -> SofarWifiConfig(sourceName, source)
+            SourceType.SOFAR_MODBUS -> SofarModbusConfig(sourceName, source)
+            SourceType.AFORE_T6 -> AforeConfig(sourceName, source)
         }
     }
 }
