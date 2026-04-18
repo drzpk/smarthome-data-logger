@@ -1,47 +1,49 @@
-package dev.drzepka.smarthome.logger.sensors.core
+package dev.drzepka.smarthome.logger.core.device
 
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
-import dev.drzepka.smarthome.common.util.Mockable
-import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
+import dev.drzepka.smarthome.logger.core.model.MacAddress
+import dev.drzepka.smarthome.logger.core.model.server.Device
+import dev.drzepka.smarthome.logger.core.network.SensorsRequestExecutor
 import dev.drzepka.smarthome.logger.core.util.ExceptionTracker
 import dev.drzepka.smarthome.logger.core.util.suspendRunCatching
-import dev.drzepka.smarthome.logger.sensors.model.MacAddress
-import dev.drzepka.smarthome.logger.sensors.model.server.Device
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 
-@Mockable
-class DeviceManager(private val executor: SensorsRequestExecutor) {
+class OnlineDeviceManager(
+    private val executor: SensorsRequestExecutor,
+    private val scheduler: TaskScheduler
+) : DeviceManager {
     private val log by Logger()
     private val devices = ConcurrentHashMap<MacAddress, Device>()
 
-    private var tracker = ExceptionTracker("DeviceManager")
+    private var tracker = ExceptionTracker("OnlineDeviceManager")
     private var initialized = false
 
-    suspend fun initialize() {
+    override suspend fun initialize() {
         if (initialized) return
         initializeDevices()
         initialized = true
     }
 
-    fun start(context: PipelineContext) {
+    override fun start() {
         if (!initialized)
             throw IllegalStateException("Data source wasn't initialized")
 
         log.info("Scheduling device refresh at interval {}", DEVICE_REFRESH_INTERVAL)
-        context.scheduler.schedule(TASK_NAME, DEVICE_REFRESH_INTERVAL) {
+        scheduler.schedule(TASK_NAME, DEVICE_REFRESH_INTERVAL) {
             refreshDevices()
         }
     }
 
-    fun stop(context: PipelineContext) {
-        context.scheduler.cancel(TASK_NAME)
+    override fun stop() {
+        scheduler.cancel(TASK_NAME)
     }
 
-    fun getDevices(): Map<MacAddress, Device> = devices.toMap()
+    override fun getDeviceId(mac: MacAddress): Int? = devices[mac]?.id
 
-    fun getDeviceId(mac: MacAddress): Int? = devices[mac]?.id
+    override fun getDevices(): Map<MacAddress, Device> = devices.toMap()
 
     private suspend fun initializeDevices() {
         log.info("Initializing devices")

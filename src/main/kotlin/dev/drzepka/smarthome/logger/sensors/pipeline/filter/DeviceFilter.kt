@@ -1,22 +1,19 @@
 package dev.drzepka.smarthome.logger.sensors.pipeline.filter
 
 import dev.drzepka.smarthome.common.util.Logger
-import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
+import dev.drzepka.smarthome.logger.core.device.DeviceManager
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataFilter
-import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
 import dev.drzepka.smarthome.logger.sensors.model.LocalMeasurement
 
 class DeviceFilter(private val deviceManager: DeviceManager) : DataFilter<LocalMeasurement> {
     private val log by Logger()
 
-    override fun start(context: PipelineContext) {
-        super.start(context)
-        deviceManager.start(context)
+    override fun start() {
+        deviceManager.start()
     }
 
-    override fun stop(context: PipelineContext) {
-        super.stop(context)
-        deviceManager.stop(context)
+    override fun stop() {
+        deviceManager.stop()
     }
 
     override fun filter(data: LocalMeasurement): LocalMeasurement? {

@@ -1,12 +1,10 @@
 package dev.drzepka.smarthome.logger.core.pipeline
 
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 
-class PipelineManager(private val scheduler: TaskScheduler) {
+class PipelineManager {
     private val log by Logger()
     private val pipelines = mutableSetOf<Pipeline<*>>()
-    private val context = ContextImpl()
 
     private var running = true
 
@@ -31,7 +29,7 @@ class PipelineManager(private val scheduler: TaskScheduler) {
     private fun startPipeline(pipeline: Pipeline<*>) {
         try {
             log.debug("Starting pipeline {}", pipeline.name)
-            pipeline.start(context)
+            pipeline.start()
         } catch (e: Exception) {
             log.error("Error while starting pipeline {}", pipeline.name, e)
         }
@@ -40,13 +38,9 @@ class PipelineManager(private val scheduler: TaskScheduler) {
     private fun stopPipeline(pipeline: Pipeline<*>) {
         try {
             log.debug("Stopping pipeline {}", pipeline.name)
-            pipeline.stop(context)
+            pipeline.stop()
         } catch (e: Exception) {
             log.error("Error while stopping pipeline {}", pipeline.name, e)
         }
-    }
-
-    private inner class ContextImpl : PipelineContext {
-        override val scheduler = this@PipelineManager.scheduler
     }
 }

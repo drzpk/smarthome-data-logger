@@ -1,6 +1,5 @@
 package dev.drzepka.smarthome.logger.pv.pipeline.decoder
 
-import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegister
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
 import dev.drzepka.smarthome.logger.pv.vendor.afore.AforeT6Registers
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -62,7 +61,7 @@ internal class AforeT6DecoderTest {
 
     @Test
     fun `should return empty collection when input is empty`() {
-        val result = AforeT6Decoder.decode(emptyMap<ModbusRegister<*>, Any>())
+        val result = AforeT6Decoder.decode(emptyMap())
 
         assertTrue(result.isEmpty())
     }
@@ -74,7 +73,7 @@ internal class AforeT6DecoderTest {
         r.totalActivePower to 6930,
         r.energyToday to BigDecimal(100),
         r.energyTotal to BigDecimal(10000),
-        r.pv1Voltage to 350.0f, r.pv1Current to 5.0f, r.pv1Power to 1750, r.pv1EnergyToday to 50,
-        r.pv2Voltage to 360.0f, r.pv2Current to 5.1f, r.pv2Power to 1836, r.pv2EnergyToday to 60
+        r.pv1Voltage to 350.0f, r.pv1Current to 5.0f, r.pv1Power to 1750, r.pv1EnergyToday to BigDecimal(50),
+        r.pv2Voltage to 360.0f, r.pv2Current to 5.1f, r.pv2Power to 1836, r.pv2EnergyToday to BigDecimal(60)
     )
 }

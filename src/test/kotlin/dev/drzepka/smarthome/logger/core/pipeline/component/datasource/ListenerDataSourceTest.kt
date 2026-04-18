@@ -1,24 +1,20 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
-import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataListener
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.mock
 
 @ExtendWith(MockitoExtension::class)
 internal class ListenerDataSourceTest {
-
-    private val context = mock<PipelineContext>()
 
     @Test
     fun `should start data source`() {
         val listener = TestListener()
         val dataSource = ListenerDataSource("test", listener, TestDataDecoder())
-        dataSource.start(context)
+        dataSource.start()
 
         then(listener.startCalled).isTrue
     }
@@ -27,7 +23,7 @@ internal class ListenerDataSourceTest {
     fun `should stop data source`() {
         val listener = TestListener()
         val dataSource = ListenerDataSource("test", listener, TestDataDecoder())
-        dataSource.stop(context)
+        dataSource.stop()
 
         then(listener.stopCalled).isTrue
     }
@@ -44,7 +40,7 @@ internal class ListenerDataSourceTest {
             }
         }
 
-        dataSource.start(context)
+        dataSource.start()
         listener.generateTestData()
 
         then(receivedData).containsExactly(123)

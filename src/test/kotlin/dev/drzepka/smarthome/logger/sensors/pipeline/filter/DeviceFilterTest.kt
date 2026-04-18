@@ -1,9 +1,8 @@
 package dev.drzepka.smarthome.logger.sensors.pipeline.filter
 
-import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
-import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
+import dev.drzepka.smarthome.logger.core.device.DeviceManager
+import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.LocalMeasurement
-import dev.drzepka.smarthome.logger.sensors.model.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.server.Measurement
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
@@ -15,18 +14,17 @@ import org.mockito.kotlin.*
 internal class DeviceFilterTest {
 
     private val deviceManager = mock<DeviceManager>()
-    private val context = mock<PipelineContext>()
 
-     @Test
+    @Test
     fun `should forward start event to device manager`() {
-        DeviceFilter(deviceManager).start(context)
-        verify(deviceManager).start(same(context))
+        DeviceFilter(deviceManager).start()
+        verify(deviceManager).start()
     }
 
     @Test
     fun `should forward stop event to device manager`() {
-        DeviceFilter(deviceManager).stop(context)
-        verify(deviceManager).stop(same(context))
+        DeviceFilter(deviceManager).stop()
+        verify(deviceManager).stop()
     }
 
     @Test

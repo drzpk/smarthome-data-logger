@@ -14,5 +14,10 @@ class CreateMeasurementsResponse {
 }
 
 interface Measurement {
+    val type: MeasurementType
     val deviceId: Int
+}
+
+enum class MeasurementType {
+    TEMPERATURE, PV
 }

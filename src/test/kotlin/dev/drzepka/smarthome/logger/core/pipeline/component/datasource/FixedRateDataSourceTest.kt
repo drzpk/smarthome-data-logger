@@ -1,6 +1,6 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
-import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -8,7 +8,6 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.internal.stubbing.defaultanswers.ReturnsDeepStubs
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.*
 import java.time.Duration
@@ -18,35 +17,35 @@ import java.time.Duration
 internal class FixedRateDataSourceTest {
 
     private val collector = mock<DataCollector<String>>()
-    private val context = mock<PipelineContext>(defaultAnswer = ReturnsDeepStubs())
+    private val scheduler = mock<TaskScheduler>()
     private val schedulerTaskCaptor = argumentCaptor<suspend () -> Unit>()
 
     @Test
     fun `should start data source`() {
         val interval = Duration.ofSeconds(10L)
-        val dataSource = FixedRateDataSource("test", interval, collector, TestDecoder())
+        val dataSource = FixedRateDataSource("test", interval, scheduler, collector, TestDecoder())
 
-        dataSource.start(context)
+        dataSource.start()
 
         verify(collector).start()
-        verify(context.scheduler).schedule(argThat { endsWith("test") }, eq(interval), any())
+        verify(scheduler).schedule(argThat { endsWith("test") }, eq(interval), any())
     }
 
     @Test
     fun `should stop data source`() {
         val interval = Duration.ofSeconds(10L)
-        val dataSource = FixedRateDataSource("test", interval, collector, TestDecoder())
+        val dataSource = FixedRateDataSource("test", interval, scheduler, collector, TestDecoder())
 
-        dataSource.stop(context)
+        dataSource.stop()
 
         verify(collector).stop()
-        verify(context.scheduler).cancel(argThat { endsWith("test") })
+        verify(scheduler).cancel(argThat { endsWith("test") })
     }
 
     @Test
     fun `should decode and forward data`() = runBlockingTest {
-        val dataSource = FixedRateDataSource("test", Duration.ofSeconds(1), collector, TestDecoder())
-        dataSource.start(context)
+        val dataSource = FixedRateDataSource("test", Duration.ofSeconds(1), scheduler, collector, TestDecoder())
+        dataSource.start()
 
         var receiverCalled = false
         dataSource.receiver = object : DataReceiver<Int> {
@@ -56,7 +55,7 @@ internal class FixedRateDataSourceTest {
         }
 
         whenever(collector.getData()).thenReturn(listOf("1", "2"))
-        verify(context.scheduler).schedule(any(), any(), schedulerTaskCaptor.capture())
+        verify(scheduler).schedule(any(), any(), schedulerTaskCaptor.capture())
         schedulerTaskCaptor.firstValue.invoke()
 
         verify(collector).getData()

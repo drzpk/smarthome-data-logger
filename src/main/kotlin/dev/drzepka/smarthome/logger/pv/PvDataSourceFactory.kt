@@ -1,7 +1,9 @@
 package dev.drzepka.smarthome.logger.pv
 
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
+import dev.drzepka.smarthome.logger.core.device.DeviceManager
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataSource
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.FixedRateDataSource
 import dev.drzepka.smarthome.logger.pv.client.SocketClient
@@ -10,12 +12,12 @@ import dev.drzepka.smarthome.logger.pv.pipeline.collector.AforeDataCollector
 import dev.drzepka.smarthome.logger.pv.pipeline.decoder.AforeT6Decoder
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.AforeConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfigFactory
-import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
 import java.time.Duration
 
 class PvDataSourceFactory(
     private val deviceManager: DeviceManager,
-    private val configPropertySource: ConfigPropertySource
+    private val configPropertySource: ConfigPropertySource,
+    private val scheduler: TaskScheduler
 ) {
 
     fun createDataSources(): List<DataSource<*, PvMeasurement>> {
@@ -42,6 +44,7 @@ class PvDataSourceFactory(
         return FixedRateDataSource(
             name = config.name,
             interval = Duration.ofSeconds(config.measurementInterval?.toLong() ?: 60),
+            scheduler = scheduler,
             collector = aforeCollector,
             decoder = AforeT6Decoder
         )

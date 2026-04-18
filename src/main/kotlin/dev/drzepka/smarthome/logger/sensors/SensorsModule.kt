@@ -4,9 +4,9 @@ import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.DataLoggerModule
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
+import dev.drzepka.smarthome.logger.core.device.DeviceManager
 import dev.drzepka.smarthome.logger.core.pipeline.Pipeline
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
-import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
 import dev.drzepka.smarthome.logger.sensors.model.config.SensorsConfig
 import dev.drzepka.smarthome.logger.sensors.pipeline.SensorsDataSender
 import dev.drzepka.smarthome.logger.sensors.pipeline.filter.DeviceFilter
@@ -39,10 +39,10 @@ class SensorsModule(
         val deviceManager = get<DeviceManager>()
         deviceManager.initialize()
 
-        val sensorsPipeline = Pipeline("sensors", Duration.ofSeconds(30), get<SensorsDataSender>())
+        val sensorsPipeline = Pipeline("sensors", Duration.ofSeconds(30), get<SensorsDataSender>(), get())
         sensorsPipeline.addFilter(DeviceFilter(deviceManager))
 
-        val dataSources = DataSourceFactory(deviceManager, testMode).createDataSources()
+        val dataSources = DataSourceFactory(deviceManager, testMode, scheduler).createDataSources()
         dataSources.forEach { sensorsPipeline.addDataSource(it) }
 
         pipelineManager.addPipeline(sensorsPipeline)

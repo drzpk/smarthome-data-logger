@@ -1,6 +1,7 @@
 package dev.drzepka.smarthome.logger.pv.model
 
 import dev.drzepka.smarthome.logger.core.model.server.Measurement
+import dev.drzepka.smarthome.logger.core.model.server.MeasurementType
 import java.math.BigDecimal
 import java.time.Instant
 
@@ -15,7 +16,9 @@ data class PvMeasurement(
     val phaseC: Phase,
     val pv1: Pv?,
     val pv2: Pv?
-) : Measurement
+) : Measurement {
+    override val type = MeasurementType.PV
+}
 
 data class Phase(
     val voltage: Float,

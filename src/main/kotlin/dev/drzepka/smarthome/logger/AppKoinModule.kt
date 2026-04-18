@@ -9,5 +9,5 @@ import org.koin.dsl.module
 val appModule = module {
     single<ConfigPropertySource> { ConfigurationLoader().loadSource() }
     single { TaskScheduler(8) }
-    single { PipelineManager(get()) }
+    single { PipelineManager() }
 }

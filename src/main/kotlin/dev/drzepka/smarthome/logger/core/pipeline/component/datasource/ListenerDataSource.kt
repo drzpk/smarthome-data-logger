@@ -1,7 +1,6 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
 import dev.drzepka.smarthome.common.util.Logger
-import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataListener
 
@@ -23,13 +22,13 @@ open class ListenerDataSource<I, O>(
         }
     }
 
-    override fun start(context: PipelineContext) {
+    override fun start() {
         log.info("Starting listener data source '{}'", name)
         listener.start()
         started = true
     }
 
-    override fun stop(context: PipelineContext) {
+    override fun stop() {
         log.info("Stopping listener data source '{}'", name)
         listener.stop()
         started = false

@@ -5,6 +5,6 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val pvModule = module {
-    single { PVModule(get(), get(), get()) } bind DataLoggerModule::class
-    single { PvDataSourceFactory(get(), get()) }
+    single { PVModule(get(), get(), get(), get()) } bind DataLoggerModule::class
+    single { PvDataSourceFactory(get(), get(), get()) }
 }

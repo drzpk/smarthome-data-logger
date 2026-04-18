@@ -2,15 +2,16 @@ package dev.drzepka.smarthome.logger.sensors
 
 import com.diozero.api.I2CDevice
 import com.diozero.api.I2CDeviceInterface
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
+import dev.drzepka.smarthome.logger.core.device.DeviceManager
+import dev.drzepka.smarthome.logger.core.model.MacAddress
+import dev.drzepka.smarthome.logger.core.model.server.Device
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataSource
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.FixedRateDataSource
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.ListenerDataSource
-import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
 import dev.drzepka.smarthome.logger.sensors.model.LocalMeasurement
-import dev.drzepka.smarthome.logger.sensors.model.MacAddress
-import dev.drzepka.smarthome.logger.sensors.model.server.Device
 import dev.drzepka.smarthome.logger.sensors.pipeline.collector.MockSHTC3DataCollector
 import dev.drzepka.smarthome.logger.sensors.pipeline.collector.SHTC3DataCollector
 import dev.drzepka.smarthome.logger.sensors.pipeline.decoder.BluetoothServiceDataDecoder
@@ -20,7 +21,11 @@ import dev.drzepka.smarthome.logger.sensors.pipeline.listener.bluetooth.MockBlue
 import java.time.Duration
 import java.util.regex.Pattern
 
-class DataSourceFactory(private val deviceManager: DeviceManager, private val useMocks: Boolean) {
+class DataSourceFactory(
+    private val deviceManager: DeviceManager,
+    private val useMocks: Boolean,
+    private val scheduler: TaskScheduler
+) {
     private val log by Logger()
 
     fun createDataSources(): List<DataSource<*, LocalMeasurement>> {
@@ -54,7 +59,7 @@ class DataSourceFactory(private val deviceManager: DeviceManager, private val us
     private fun createSHTC3DataSource(devicesByType: Map<String, List<Device>>): DataSource<*, LocalMeasurement>? {
         val shtc3Devices = devicesByType[DEVICE_TYPE_SHTC3]!!
         if (shtc3Devices.count() > 1) {
-            log.error("Unable to create device of type {}. Only one device of this type can be connected at the time.")
+            log.error("Unable to create device of type $DEVICE_TYPE_SHTC3. Only one device of this type can be connected at the time.")
             return null
         }
 
@@ -63,9 +68,9 @@ class DataSourceFactory(private val deviceManager: DeviceManager, private val us
         return if (!useMocks) {
             val mac = MacAddress(shtc3Devices.first().mac)
             val device = createSHTC3i2cDevice(mac.value) ?: return null
-            FixedRateDataSource(name, interval, SHTC3DataCollector(device, mac), SHTC3Decoder)
+            FixedRateDataSource(name, interval, scheduler, SHTC3DataCollector(device, mac), SHTC3Decoder)
         } else {
-            FixedRateDataSource(name, interval, MockSHTC3DataCollector, DataDecoder.noop())
+            FixedRateDataSource(name, interval, scheduler, MockSHTC3DataCollector, DataDecoder.noop())
         }
     }
 

@@ -2,8 +2,8 @@ package dev.drzepka.smarthome.logger.sensors.pipeline.collector
 
 import com.diozero.api.I2CDeviceInterface
 import dev.drzepka.smarthome.common.util.Logger
+import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
-import dev.drzepka.smarthome.logger.sensors.model.MacAddress
 import kotlinx.coroutines.delay
 import java.nio.ByteBuffer
 

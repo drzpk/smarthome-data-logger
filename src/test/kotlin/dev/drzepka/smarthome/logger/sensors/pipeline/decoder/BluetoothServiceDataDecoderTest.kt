@@ -1,6 +1,6 @@
 package dev.drzepka.smarthome.logger.sensors.pipeline.decoder
 
-import dev.drzepka.smarthome.logger.sensors.model.MacAddress
+import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test

@@ -1,15 +1,15 @@
-package dev.drzepka.smarthome.logger.sensors.core
+package dev.drzepka.smarthome.logger.core.device
 
-import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
-import dev.drzepka.smarthome.logger.sensors.model.MacAddress
-import dev.drzepka.smarthome.logger.sensors.model.server.Device
+import dev.drzepka.smarthome.common.TaskScheduler
+import dev.drzepka.smarthome.logger.core.model.MacAddress
+import dev.drzepka.smarthome.logger.core.model.server.Device
+import dev.drzepka.smarthome.logger.core.network.SensorsRequestExecutor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.assertj.core.api.Assertions.assertThatIllegalStateException
-import org.assertj.core.api.BDDAssertions.then
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.BDDAssertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.internal.stubbing.defaultanswers.ReturnsDeepStubs
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.*
 
@@ -18,98 +18,89 @@ import org.mockito.kotlin.*
 internal class DeviceManagerTest {
 
     private val executor = mock<SensorsRequestExecutor>()
-    private val context = mock<PipelineContext>(defaultAnswer = ReturnsDeepStubs())
+    private val scheduler = mock<TaskScheduler>()
 
     private val stringCaptor = argumentCaptor<String>()
     private val taskCaptor = argumentCaptor<suspend () -> Unit>()
 
     @Test
     fun `should not start device manager if it wasn't initialized`() {
-        val manager = DeviceManager(executor)
+        val manager = OnlineDeviceManager(executor, scheduler)
 
-        assertThatIllegalStateException()
-            .isThrownBy { manager.start(context) }
+        Assertions.assertThatIllegalStateException()
+            .isThrownBy { manager.start() }
             .withMessage("Data source wasn't initialized")
     }
 
     @Test
     fun `should refresh devices when initializing`() = runBlockingTest {
-        val device = Device().apply {
-            id = 192
-            mac = "aa:bb:cc"
-        }
+        val device = Device(id = 192, mac = "aa:bb:cc")
         whenever(executor.getDevices()).thenReturn(listOf(device))
 
-        val manager = DeviceManager(executor)
+        val manager = OnlineDeviceManager(executor, scheduler)
         manager.initialize()
 
-        then(manager.getDeviceId(MacAddress("aa:bb:cc"))).isEqualTo(192)
-        then(manager.getDeviceId(MacAddress("x:y:z"))).isNull()
+        BDDAssertions.then(manager.getDeviceId(MacAddress("aa:bb:cc"))).isEqualTo(192)
+        BDDAssertions.then(manager.getDeviceId(MacAddress("x:y:z"))).isNull()
     }
 
     @Test
     fun `should refresh devices during initialization until a successful response is returned`() = runBlockingTest {
-        val device = Device().apply {
-            id = 1234
-            mac = "aa:bb:cc"
-        }
+        val device = Device(id = 1234, mac = "aa:bb:cc")
 
         val exception = RuntimeException("no network")
         whenever(executor.getDevices())
             .thenThrow(exception, exception, exception)
             .thenReturn(listOf(device))
 
-        val manager = DeviceManager(executor)
+        val manager = OnlineDeviceManager(executor, scheduler)
         manager.initialize()
 
-        then(manager.getDeviceId(MacAddress("aa:bb:cc"))).isEqualTo(1234)
+        BDDAssertions.then(manager.getDeviceId(MacAddress("aa:bb:cc"))).isEqualTo(1234)
     }
 
     @Test
     fun `should schedule device refresh when starting`() = runBlockingTest {
         whenever(executor.getDevices()).thenReturn(emptyList())
 
-        val manager = DeviceManager(executor)
+        val manager = OnlineDeviceManager(executor, scheduler)
         manager.initialize()
-        manager.start(context)
+        manager.start()
 
-        verify(context.scheduler).schedule(any(), any(), any())
+        verify(scheduler).schedule(any(), any(), any())
     }
 
     @Test
     fun `should refresh devices with scheduler`() = runBlockingTest {
-        val device = Device().apply {
-            id = 1234
-            mac = "aa:bb:cc"
-        }
+        val device = Device(id = 1234, mac = "aa:bb:cc")
 
         whenever(executor.getDevices()).thenReturn(emptyList(), listOf(device))
 
-        val manager = DeviceManager(executor)
+        val manager = OnlineDeviceManager(executor, scheduler)
         manager.initialize()
-        manager.start(context)
+        manager.start()
 
-        then(manager.getDeviceId(MacAddress("aa:bb:cc"))).isNull()
+        BDDAssertions.then(manager.getDeviceId(MacAddress("aa:bb:cc"))).isNull()
 
-        verify(context.scheduler).schedule(any(), any(), taskCaptor.capture())
+        verify(scheduler).schedule(any(), any(), taskCaptor.capture())
         val task = taskCaptor.firstValue
 
         task.invoke()
-        then(manager.getDeviceId(MacAddress("aa:bb:cc"))).isEqualTo(1234)
+        BDDAssertions.then(manager.getDeviceId(MacAddress("aa:bb:cc"))).isEqualTo(1234)
     }
 
     @Test
     fun `should cancel task when stopping the manager`() = runBlockingTest {
         whenever(executor.getDevices()).thenReturn(emptyList())
 
-        val manager = DeviceManager(executor)
+        val manager = OnlineDeviceManager(executor, scheduler)
         manager.initialize()
-        manager.start(context)
-        manager.stop(context)
+        manager.start()
+        manager.stop()
 
-        verify(context.scheduler).schedule(stringCaptor.capture(), any(), any())
+        verify(scheduler).schedule(stringCaptor.capture(), any(), any())
 
         val name = stringCaptor.firstValue
-        verify(context.scheduler).cancel(eq(name))
+        verify(scheduler).cancel(eq(name))
     }
 }

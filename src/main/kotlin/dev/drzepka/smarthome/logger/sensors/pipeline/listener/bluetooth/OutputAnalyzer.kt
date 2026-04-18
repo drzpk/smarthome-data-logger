@@ -1,6 +1,6 @@
 package dev.drzepka.smarthome.logger.sensors.pipeline.listener.bluetooth
 
-import dev.drzepka.smarthome.logger.sensors.model.MacAddress
+import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothData
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
 

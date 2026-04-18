@@ -1,12 +1,13 @@
 package dev.drzepka.smarthome.logger.pv
 
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.DataLoggerModule
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
+import dev.drzepka.smarthome.logger.core.device.DeviceManager
 import dev.drzepka.smarthome.logger.core.pipeline.Pipeline
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
 import dev.drzepka.smarthome.logger.pv.model.config.PVProperties
-import dev.drzepka.smarthome.logger.sensors.core.DeviceManager
 import dev.drzepka.smarthome.logger.test.TestSender
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
@@ -15,7 +16,8 @@ import java.time.Duration
 class PVModule(
     private val configPropertySource: ConfigPropertySource,
     private val deviceManager: DeviceManager,
-    private val pipelineManager: PipelineManager
+    private val pipelineManager: PipelineManager,
+    private val scheduler: TaskScheduler
 ) : DataLoggerModule, KoinComponent {
 
     override val name: String = "pv"
@@ -36,7 +38,7 @@ class PVModule(
 
         deviceManager.initialize()
 
-        val pvPipeline = Pipeline("pv", Duration.ofSeconds(10), TestSender())
+        val pvPipeline = Pipeline("pv", Duration.ofSeconds(10), TestSender(), scheduler)
 
         val dataSources = get<PvDataSourceFactory>().createDataSources()
         dataSources.forEach { pvPipeline.addDataSource(it) }

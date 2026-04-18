@@ -1,5 +1,6 @@
 package dev.drzepka.smarthome.logger.core.pipeline
 
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.common.util.Mockable
 import dev.drzepka.smarthome.logger.core.executor.ConnectionException
@@ -20,6 +21,7 @@ class Pipeline<T>(
     val name: String,
     private val sendInterval: Duration,
     private val dataSender: DataSender<T>,
+    private val scheduler: TaskScheduler,
     private val queue: LoggerQueue<T> = LoggerQueue(30, Duration.ofHours(48))
 ) {
     private val log by Logger()
@@ -54,7 +56,7 @@ class Pipeline<T>(
         filters.add(filter)
     }
 
-    fun start(context: PipelineContext) {
+    fun start() {
         if (running)
             return
 
@@ -65,27 +67,27 @@ class Pipeline<T>(
             sendInterval
         )
 
-        context.scheduler.schedule(sendTaskName, sendInterval) {
+        scheduler.schedule(sendTaskName, sendInterval) {
             val timeLimit = sendInterval.minusSeconds(5L)
             sendData(timeLimit)
         }
 
-        dataSender.start(context)
-        dataSources.forEach { it.start(context) }
-        filters.forEach { it.start(context) }
+        dataSender.start()
+        dataSources.forEach { it.start() }
+        filters.forEach { it.start() }
 
         running = true
     }
 
-    fun stop(context: PipelineContext) {
+    fun stop() {
         if (!running)
             return
 
         log.info("Stopping pipeline '{}' with {} data source(s)", name, dataSources.size)
-        filters.forEach { it.stop(context) }
-        dataSources.forEach { it.stop(context) }
-        dataSender.stop(context)
-        context.scheduler.cancel(sendTaskName)
+        filters.forEach { it.stop() }
+        dataSources.forEach { it.stop() }
+        dataSender.stop()
+        scheduler.cancel(sendTaskName)
 
         running = false
     }

@@ -1,9 +1,9 @@
 package dev.drzepka.smarthome.logger.sensors.pipeline
 
 import dev.drzepka.smarthome.common.util.Logger
+import dev.drzepka.smarthome.logger.core.network.SensorsRequestExecutor
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataSender
 import dev.drzepka.smarthome.logger.core.queue.QueueItem
-import dev.drzepka.smarthome.logger.sensors.core.SensorsRequestExecutor
 import dev.drzepka.smarthome.logger.sensors.model.LocalMeasurement
 import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsRequest
 import java.time.Duration

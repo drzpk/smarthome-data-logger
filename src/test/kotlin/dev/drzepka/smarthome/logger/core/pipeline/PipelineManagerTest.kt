@@ -11,12 +11,10 @@ import java.time.Duration
 @ExtendWith(MockitoExtension::class)
 internal class PipelineManagerTest {
 
-    private val scheduler = mock<TaskScheduler>()
-
     @Test
     fun `should start pipeline immediately when added`() {
         val pipeline = TestPipeline()
-        val manager = PipelineManager(scheduler)
+        val manager = PipelineManager()
 
         manager.addPipeline(pipeline)
 
@@ -27,7 +25,7 @@ internal class PipelineManagerTest {
     @Test
     fun `should stop all pipelines when manager is stopped`() {
         val pipeline = TestPipeline()
-        val manager = PipelineManager(scheduler)
+        val manager = PipelineManager()
 
         manager.addPipeline(pipeline)
         manager.stop()
@@ -37,15 +35,15 @@ internal class PipelineManagerTest {
     }
 
 
-    private class TestPipeline : Pipeline<String>("test", Duration.ofSeconds(1), mock()) {
+    private class TestPipeline : Pipeline<String>("test", Duration.ofSeconds(1), mock(), mock<TaskScheduler>()) {
         var startCallCount = 0
         var stopCallCount = 0
 
-        override fun start(context: PipelineContext) {
+        override fun start() {
             startCallCount++
         }
 
-        override fun stop(context: PipelineContext) {
+        override fun stop() {
             stopCallCount++
         }
     }

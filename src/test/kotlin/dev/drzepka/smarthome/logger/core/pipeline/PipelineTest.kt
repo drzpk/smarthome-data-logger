@@ -1,5 +1,6 @@
 package dev.drzepka.smarthome.logger.core.pipeline
 
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.executor.ConnectionException
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataFilter
@@ -25,8 +26,7 @@ import java.time.Instant
 internal class PipelineTest {
 
     private val dataSender = mock<DataSender<String>>()
-    //private val scheduler = mock<TaskScheduler>()
-    private val context = mock<PipelineContext>(defaultAnswer = ReturnsDeepStubs())
+    private val scheduler = mock<TaskScheduler>(defaultAnswer = ReturnsDeepStubs())
     private val sendInterval = Duration.ofSeconds(1)
 
     private val taskCaptor = argumentCaptor<suspend () -> Unit>()
@@ -34,19 +34,14 @@ internal class PipelineTest {
 
     private val queue = spy<LoggerQueue<String>>(LoggerQueue(5, Duration.ofHours(1)))
 
-//    private val context: PipelineContext
-//        get() = object : PipelineContext {
-//            override val scheduler = this@PipelineTest.scheduler
-//        }
-
     @Test
     fun `should add data source to pipeline, set its receiver, and forward start-stop events`() {
         val pipeline = getPipeline()
         val source = TestDataSource()
 
         pipeline.addDataSource(source)
-        pipeline.start(context)
-        pipeline.stop(context)
+        pipeline.start()
+        pipeline.stop()
 
         then(source.startCallCount).isEqualTo(1)
         then(source.stopCallCount).isEqualTo(1)
@@ -56,7 +51,7 @@ internal class PipelineTest {
     @Test
     fun `should prevent from adding data source when pipeline is running`() {
         val pipeline = getPipeline()
-        pipeline.start(context)
+        pipeline.start()
 
         assertThatIllegalStateException()
             .isThrownBy { pipeline.addDataSource(TestDataSource()) }
@@ -69,8 +64,8 @@ internal class PipelineTest {
         val filter = TestFilter()
 
         pipeline.addFilter(filter)
-        pipeline.start(context)
-        pipeline.stop(context)
+        pipeline.start()
+        pipeline.stop()
 
         then(filter.startCallCount).isEqualTo(1)
         then(filter.stopCallCount).isEqualTo(1)
@@ -79,7 +74,7 @@ internal class PipelineTest {
     @Test
     fun `should prevent from adding filter when pipeline is running`() {
         val pipeline = getPipeline()
-        pipeline.start(context)
+        pipeline.start()
 
         val filter = object : DataFilter<String> {
             override fun filter(data: String): String? = null
@@ -96,12 +91,12 @@ internal class PipelineTest {
         val source = TestDataSource()
 
         pipeline.addDataSource(source)
-        pipeline.start(context)
+        pipeline.start()
 
         source.generateData("string1")
         source.generateData("string2")
 
-        verify(context.scheduler).schedule(any(), any(), taskCaptor.capture())
+        verify(scheduler).schedule(any(), any(), taskCaptor.capture())
         taskCaptor.firstValue.invoke()
 
         verify(dataSender).send(queueItemsCaptor.capture())
@@ -122,13 +117,13 @@ internal class PipelineTest {
 
         pipeline.addDataSource(source)
         pipeline.addFilter(filter)
-        pipeline.start(context)
+        pipeline.start()
 
         source.generateData("pass1")
         source.generateData("drop")
         source.generateData("pass2")
 
-        verify(context.scheduler).schedule(any(), any(), taskCaptor.capture())
+        verify(scheduler).schedule(any(), any(), taskCaptor.capture())
         taskCaptor.firstValue.invoke()
 
         verify(dataSender).send(queueItemsCaptor.capture())
@@ -156,9 +151,9 @@ internal class PipelineTest {
         }
 
         val pipeline = getPipeline()
-        pipeline.start(context)
+        pipeline.start()
 
-        verify(context.scheduler).schedule(any(), any(), taskCaptor.capture())
+        verify(scheduler).schedule(any(), any(), taskCaptor.capture())
         taskCaptor.firstValue.invoke()
 
         then(processingNo).isEqualTo(1)
@@ -175,9 +170,9 @@ internal class PipelineTest {
         whenever(queue.size()).thenReturn(1)
 
         val pipeline = getPipeline()
-        pipeline.start(context)
+        pipeline.start()
 
-        verify(context.scheduler).schedule(any(), any(), taskCaptor.capture())
+        verify(scheduler).schedule(any(), any(), taskCaptor.capture())
         taskCaptor.firstValue.invoke()
 
         verify(queue, times(0)).removeBatch(same(batch))
@@ -194,27 +189,27 @@ internal class PipelineTest {
         whenever(queue.size()).thenReturn(1)
 
         val pipeline = getPipeline()
-        pipeline.start(context)
+        pipeline.start()
 
-        verify(context.scheduler).schedule(any(), any(), taskCaptor.capture())
+        verify(scheduler).schedule(any(), any(), taskCaptor.capture())
         taskCaptor.firstValue.invoke()
 
         verify(queue).removeBatch(same(batch))
     }
 
-    private fun getPipeline(): Pipeline<String> = Pipeline("TestPipeline", sendInterval, dataSender, queue)
+    private fun getPipeline(): Pipeline<String> = Pipeline("TestPipeline", sendInterval, dataSender, scheduler, queue)
 
     private class TestDataSource : DataSource<String, String>("TestSource", NoopDecoder()) {
         var startCallCount = 0
         var stopCallCount = 0
 
-        override fun start(context: PipelineContext) {
-            super.start(context)
+        override fun start() {
+            super.start()
             startCallCount++
         }
 
-        override fun stop(context: PipelineContext) {
-            super.stop(context)
+        override fun stop() {
+            super.stop()
             stopCallCount++
         }
 
@@ -227,13 +222,13 @@ internal class PipelineTest {
         var startCallCount = 0
         var stopCallCount = 0
 
-        override fun start(context: PipelineContext) {
-            super.start(context)
+        override fun start() {
+            super.start()
             startCallCount++
         }
 
-        override fun stop(context: PipelineContext) {
-            super.stop(context)
+        override fun stop() {
+            super.stop()
             stopCallCount++
         }
 

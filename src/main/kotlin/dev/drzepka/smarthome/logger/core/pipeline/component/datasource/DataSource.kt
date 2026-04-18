@@ -1,7 +1,6 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
 import dev.drzepka.smarthome.common.util.Logger
-import dev.drzepka.smarthome.logger.core.pipeline.PipelineContext
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 
 abstract class DataSource<I, O>(val name: String, private val decoder: DataDecoder<I, O>) {
@@ -9,9 +8,9 @@ abstract class DataSource<I, O>(val name: String, private val decoder: DataDecod
 
     private val log by Logger()
 
-    open fun start(context: PipelineContext) = Unit
+    open fun start() = Unit
 
-    open fun stop(context: PipelineContext) = Unit
+    open fun stop() = Unit
 
     protected open fun forwardData(data: Collection<I>) {
         if (receiver != null)

@@ -1,8 +1,8 @@
 package dev.drzepka.smarthome.logger.sensors.pipeline.collector
 
+import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
 import dev.drzepka.smarthome.logger.sensors.model.LocalMeasurement
-import dev.drzepka.smarthome.logger.sensors.model.MacAddress
 import dev.drzepka.smarthome.logger.sensors.model.server.Measurement
 import java.math.BigDecimal
 import java.math.RoundingMode
