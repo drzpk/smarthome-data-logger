@@ -4,11 +4,11 @@ import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataListener
 
-open class ListenerDataSource<I, O>(
+open class ListenerDataSource<I>(
     name: String,
     private val listener: DataListener<I>,
-    decoder: DataDecoder<I, O>
-) : DataSource<I, O>(name, decoder) {
+    decoder: DataDecoder<I>
+) : DataSource<I>(name, decoder) {
 
     private val log by Logger()
     private var started = false

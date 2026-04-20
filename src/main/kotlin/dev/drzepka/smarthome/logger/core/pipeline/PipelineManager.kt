@@ -4,11 +4,11 @@ import dev.drzepka.smarthome.common.util.Logger
 
 class PipelineManager {
     private val log by Logger()
-    private val pipelines = mutableSetOf<Pipeline<*>>()
+    private val pipelines = mutableSetOf<Pipeline>()
 
     private var running = true
 
-    fun addPipeline(pipeline: Pipeline<*>) {
+    fun addPipeline(pipeline: Pipeline) {
         log.info("Adding pipeline '{}'", pipeline.name)
         val added = pipelines.add(pipeline)
 
@@ -26,7 +26,7 @@ class PipelineManager {
         running = false
     }
 
-    private fun startPipeline(pipeline: Pipeline<*>) {
+    private fun startPipeline(pipeline: Pipeline) {
         try {
             log.debug("Starting pipeline {}", pipeline.name)
             pipeline.start()
@@ -35,7 +35,7 @@ class PipelineManager {
         }
     }
 
-    private fun stopPipeline(pipeline: Pipeline<*>) {
+    private fun stopPipeline(pipeline: Pipeline) {
         try {
             log.debug("Stopping pipeline {}", pipeline.name)
             pipeline.stop()

@@ -1,10 +1,11 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
 import dev.drzepka.smarthome.common.util.Logger
+import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 
-abstract class DataSource<I, O>(val name: String, private val decoder: DataDecoder<I, O>) {
-    var receiver: DataReceiver<O>? = null
+abstract class DataSource<I>(val name: String, private val decoder: DataDecoder<I>) {
+    var receiver: DataReceiver? = null
 
     private val log by Logger()
 
@@ -19,7 +20,7 @@ abstract class DataSource<I, O>(val name: String, private val decoder: DataDecod
             log.warn("DataSourceListener is null")
     }
 
-    private fun decodeData(data: Collection<I>): Collection<O> = data.flatMap { item ->
+    private fun decodeData(data: Collection<I>): Collection<Measurement> = data.flatMap { item ->
         try {
             decoder.decode(item)
         } catch (e: Exception) {

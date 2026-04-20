@@ -2,10 +2,10 @@ package dev.drzepka.smarthome.logger.core.network
 
 import dev.drzepka.smarthome.common.util.Mockable
 import dev.drzepka.smarthome.logger.core.executor.RequestExecutor
-import dev.drzepka.smarthome.logger.core.model.server.Device
+import dev.drzepka.smarthome.logger.core.model.Device
+import dev.drzepka.smarthome.logger.core.model.measurement.CreateMeasurementsRequest
+import dev.drzepka.smarthome.logger.core.model.measurement.CreateMeasurementsResponse
 import dev.drzepka.smarthome.logger.sensors.model.config.SensorsConfig
-import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsRequest
-import dev.drzepka.smarthome.logger.sensors.model.server.CreateMeasurementsResponse
 
 @Mockable
 class SensorsRequestExecutor(sensorsConfig: SensorsConfig, timeoutSeconds: Int) :

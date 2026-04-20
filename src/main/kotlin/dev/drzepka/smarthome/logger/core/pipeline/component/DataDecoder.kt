@@ -1,11 +1,13 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component
 
-interface DataDecoder<I, O> {
-    fun decode(item: I): Collection<O>
+import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
+
+interface DataDecoder<I> {
+    fun decode(item: I): Collection<Measurement>
 
     companion object {
-        fun <T> noop() = object : DataDecoder<T, T> {
-            override fun decode(item: T): Collection<T> = listOf(item)
+        fun <T> noop() = object : DataDecoder<Measurement> {
+            override fun decode(item: Measurement): Collection<Measurement> = listOf(item)
         }
     }
 }

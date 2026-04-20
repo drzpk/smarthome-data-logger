@@ -5,7 +5,7 @@ import dev.drzepka.smarthome.logger.core.frame.modbus.IntModbusRegister
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
 import dev.drzepka.smarthome.logger.pv.client.SocketClient
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -51,9 +51,10 @@ internal class AforeDataCollectorTest {
 
         val result = collector.getData().toList()
 
-        Assertions.assertEquals(1, result.size)
-        Assertions.assertEquals(10, result[0][register1])
-        Assertions.assertEquals(20, result[0][register2])
+        assertEquals(1, result.size)
+        assertEquals(123456789L, result[0].sn)
+        assertEquals(10, result[0].registerData[register1])
+        assertEquals(20, result[0].registerData[register2])
     }
 
     @Test
@@ -62,7 +63,7 @@ internal class AforeDataCollectorTest {
 
         val result = collector.getData().toList()
 
-        result.forEach { Assertions.assertEquals(emptyMap<Any, Any>(), it) }
+        result.forEach { assertEquals(emptyMap<Any, Any>(), it.registerData) }
     }
 
     @Test
@@ -70,6 +71,6 @@ internal class AforeDataCollectorTest {
         whenever(client.send(any<Frame<ModbusRegisterData>>())).thenThrow(RuntimeException("connection failed"))
 
         val ex = assertThrows<IllegalStateException> { collector.getData() }
-        Assertions.assertEquals("Error while sending frame 1/2", ex.message)
+        assertEquals("Error while sending frame 1/2", ex.message)
     }
 }

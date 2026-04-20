@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component
 
-interface DataFilter<T> {
-    fun start() {}
-    fun stop() {}
-    fun filter(data: T): T?
+import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
+
+interface DataFilter {
+    fun filter(data: Measurement): Measurement?
 }

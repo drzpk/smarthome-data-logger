@@ -1,6 +1,7 @@
 package dev.drzepka.smarthome.logger.pv.pipeline.decoder
 
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
+import dev.drzepka.smarthome.logger.pv.model.AforeData
 import dev.drzepka.smarthome.logger.pv.vendor.afore.AforeT6Registers
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -13,7 +14,7 @@ internal class AforeT6DecoderTest {
 
     @Test
     fun `should decode all registers into PvMeasurement`() {
-        val result = AforeT6Decoder.decode(fullRegisterData()).toList()
+        val result = AforeT6Decoder.decode(AforeData(0L, fullRegisterData())).toList()
 
         assertEquals(1, result.size)
         val m = result[0]
@@ -54,14 +55,14 @@ internal class AforeT6DecoderTest {
     fun `should return empty collection when registers are missing`() {
         val incomplete: ModbusRegisterData = mapOf(r.gridVoltageA to 230.0f)
 
-        val result = AforeT6Decoder.decode(incomplete)
+        val result = AforeT6Decoder.decode(AforeData(0L, incomplete))
 
         assertTrue(result.isEmpty())
     }
 
     @Test
     fun `should return empty collection when input is empty`() {
-        val result = AforeT6Decoder.decode(emptyMap())
+        val result = AforeT6Decoder.decode(AforeData(0L, emptyMap()))
 
         assertTrue(result.isEmpty())
     }

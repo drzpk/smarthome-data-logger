@@ -1,11 +1,14 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
+import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
+import dev.drzepka.smarthome.logger.core.model.measurement.TemperatureMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataListener
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
+import java.math.BigDecimal
 
 @ExtendWith(MockitoExtension::class)
 internal class ListenerDataSourceTest {
@@ -33,9 +36,9 @@ internal class ListenerDataSourceTest {
         val listener = TestListener()
         val dataSource = ListenerDataSource("test", listener, TestDataDecoder())
 
-        val receivedData = mutableListOf<Int>()
-        dataSource.receiver = object : DataReceiver<Int> {
-            override fun onDataAvailable(items: Collection<Int>) {
+        val receivedData = mutableListOf<Measurement>()
+        dataSource.receiver = object : DataReceiver {
+            override fun onDataAvailable(items: Collection<Measurement>) {
                 receivedData.addAll(items)
             }
         }
@@ -43,7 +46,8 @@ internal class ListenerDataSourceTest {
         dataSource.start()
         listener.generateTestData()
 
-        then(receivedData).containsExactly(123)
+        then(receivedData).hasSize(1)
+        then(receivedData.first().mac).isEqualTo("123")
     }
 
     private class TestListener : DataListener<String>() {
@@ -63,7 +67,8 @@ internal class ListenerDataSourceTest {
         }
     }
 
-    private class TestDataDecoder : DataDecoder<String, Int> {
-        override fun decode(item: String): Collection<Int> = listOf(item.toInt())
+    private class TestDataDecoder : DataDecoder<String> {
+        override fun decode(item: String): Collection<Measurement> =
+            listOf(TemperatureMeasurement(mac = item, temperature = BigDecimal(item.toInt())))
     }
 }

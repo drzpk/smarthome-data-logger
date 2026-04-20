@@ -1,12 +1,10 @@
-package dev.drzepka.smarthome.logger.pv.model
+package dev.drzepka.smarthome.logger.core.model.measurement
 
-import dev.drzepka.smarthome.logger.core.model.server.Measurement
-import dev.drzepka.smarthome.logger.core.model.server.MeasurementType
 import java.math.BigDecimal
 import java.time.Instant
 
 data class PvMeasurement(
-    override val deviceId: Int,
+    override val mac: String,
     val time: Instant?,
     val totalPower: Int,
     val energyToday: BigDecimal,

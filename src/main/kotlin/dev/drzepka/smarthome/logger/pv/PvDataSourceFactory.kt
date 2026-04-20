@@ -1,13 +1,10 @@
 package dev.drzepka.smarthome.logger.pv
 
 import dev.drzepka.smarthome.common.TaskScheduler
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
-import dev.drzepka.smarthome.logger.core.device.DeviceManager
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataSource
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.FixedRateDataSource
 import dev.drzepka.smarthome.logger.pv.client.SocketClient
-import dev.drzepka.smarthome.logger.pv.model.PvMeasurement
 import dev.drzepka.smarthome.logger.pv.pipeline.collector.AforeDataCollector
 import dev.drzepka.smarthome.logger.pv.pipeline.decoder.AforeT6Decoder
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.AforeConfig
@@ -15,13 +12,12 @@ import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfigFact
 import java.time.Duration
 
 class PvDataSourceFactory(
-    private val deviceManager: DeviceManager,
     private val configPropertySource: ConfigPropertySource,
     private val scheduler: TaskScheduler
 ) {
 
-    fun createDataSources(): List<DataSource<*, PvMeasurement>> {
-        val dataSources = mutableListOf<DataSource<*, PvMeasurement>>()
+    fun createDataSources(): List<DataSource<*>> {
+        val dataSources = mutableListOf<DataSource<*>>()
 
         val sourceNames = SourceConfigFactory.getAvailableNames(configPropertySource)
         for (it in sourceNames) {
@@ -35,7 +31,7 @@ class PvDataSourceFactory(
         return dataSources
     }
 
-    private fun createAforeT6DataSource(config: AforeConfig): DataSource<*, PvMeasurement> {
+    private fun createAforeT6DataSource(config: AforeConfig): DataSource<*> {
         val parts = config.url.split(":")
         val socketClient = SocketClient(parts[0], parts[1].toInt(), Duration.ofSeconds(3))
         // todo: slave address
@@ -48,9 +44,5 @@ class PvDataSourceFactory(
             collector = aforeCollector,
             decoder = AforeT6Decoder
         )
-    }
-
-    companion object {
-        private val log by Logger()
     }
 }

@@ -2,8 +2,8 @@ package dev.drzepka.smarthome.logger.core.device
 
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.config.OfflineDeviceProperties
+import dev.drzepka.smarthome.logger.core.model.Device
 import dev.drzepka.smarthome.logger.core.model.MacAddress
-import dev.drzepka.smarthome.logger.core.model.server.Device
 
 class OfflineDeviceManager(properties: OfflineDeviceProperties) : DeviceManager {
     private val log by Logger()

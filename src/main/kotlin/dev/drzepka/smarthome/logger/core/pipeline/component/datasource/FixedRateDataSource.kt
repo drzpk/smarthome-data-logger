@@ -6,13 +6,13 @@ import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import java.time.Duration
 
-open class FixedRateDataSource<I, O>(
+open class FixedRateDataSource<I>(
     name: String,
     private val interval: Duration,
     private val scheduler: TaskScheduler,
     private val collector: DataCollector<I>,
-    decoder: DataDecoder<I, O>
-) : DataSource<I, O>(name, decoder) {
+    decoder: DataDecoder<I>
+) : DataSource<I>(name, decoder) {
 
     private val log by Logger()
     private val taskName = "dataSource_$name"
@@ -23,12 +23,10 @@ open class FixedRateDataSource<I, O>(
             val data = collector.getData()
             forwardData(data)
         }
-        collector.start()
     }
 
     override fun stop() {
         log.info("Stopping fixed data source '{}'", name)
-        collector.stop()
         scheduler.cancel(taskName)
     }
 }

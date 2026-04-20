@@ -2,19 +2,18 @@ package dev.drzepka.smarthome.logger.pv.pipeline.decoder
 
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegister
-import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
+import dev.drzepka.smarthome.logger.core.model.measurement.Phase
+import dev.drzepka.smarthome.logger.core.model.measurement.Pv
+import dev.drzepka.smarthome.logger.core.model.measurement.PvMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
-import dev.drzepka.smarthome.logger.pv.model.Phase
-import dev.drzepka.smarthome.logger.pv.model.Pv
-import dev.drzepka.smarthome.logger.pv.model.PvMeasurement
+import dev.drzepka.smarthome.logger.pv.model.AforeData
 import dev.drzepka.smarthome.logger.pv.vendor.afore.AforeT6Registers
 import java.time.Instant
 
-object AforeT6Decoder : DataDecoder<ModbusRegisterData, PvMeasurement> {
-
+object AforeT6Decoder : DataDecoder<AforeData> {
     private val log by Logger()
 
-    override fun decode(item: ModbusRegisterData): Collection<PvMeasurement> {
+    override fun decode(item: AforeData): Collection<PvMeasurement> {
         val r = AforeT6Registers
         val required = listOf(
             r.gridVoltageA, r.gridCurrentA, r.gridFrequencyA, r.activePowerA,
@@ -25,17 +24,17 @@ object AforeT6Decoder : DataDecoder<ModbusRegisterData, PvMeasurement> {
             r.pv2Voltage, r.pv2Current, r.pv2Power, r.pv2EnergyToday
         )
 
-        val missing = required.filter { it !in item }
+        val missing = required.filter { it !in item.registerData }
         if (missing.isNotEmpty()) {
             missing.forEach { log.warn("Missing register data for: {}", it.name) }
             return emptyList()
         }
 
         @Suppress("UNCHECKED_CAST")
-        fun <T : Any> get(register: ModbusRegister<T>): T = item[register] as T
+        fun <T : Any> get(register: ModbusRegister<T>): T = item.registerData[register] as T
 
         val measurement = PvMeasurement(
-            deviceId = 0,
+            mac = item.sn.toString(),
             time = Instant.now(),
             totalPower = get(r.totalActivePower),
             energyToday = get(r.energyToday),

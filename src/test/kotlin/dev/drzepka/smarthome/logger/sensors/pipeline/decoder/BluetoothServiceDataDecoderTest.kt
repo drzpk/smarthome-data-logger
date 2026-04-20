@@ -1,6 +1,7 @@
 package dev.drzepka.smarthome.logger.sensors.pipeline.decoder
 
 import dev.drzepka.smarthome.logger.core.model.MacAddress
+import dev.drzepka.smarthome.logger.core.model.measurement.TemperatureMeasurement
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
@@ -19,7 +20,7 @@ internal class BluetoothServiceDataDecoderTest {
         val measurements = BluetoothServiceDataDecoder.decode(data)
         then(measurements).hasSize(1)
 
-        val measurement = measurements.first().measurement
+        val measurement = measurements.first() as TemperatureMeasurement
         then(measurement.temperature).isEqualTo(BigDecimal("29.56"))
         then(measurement.humidity).isEqualTo(BigDecimal("62.42"))
         then(measurement.batteryVoltage).isEqualTo(BigDecimal("3.033"))
@@ -37,7 +38,7 @@ internal class BluetoothServiceDataDecoderTest {
         val measurements = BluetoothServiceDataDecoder.decode(data)
         then(measurements).hasSize(1)
 
-        val measurement = measurements.first().measurement
+        val measurement = measurements.first() as TemperatureMeasurement
         then(measurement.temperature).isEqualTo(BigDecimal("-19.74"))
     }
 }

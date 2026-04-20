@@ -9,7 +9,6 @@ import dev.drzepka.smarthome.logger.core.pipeline.Pipeline
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
 import dev.drzepka.smarthome.logger.sensors.model.config.SensorsConfig
 import dev.drzepka.smarthome.logger.sensors.pipeline.SensorsDataSender
-import dev.drzepka.smarthome.logger.sensors.pipeline.filter.DeviceFilter
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import java.time.Duration
@@ -39,8 +38,8 @@ class SensorsModule(
         val deviceManager = get<DeviceManager>()
         deviceManager.initialize()
 
+        // todo: drop measurements which aren't present in the devices list
         val sensorsPipeline = Pipeline("sensors", Duration.ofSeconds(30), get<SensorsDataSender>(), get())
-        sensorsPipeline.addFilter(DeviceFilter(deviceManager))
 
         val dataSources = DataSourceFactory(deviceManager, testMode, scheduler).createDataSources()
         dataSources.forEach { sensorsPipeline.addDataSource(it) }

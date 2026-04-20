@@ -4,6 +4,7 @@ import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.common.util.Mockable
 import dev.drzepka.smarthome.logger.core.executor.ConnectionException
+import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataFilter
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataSender
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataReceiver
@@ -17,29 +18,29 @@ import java.time.Duration
 
 @Mockable
 @Suppress("LeakingThis")
-class Pipeline<T>(
+class Pipeline(
     val name: String,
     private val sendInterval: Duration,
-    private val dataSender: DataSender<T>,
+    private val dataSender: DataSender,
     private val scheduler: TaskScheduler,
-    private val queue: LoggerQueue<T> = LoggerQueue(30, Duration.ofHours(48))
+    private val queue: LoggerQueue = LoggerQueue(30, Duration.ofHours(48))
 ) {
     private val log by Logger()
-    private val filters = mutableListOf<DataFilter<T>>()
-    private val dataSources = mutableListOf<DataSource<*, *>>()
+    private val filters = mutableListOf<DataFilter>()
+    private val dataSources = mutableListOf<DataSource<*>>()
     private val sendTaskName = "dataSend_$name"
     private val sendDataTracker = ExceptionTracker("SendData")
 
     private var running = false
 
-    fun addDataSource(dataSource: DataSource<*, T>) {
+    fun addDataSource(dataSource: DataSource<*>) {
         checkNotRunning()
 
         if (dataSources.contains(dataSource))
             throw IllegalArgumentException("Data source already added")
 
-        dataSource.receiver = object : DataReceiver<T> {
-            override fun onDataAvailable(items: Collection<T>) {
+        dataSource.receiver = object : DataReceiver {
+            override fun onDataAvailable(items: Collection<Measurement>) {
                 this@Pipeline.onDataAvailable(dataSource, items)
             }
         }
@@ -47,7 +48,7 @@ class Pipeline<T>(
         dataSources.add(dataSource)
     }
 
-    fun addFilter(filter: DataFilter<T>) {
+    fun addFilter(filter: DataFilter) {
         checkNotRunning()
 
         if (filters.contains(filter))
@@ -74,7 +75,6 @@ class Pipeline<T>(
 
         dataSender.start()
         dataSources.forEach { it.start() }
-        filters.forEach { it.start() }
 
         running = true
     }
@@ -84,7 +84,6 @@ class Pipeline<T>(
             return
 
         log.info("Stopping pipeline '{}' with {} data source(s)", name, dataSources.size)
-        filters.forEach { it.stop() }
         dataSources.forEach { it.stop() }
         dataSender.stop()
         scheduler.cancel(sendTaskName)
@@ -92,7 +91,7 @@ class Pipeline<T>(
         running = false
     }
 
-    private fun onDataAvailable(dataSource: DataSource<*, T>, items: Collection<T>) {
+    private fun onDataAvailable(dataSource: DataSource<*>, items: Collection<Measurement>) {
         if (!running) {
             log.warn("Received data from source '{}' when it should be stopped", dataSource.name)
             return
@@ -103,8 +102,8 @@ class Pipeline<T>(
             .forEach { queue.enqueue(it) }
     }
 
-    private fun filterItem(item: T): T? {
-        var filteredItem: T? = item
+    private fun filterItem(item: Measurement): Measurement? {
+        var filteredItem: Measurement? = item
         for (filter in filters) {
             if (filteredItem == null)
                 break
@@ -151,7 +150,7 @@ class Pipeline<T>(
         }
     }
 
-    private suspend fun sendBatch(batch: QueueBatch<T>) {
+    private suspend fun sendBatch(batch: QueueBatch) {
         val result = runCatching {
             dataSender.send(batch.items)
         }

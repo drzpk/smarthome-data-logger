@@ -1,8 +1,8 @@
 package dev.drzepka.smarthome.logger.core.device
 
 import dev.drzepka.smarthome.common.util.Mockable
+import dev.drzepka.smarthome.logger.core.model.Device
 import dev.drzepka.smarthome.logger.core.model.MacAddress
-import dev.drzepka.smarthome.logger.core.model.server.Device
 
 @Mockable
 interface DeviceManager {

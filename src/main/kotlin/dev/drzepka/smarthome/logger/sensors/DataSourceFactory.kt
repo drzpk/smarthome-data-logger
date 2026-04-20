@@ -5,13 +5,13 @@ import com.diozero.api.I2CDeviceInterface
 import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.device.DeviceManager
+import dev.drzepka.smarthome.logger.core.model.Device
 import dev.drzepka.smarthome.logger.core.model.MacAddress
-import dev.drzepka.smarthome.logger.core.model.server.Device
+import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataSource
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.FixedRateDataSource
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.ListenerDataSource
-import dev.drzepka.smarthome.logger.sensors.model.LocalMeasurement
 import dev.drzepka.smarthome.logger.sensors.pipeline.collector.MockSHTC3DataCollector
 import dev.drzepka.smarthome.logger.sensors.pipeline.collector.SHTC3DataCollector
 import dev.drzepka.smarthome.logger.sensors.pipeline.decoder.BluetoothServiceDataDecoder
@@ -28,9 +28,9 @@ class DataSourceFactory(
 ) {
     private val log by Logger()
 
-    fun createDataSources(): List<DataSource<*, LocalMeasurement>> {
+    fun createDataSources(): List<DataSource<*>> {
         val devicesByType = deviceManager.getDevices().values.groupBy { it.type }
-        val dataSources = mutableListOf<DataSource<*, LocalMeasurement>>()
+        val dataSources = mutableListOf<DataSource<*>>()
 
         for (type in devicesByType.keys) {
             log.info("Creating data source for type: {}", type)
@@ -51,12 +51,12 @@ class DataSourceFactory(
         return dataSources
     }
 
-    private fun createXiaomiThermometerDataSource(): DataSource<*, LocalMeasurement> {
+    private fun createXiaomiThermometerDataSource(): DataSource<*> {
         val listener = if (useMocks) MockBluetoothListener() else BluetoothCtlBluetoothListener()
         return ListenerDataSource("bluetooth", listener, BluetoothServiceDataDecoder)
     }
 
-    private fun createSHTC3DataSource(devicesByType: Map<String, List<Device>>): DataSource<*, LocalMeasurement>? {
+    private fun createSHTC3DataSource(devicesByType: Map<String, List<Device>>): DataSource<*>? {
         val shtc3Devices = devicesByType[DEVICE_TYPE_SHTC3]!!
         if (shtc3Devices.count() > 1) {
             log.error("Unable to create device of type $DEVICE_TYPE_SHTC3. Only one device of this type can be connected at the time.")
@@ -70,7 +70,7 @@ class DataSourceFactory(
             val device = createSHTC3i2cDevice(mac.value) ?: return null
             FixedRateDataSource(name, interval, scheduler, SHTC3DataCollector(device, mac), SHTC3Decoder)
         } else {
-            FixedRateDataSource(name, interval, scheduler, MockSHTC3DataCollector, DataDecoder.noop())
+            FixedRateDataSource(name, interval, scheduler, MockSHTC3DataCollector, DataDecoder.noop<Measurement>())
         }
     }
 

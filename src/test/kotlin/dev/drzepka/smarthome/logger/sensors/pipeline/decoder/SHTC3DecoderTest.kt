@@ -1,6 +1,7 @@
 package dev.drzepka.smarthome.logger.sensors.pipeline.decoder
 
 import dev.drzepka.smarthome.logger.core.model.MacAddress
+import dev.drzepka.smarthome.logger.core.model.measurement.TemperatureMeasurement
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -14,9 +15,10 @@ internal class SHTC3DecoderTest {
         val decoded = SHTC3Decoder.decode(Pair(mac, raw))
 
         then(decoded).hasSize(1)
-        then(decoded.first().measurement.temperature).isEqualTo(BigDecimal("23.7"))
-        then(decoded.first().measurement.humidity).isEqualTo(BigDecimal("44"))
-        then(decoded.first().mac).isSameAs(mac)
+        val m = decoded.first() as TemperatureMeasurement
+        then(m.temperature).isEqualTo(BigDecimal("23.7"))
+        then(m.humidity).isEqualTo(BigDecimal("44"))
+        then(m.mac).isEqualTo(mac.value)
     }
 
     @Test
@@ -35,6 +37,6 @@ internal class SHTC3DecoderTest {
         val decoded = SHTC3Decoder.decode(Pair(mac, raw))
 
         then(decoded).hasSize(1)
-        then(decoded.first().measurement.humidity).isZero
+        then((decoded.first() as TemperatureMeasurement).humidity).isZero
     }
 }

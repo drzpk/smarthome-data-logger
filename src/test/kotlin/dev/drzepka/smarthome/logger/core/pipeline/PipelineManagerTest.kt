@@ -35,7 +35,7 @@ internal class PipelineManagerTest {
     }
 
 
-    private class TestPipeline : Pipeline<String>("test", Duration.ofSeconds(1), mock(), mock<TaskScheduler>()) {
+    private class TestPipeline : Pipeline("test", Duration.ofSeconds(1), mock(), mock<TaskScheduler>()) {
         var startCallCount = 0
         var stopCallCount = 0
 

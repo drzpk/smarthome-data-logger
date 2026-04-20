@@ -1,13 +1,12 @@
 package dev.drzepka.smarthome.logger.sensors.pipeline.decoder
 
+import dev.drzepka.smarthome.logger.core.model.measurement.TemperatureMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
-import dev.drzepka.smarthome.logger.sensors.model.LocalMeasurement
 import dev.drzepka.smarthome.logger.sensors.model.bluetooth.BluetoothServiceData
-import dev.drzepka.smarthome.logger.sensors.model.server.Measurement
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-object BluetoothServiceDataDecoder : DataDecoder<BluetoothServiceData, LocalMeasurement> {
+object BluetoothServiceDataDecoder : DataDecoder<BluetoothServiceData> {
 
     private val HUNDRED = BigDecimal("100")
     private val THOUSAND = BigDecimal("1000")
@@ -16,31 +15,29 @@ object BluetoothServiceDataDecoder : DataDecoder<BluetoothServiceData, LocalMeas
      * Decodes bluetooth data to measurement using
      * [custom format](https://github.com/pvvx/ATC_MiThermometer#custom-format-all-data-little-endian)
      */
-    override fun decode(item: BluetoothServiceData): Collection<LocalMeasurement> {
+    override fun decode(item: BluetoothServiceData): Collection<dev.drzepka.smarthome.logger.core.model.measurement.Measurement> {
         val bin = item.data
-        val measurement = Measurement().apply {
+        val measurement = TemperatureMeasurement(
+            mac = item.mac.value,
             temperature = intLittleEndianToInt(
                 bin,
                 6,
                 2
-            ).toBigDecimal().divide(HUNDRED, 2, RoundingMode.UNNECESSARY)
-
+            ).toBigDecimal().divide(HUNDRED, 2, RoundingMode.UNNECESSARY),
             humidity = uintLittleEndianToInt(
                 bin,
                 8,
                 2
-            ).toBigDecimal().divide(HUNDRED, 2, RoundingMode.UNNECESSARY)
-
+            ).toBigDecimal().divide(HUNDRED, 2, RoundingMode.UNNECESSARY),
             batteryVoltage = uintLittleEndianToInt(
                 bin,
                 10,
                 2
-            ).toBigDecimal().divide(THOUSAND, 3, RoundingMode.UNNECESSARY)
-
+            ).toBigDecimal().divide(THOUSAND, 3, RoundingMode.UNNECESSARY),
             batteryLevel = bin[12].toInt()
-        }
+        )
 
-        return listOf(LocalMeasurement(item.mac, measurement))
+        return listOf(measurement)
     }
 
     @Suppress("SameParameterValue")

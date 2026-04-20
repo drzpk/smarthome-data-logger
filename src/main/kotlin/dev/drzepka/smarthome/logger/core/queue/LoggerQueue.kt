@@ -2,18 +2,19 @@ package dev.drzepka.smarthome.logger.core.queue
 
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.common.util.Mockable
+import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentLinkedQueue
 
 @Mockable
-class LoggerQueue<T>(private val maxBatchSize: Int, private val maxAge: Duration, private val maxSize: Int = 15_000) {
+class LoggerQueue(private val maxBatchSize: Int, private val maxAge: Duration, private val maxSize: Int = 15_000) {
     private val log by Logger()
-    private val queue = ConcurrentLinkedQueue<QueueItem<T>>()
+    private val queue = ConcurrentLinkedQueue<QueueItem>()
 
     fun size(): Int = queue.size
 
-    fun enqueue(item: T) {
+    fun enqueue(item: Measurement) {
         if (queue.size >= maxSize) {
             queue.last()
             val oldest = queue.poll()
@@ -27,9 +28,9 @@ class LoggerQueue<T>(private val maxBatchSize: Int, private val maxAge: Duration
         queue.add(QueueItem(item))
     }
 
-    fun getBatch(): QueueBatch<T> {
+    fun getBatch(): QueueBatch {
         val batchSize = minOf(queue.size, maxBatchSize)
-        val batchItems = LinkedHashSet<QueueItem<T>>(batchSize)
+        val batchItems = LinkedHashSet<QueueItem>(batchSize)
 
         val iterator = queue.iterator()
         while (batchItems.size < batchSize && iterator.hasNext()) {
@@ -47,9 +48,9 @@ class LoggerQueue<T>(private val maxBatchSize: Int, private val maxAge: Duration
         return QueueBatch(batchItems)
     }
 
-    fun removeBatch(batch: QueueBatch<T>) {
-        queue.removeAll(batch.items)
+    fun removeBatch(batch: QueueBatch) {
+        queue.removeAll(batch.items.toSet())
     }
 
-    private fun isExpired(item: QueueItem<T>): Boolean = item.createdAt.plus(maxAge).isBefore(Instant.now())
+    private fun isExpired(item: QueueItem): Boolean = item.createdAt.plus(maxAge).isBefore(Instant.now())
 }
