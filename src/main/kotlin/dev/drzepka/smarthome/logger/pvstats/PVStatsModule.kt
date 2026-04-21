@@ -4,8 +4,8 @@ import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.DataLoggerModule
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
+import dev.drzepka.smarthome.logger.pv.source.afore.AforeConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.PvStatsConfig
-import dev.drzepka.smarthome.logger.pvstats.model.config.source.AforeConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfigFactory
 import java.time.Duration
 import kotlin.system.exitProcess

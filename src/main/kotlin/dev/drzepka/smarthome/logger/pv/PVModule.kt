@@ -7,7 +7,6 @@ import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.device.DeviceManager
 import dev.drzepka.smarthome.logger.core.pipeline.Pipeline
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
-import dev.drzepka.smarthome.logger.pv.model.config.PVProperties
 import dev.drzepka.smarthome.logger.test.TestSender
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get

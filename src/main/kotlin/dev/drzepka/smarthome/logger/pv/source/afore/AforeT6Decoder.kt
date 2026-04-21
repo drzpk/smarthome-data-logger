@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.logger.pv.pipeline.decoder
+package dev.drzepka.smarthome.logger.pv.source.afore
 
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegister
@@ -6,8 +6,6 @@ import dev.drzepka.smarthome.logger.core.model.measurement.Phase
 import dev.drzepka.smarthome.logger.core.model.measurement.Pv
 import dev.drzepka.smarthome.logger.core.model.measurement.PvMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
-import dev.drzepka.smarthome.logger.pv.model.AforeData
-import dev.drzepka.smarthome.logger.pv.vendor.afore.AforeT6Registers
 import java.time.Instant
 
 object AforeT6Decoder : DataDecoder<AforeData> {

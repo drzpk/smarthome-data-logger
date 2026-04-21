@@ -1,11 +1,10 @@
-package dev.drzepka.smarthome.logger.pv.vendor
+package dev.drzepka.smarthome.logger.pv.solarman
 
 import dev.drzepka.smarthome.logger.core.frame.Frame
 import dev.drzepka.smarthome.logger.core.util.HexUtils
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-// todo: finish tests
 internal class SolarmanV5FrameTest {
 
     @Test
@@ -13,7 +12,7 @@ internal class SolarmanV5FrameTest {
         val expected =
             HexUtils.hexToByteArray("a5 17 00 10 45 38 00 08 77 6f d1 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 03 00 00 00 0a c5 cd 05 15")
         val frame = SolarmanV5Frame(56, 3513743112L, TestFrame())
-        assertArrayEquals(expected, frame.encodeRequest())
+        Assertions.assertArrayEquals(expected, frame.encodeRequest())
     }
 
     @Test
@@ -25,8 +24,8 @@ internal class SolarmanV5FrameTest {
         val frame = SolarmanV5Frame(56, 3513743112L, TestFrame())
         val decoded = frame.decodeResponse(rawResponse)
 
-        assertTrue(decoded is ByteArray)
-        assertArrayEquals(HexUtils.hexToByteArray("01 04 04 00 00 27 0d 21 b1"), decoded as ByteArray)
+        Assertions.assertTrue(decoded is ByteArray)
+        Assertions.assertArrayEquals(HexUtils.hexToByteArray("01 04 04 00 00 27 0d 21 b1"), decoded as ByteArray)
     }
 
     @Test
@@ -35,8 +34,8 @@ internal class SolarmanV5FrameTest {
         val raw = HexUtils.hexToByteArray("a5 17 00 10 15 38 58 08 77 6f d1 02 01 fa dc 3a 32 9b 09 00 00 80 5b 21 34 01 04 04 00 00 27 0d 21 b1 b4 15")
         val frame = SolarmanV5Frame(56, 3513743112L, TestFrame())
 
-        val ex = assertThrows(SolarmanV5FrameDecodingException::class.java) { frame.decodeResponse(raw) }
-        assertTrue(ex.reason.contains("checksum"))
+        val ex = Assertions.assertThrows(SolarmanV5FrameDecodingException::class.java) { frame.decodeResponse(raw) }
+        Assertions.assertTrue(ex.reason.contains("checksum"))
     }
 
     @Test
@@ -45,8 +44,8 @@ internal class SolarmanV5FrameTest {
         val raw = HexUtils.hexToByteArray("a5 17 00 10 15 39 58 08 77 6f d1 02 01 fa dc 3a 32 9b 09 00 00 80 5b 21 34 01 04 04 00 00 27 0d 21 b1 b3 15")
         val frame = SolarmanV5Frame(56, 3513743112L, TestFrame())
 
-        val ex = assertThrows(SolarmanV5FrameDecodingException::class.java) { frame.decodeResponse(raw) }
-        assertTrue(ex.reason.contains("request echo"))
+        val ex = Assertions.assertThrows(SolarmanV5FrameDecodingException::class.java) { frame.decodeResponse(raw) }
+        Assertions.assertTrue(ex.reason.contains("request echo"))
     }
 
     @Test
@@ -55,8 +54,8 @@ internal class SolarmanV5FrameTest {
         val raw = HexUtils.hexToByteArray("a5 17 00 10 15 38 58 09 77 6f d1 02 01 fa dc 3a 32 9b 09 00 00 80 5b 21 34 01 04 04 00 00 27 0d 21 b1 b3 15")
         val frame = SolarmanV5Frame(56, 3513743112L, TestFrame())
 
-        val ex = assertThrows(SolarmanV5FrameDecodingException::class.java) { frame.decodeResponse(raw) }
-        assertTrue(ex.reason.contains("logger serial"))
+        val ex = Assertions.assertThrows(SolarmanV5FrameDecodingException::class.java) { frame.decodeResponse(raw) }
+        Assertions.assertTrue(ex.reason.contains("logger serial"))
     }
 
     @Test
@@ -66,8 +65,8 @@ internal class SolarmanV5FrameTest {
         val raw = HexUtils.hexToByteArray("a5 18 00 10 15 38 58 08 77 6f d1 02 01 fa dc 3a 32 9b 09 00 00 80 5b 21 34 01 04 04 00 00 27 0d 21 b1 b3 15")
         val frame = SolarmanV5Frame(56, 3513743112L, TestFrame())
 
-        val ex = assertThrows(SolarmanV5FrameDecodingException::class.java) { frame.decodeResponse(raw) }
-        assertTrue(ex.reason.contains("length"))
+        val ex = Assertions.assertThrows(SolarmanV5FrameDecodingException::class.java) { frame.decodeResponse(raw) }
+        Assertions.assertTrue(ex.reason.contains("length"))
     }
 }
 

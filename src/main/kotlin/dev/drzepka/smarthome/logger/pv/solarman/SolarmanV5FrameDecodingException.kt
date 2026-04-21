@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.logger.pv.vendor
+package dev.drzepka.smarthome.logger.pv.solarman
 
 import dev.drzepka.smarthome.logger.core.util.HexUtils
 

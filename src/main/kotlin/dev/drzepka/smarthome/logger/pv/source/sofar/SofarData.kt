@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.logger.pv.vendor.sofar
+package dev.drzepka.smarthome.logger.pv.source.sofar
 
 import java.time.Instant
 

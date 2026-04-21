@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.logger.pv.pipeline.collector
+package dev.drzepka.smarthome.logger.pv.source.afore
 
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.frame.Frame
@@ -7,9 +7,7 @@ import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusFrame
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
 import dev.drzepka.smarthome.logger.pv.client.SocketClient
-import dev.drzepka.smarthome.logger.pv.model.AforeData
-import dev.drzepka.smarthome.logger.pv.vendor.SolarmanV5Frame
-import dev.drzepka.smarthome.logger.pv.vendor.afore.AforeT6Registers
+import dev.drzepka.smarthome.logger.pv.solarman.SolarmanV5Frame
 
 class AforeDataCollector(
     private val client: SocketClient,

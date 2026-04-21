@@ -5,9 +5,9 @@ import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataSource
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.FixedRateDataSource
 import dev.drzepka.smarthome.logger.pv.client.SocketClient
-import dev.drzepka.smarthome.logger.pv.pipeline.collector.AforeDataCollector
-import dev.drzepka.smarthome.logger.pv.pipeline.decoder.AforeT6Decoder
-import dev.drzepka.smarthome.logger.pvstats.model.config.source.AforeConfig
+import dev.drzepka.smarthome.logger.pv.source.afore.AforeConfig
+import dev.drzepka.smarthome.logger.pv.source.afore.AforeDataCollector
+import dev.drzepka.smarthome.logger.pv.source.afore.AforeT6Decoder
 import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfigFactory
 import java.time.Duration
 

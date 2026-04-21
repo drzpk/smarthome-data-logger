@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.logger.pv.model.config
+package dev.drzepka.smarthome.logger.pv
 
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.config.getEnum

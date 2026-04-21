@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.logger.pv.model
+package dev.drzepka.smarthome.logger.pv.source.afore
 
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
 

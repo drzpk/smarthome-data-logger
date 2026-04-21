@@ -1,9 +1,10 @@
-package dev.drzepka.smarthome.logger.pv.vendor.sofar
+package dev.drzepka.smarthome.logger.pv.source.sofar
 
 import dev.drzepka.smarthome.common.pvstats.model.vendor.sofar.SofarDataImpl
 import dev.drzepka.smarthome.logger.core.frame.Frame
 import java.time.Instant
 import java.util.*
+import kotlin.math.floor
 
 class SofarFrame : Frame<SofarData> {
 
@@ -11,18 +12,18 @@ class SofarFrame : Frame<SofarData> {
 
     override fun decodeResponse(content: ByteArray): SofarData = SofarData(
         date = Instant.now(),
-        energyToday = kotlin.math.floor(content.getShort(TODAY_PRODUCTION, 1) * 10).toInt(),
+        energyToday = floor(content.getShort(TODAY_PRODUCTION, 1) * 10).toInt(),
         energyTotal = content.getInt(TOTAL_PRODUCTION) * 1000,
-        currentPower = kotlin.math.floor(content.getShort(ACTIVE_POWER, 1) * 10).toInt(),
+        currentPower = floor(content.getShort(ACTIVE_POWER, 1) * 10).toInt(),
         frequency = content.getShort(GRID_FREQUENCY, 100),
         generationHoursToday = content.getShort(TODAY_GENERATION_TIME, 60),
         generationHoursTotal = content.getInt(TOTAL_GENERATION_TIME),
         pv1Voltage = content.getShort(PV1_VOLTAGE, 10),
         pv1Current = content.getShort(PV1_CURRENT, 100),
-        pv1Power = kotlin.math.floor(content.getShort(PV1_POWER, 1) * 10).toInt(),
+        pv1Power = floor(content.getShort(PV1_POWER, 1) * 10).toInt(),
         pv2Voltage = content.getShort(PV2_VOLTAGE, 10),
         pv2Current = content.getShort(PV2_CURRENT, 100),
-        pv2Power = kotlin.math.floor(content.getShort(PV2_POWER, 1) * 10).toInt(),
+        pv2Power = floor(content.getShort(PV2_POWER, 1) * 10).toInt(),
         phaseAVoltage = content.getShort(PHASE_A_VOLTAGE, 10),
         phaseACurrent = content.getShort(PHASE_A_CURRENT, 100),
         phaseBVoltage = content.getShort(PHASE_B_VOLTAGE, 10),

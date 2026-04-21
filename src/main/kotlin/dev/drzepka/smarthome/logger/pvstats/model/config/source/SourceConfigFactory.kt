@@ -1,6 +1,7 @@
 package dev.drzepka.smarthome.logger.pvstats.model.config.source
 
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
+import dev.drzepka.smarthome.logger.pv.source.afore.AforeConfig
 import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
 
 object SourceConfigFactory {

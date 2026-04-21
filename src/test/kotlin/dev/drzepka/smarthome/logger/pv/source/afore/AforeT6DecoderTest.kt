@@ -1,10 +1,7 @@
-package dev.drzepka.smarthome.logger.pv.pipeline.decoder
+package dev.drzepka.smarthome.logger.pv.source.afore
 
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
-import dev.drzepka.smarthome.logger.pv.model.AforeData
-import dev.drzepka.smarthome.logger.pv.vendor.afore.AforeT6Registers
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
@@ -16,39 +13,39 @@ internal class AforeT6DecoderTest {
     fun `should decode all registers into PvMeasurement`() {
         val result = AforeT6Decoder.decode(AforeData(0L, fullRegisterData())).toList()
 
-        assertEquals(1, result.size)
+        Assertions.assertEquals(1, result.size)
         val m = result[0]
 
-        assertEquals(6930, m.totalPower)
-        assertEquals(BigDecimal(100), m.energyToday)
-        assertEquals(BigDecimal(10000), m.energyTotal)
+        Assertions.assertEquals(6930, m.totalPower)
+        Assertions.assertEquals(BigDecimal(100), m.energyToday)
+        Assertions.assertEquals(BigDecimal(10000), m.energyTotal)
 
-        assertEquals(230.0f, m.phaseA.voltage)
-        assertEquals(10.0f, m.phaseA.current)
-        assertEquals(50.0f, m.phaseA.frequency)
-        assertEquals(2300, m.phaseA.power)
+        Assertions.assertEquals(230.0f, m.phaseA.voltage)
+        Assertions.assertEquals(10.0f, m.phaseA.current)
+        Assertions.assertEquals(50.0f, m.phaseA.frequency)
+        Assertions.assertEquals(2300, m.phaseA.power)
 
-        assertEquals(231.0f, m.phaseB.voltage)
-        assertEquals(10.1f, m.phaseB.current)
-        assertEquals(50.1f, m.phaseB.frequency)
-        assertEquals(2310, m.phaseB.power)
+        Assertions.assertEquals(231.0f, m.phaseB.voltage)
+        Assertions.assertEquals(10.1f, m.phaseB.current)
+        Assertions.assertEquals(50.1f, m.phaseB.frequency)
+        Assertions.assertEquals(2310, m.phaseB.power)
 
-        assertEquals(232.0f, m.phaseC.voltage)
-        assertEquals(10.2f, m.phaseC.current)
-        assertEquals(50.2f, m.phaseC.frequency)
-        assertEquals(2320, m.phaseC.power)
+        Assertions.assertEquals(232.0f, m.phaseC.voltage)
+        Assertions.assertEquals(10.2f, m.phaseC.current)
+        Assertions.assertEquals(50.2f, m.phaseC.frequency)
+        Assertions.assertEquals(2320, m.phaseC.power)
 
         val pv1 = m.pv1!!
-        assertEquals(350.0f, pv1.voltage)
-        assertEquals(5.0f, pv1.current)
-        assertEquals(1750, pv1.power)
-        assertEquals(BigDecimal(50), pv1.energyToday)
+        Assertions.assertEquals(350.0f, pv1.voltage)
+        Assertions.assertEquals(5.0f, pv1.current)
+        Assertions.assertEquals(1750, pv1.power)
+        Assertions.assertEquals(BigDecimal(50), pv1.energyToday)
 
         val pv2 = m.pv2!!
-        assertEquals(360.0f, pv2.voltage)
-        assertEquals(5.1f, pv2.current)
-        assertEquals(1836, pv2.power)
-        assertEquals(BigDecimal(60), pv2.energyToday)
+        Assertions.assertEquals(360.0f, pv2.voltage)
+        Assertions.assertEquals(5.1f, pv2.current)
+        Assertions.assertEquals(1836, pv2.power)
+        Assertions.assertEquals(BigDecimal(60), pv2.energyToday)
     }
 
     @Test
@@ -57,14 +54,14 @@ internal class AforeT6DecoderTest {
 
         val result = AforeT6Decoder.decode(AforeData(0L, incomplete))
 
-        assertTrue(result.isEmpty())
+        Assertions.assertTrue(result.isEmpty())
     }
 
     @Test
     fun `should return empty collection when input is empty`() {
         val result = AforeT6Decoder.decode(AforeData(0L, emptyMap()))
 
-        assertTrue(result.isEmpty())
+        Assertions.assertTrue(result.isEmpty())
     }
 
     private fun fullRegisterData(): ModbusRegisterData = mapOf(

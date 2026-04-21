@@ -1,6 +1,6 @@
-package dev.drzepka.smarthome.logger.pv.vendor.sofar
+package dev.drzepka.smarthome.logger.pv.source.sofar
 
-import org.assertj.core.api.BDDAssertions.then
+import org.assertj.core.api.BDDAssertions
 import org.assertj.core.data.Offset
 import org.junit.jupiter.api.Test
 
@@ -10,24 +10,24 @@ class SofarFrameTest {
     fun `should deserialize data`() {
         val frame = SofarFrame().decodeResponse(getRegistersData())
 
-        then(frame.pv1Voltage).isEqualTo(404.0f, Offset.offset(0.1f))
-        then(frame.pv1Current).isEqualTo(6.22f, Offset.offset(0.01f))
-        then(frame.pv2Voltage).isEqualTo(79.7f, Offset.offset(0.1f))
-        then(frame.pv2Current).isEqualTo(0.01f, Offset.offset(0.01f))
-        then(frame.pv1Power).isEqualTo(2510)
-        then(frame.pv2Power).isEqualTo(0)
+        BDDAssertions.then(frame.pv1Voltage).isEqualTo(404.0f, Offset.offset(0.1f))
+        BDDAssertions.then(frame.pv1Current).isEqualTo(6.22f, Offset.offset(0.01f))
+        BDDAssertions.then(frame.pv2Voltage).isEqualTo(79.7f, Offset.offset(0.1f))
+        BDDAssertions.then(frame.pv2Current).isEqualTo(0.01f, Offset.offset(0.01f))
+        BDDAssertions.then(frame.pv1Power).isEqualTo(2510)
+        BDDAssertions.then(frame.pv2Power).isEqualTo(0)
 
-        then(frame.phaseAVoltage).isEqualTo(243.1f, Offset.offset(0.1f))
-        then(frame.phaseACurrent).isEqualTo(3.50f, Offset.offset(0.01f))
-        then(frame.phaseBVoltage).isEqualTo(241.0f, Offset.offset(0.1f))
-        then(frame.phaseBCurrent).isEqualTo(3.51f, Offset.offset(0.01f))
-        then(frame.phaseCVoltage).isEqualTo(238.2f, Offset.offset(0.1f))
-        then(frame.phaseCCurrent).isEqualTo(3.49f, Offset.offset(0.01f))
+        BDDAssertions.then(frame.phaseAVoltage).isEqualTo(243.1f, Offset.offset(0.1f))
+        BDDAssertions.then(frame.phaseACurrent).isEqualTo(3.50f, Offset.offset(0.01f))
+        BDDAssertions.then(frame.phaseBVoltage).isEqualTo(241.0f, Offset.offset(0.1f))
+        BDDAssertions.then(frame.phaseBCurrent).isEqualTo(3.51f, Offset.offset(0.01f))
+        BDDAssertions.then(frame.phaseCVoltage).isEqualTo(238.2f, Offset.offset(0.1f))
+        BDDAssertions.then(frame.phaseCCurrent).isEqualTo(3.49f, Offset.offset(0.01f))
 
-        then(frame.energyTotal).isEqualTo(3209000)
-        then(frame.generationHoursTotal).isEqualTo(3155)
-        then(frame.energyToday).isEqualTo(10350)
-        then(frame.generationHoursToday).isEqualTo(369 / 60f, Offset.offset(0.1f))
+        BDDAssertions.then(frame.energyTotal).isEqualTo(3209000)
+        BDDAssertions.then(frame.generationHoursTotal).isEqualTo(3155)
+        BDDAssertions.then(frame.energyToday).isEqualTo(10350)
+        BDDAssertions.then(frame.generationHoursToday).isEqualTo(369 / 60f, Offset.offset(0.1f))
     }
 
     private fun getRegistersData(): ByteArray {
