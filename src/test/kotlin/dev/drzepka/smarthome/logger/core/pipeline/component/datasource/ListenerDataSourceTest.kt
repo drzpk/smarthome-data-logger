@@ -1,5 +1,6 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.model.measurement.TemperatureMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
@@ -8,6 +9,7 @@ import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.mock
 import java.math.BigDecimal
 
 @ExtendWith(MockitoExtension::class)
@@ -17,7 +19,7 @@ internal class ListenerDataSourceTest {
     fun `should start data source`() {
         val listener = TestListener()
         val dataSource = ListenerDataSource("test", listener, TestDataDecoder())
-        dataSource.start()
+        dataSource.start(mock<TaskScheduler>())
 
         then(listener.startCalled).isTrue
     }
@@ -43,7 +45,7 @@ internal class ListenerDataSourceTest {
             }
         }
 
-        dataSource.start()
+        dataSource.start(mock<TaskScheduler>())
         listener.generateTestData()
 
         then(receivedData).hasSize(1)

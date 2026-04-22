@@ -21,8 +21,6 @@ import java.time.Duration
 class Pipeline(
     val name: String,
     private val sendInterval: Duration,
-    private val dataSender: DataSender,
-    private val scheduler: TaskScheduler,
     private val queue: LoggerQueue = LoggerQueue(30, Duration.ofHours(48))
 ) {
     private val log by Logger()
@@ -31,6 +29,8 @@ class Pipeline(
     private val sendTaskName = "dataSend_$name"
     private val sendDataTracker = ExceptionTracker("SendData")
 
+    private lateinit var scheduler: TaskScheduler
+    private lateinit var dataSender: DataSender
     private var running = false
 
     fun addDataSource(dataSource: DataSource<*>) {
@@ -57,9 +57,12 @@ class Pipeline(
         filters.add(filter)
     }
 
-    fun start() {
+    fun start(scheduler: TaskScheduler, dataSender: DataSender) {
         if (running)
             return
+
+        this.scheduler = scheduler
+        this.dataSender = dataSender
 
         log.info(
             "Starting pipeline '{}' with {} data source(s). Send interval is {}",
@@ -73,8 +76,7 @@ class Pipeline(
             sendData(timeLimit)
         }
 
-        dataSender.start()
-        dataSources.forEach { it.start() }
+        dataSources.forEach { it.start(scheduler) }
 
         running = true
     }
@@ -85,8 +87,6 @@ class Pipeline(
 
         log.info("Stopping pipeline '{}' with {} data source(s)", name, dataSources.size)
         dataSources.forEach { it.stop() }
-        dataSender.stop()
-        scheduler.cancel(sendTaskName)
 
         running = false
     }

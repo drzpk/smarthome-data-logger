@@ -1,5 +1,6 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
@@ -9,7 +10,7 @@ abstract class DataSource<I>(val name: String, private val decoder: DataDecoder<
 
     private val log by Logger()
 
-    open fun start() = Unit
+    open fun start(scheduler: TaskScheduler) = Unit
 
     open fun stop() = Unit
 

@@ -1,8 +1,13 @@
 package dev.drzepka.smarthome.logger.core.pipeline
 
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
+import dev.drzepka.smarthome.logger.core.pipeline.component.DataSender
 
-class PipelineManager {
+class PipelineManager(
+    private val scheduler: TaskScheduler,
+    private val dataSender: DataSender
+) {
     private val log by Logger()
     private val pipelines = mutableSetOf<Pipeline>()
 
@@ -29,7 +34,7 @@ class PipelineManager {
     private fun startPipeline(pipeline: Pipeline) {
         try {
             log.debug("Starting pipeline {}", pipeline.name)
-            pipeline.start()
+            pipeline.start(scheduler, dataSender)
         } catch (e: Exception) {
             log.error("Error while starting pipeline {}", pipeline.name, e)
         }

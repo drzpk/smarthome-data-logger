@@ -2,7 +2,6 @@ package dev.drzepka.smarthome.logger.sensors
 
 import com.diozero.api.I2CDevice
 import com.diozero.api.I2CDeviceInterface
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.device.DeviceManager
 import dev.drzepka.smarthome.logger.core.model.Device
@@ -23,8 +22,7 @@ import java.util.regex.Pattern
 
 class DataSourceFactory(
     private val deviceManager: DeviceManager,
-    private val useMocks: Boolean,
-    private val scheduler: TaskScheduler
+    private val useMocks: Boolean
 ) {
     private val log by Logger()
 
@@ -68,9 +66,9 @@ class DataSourceFactory(
         return if (!useMocks) {
             val mac = MacAddress(shtc3Devices.first().mac)
             val device = createSHTC3i2cDevice(mac.value) ?: return null
-            FixedRateDataSource(name, interval, scheduler, SHTC3DataCollector(device, mac), SHTC3Decoder)
+            FixedRateDataSource(name, interval, SHTC3DataCollector(device, mac), SHTC3Decoder)
         } else {
-            FixedRateDataSource(name, interval, scheduler, MockSHTC3DataCollector, DataDecoder.noop<Measurement>())
+            FixedRateDataSource(name, interval, MockSHTC3DataCollector, DataDecoder.noop<Measurement>())
         }
     }
 

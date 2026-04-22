@@ -1,5 +1,6 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
+import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataListener
@@ -22,7 +23,7 @@ open class ListenerDataSource<I>(
         }
     }
 
-    override fun start() {
+    override fun start(scheduler: TaskScheduler) {
         log.info("Starting listener data source '{}'", name)
         listener.start()
         started = true

@@ -1,6 +1,7 @@
 package dev.drzepka.smarthome.logger.core.pipeline
 
 import dev.drzepka.smarthome.common.TaskScheduler
+import dev.drzepka.smarthome.logger.core.pipeline.component.DataSender
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -14,7 +15,7 @@ internal class PipelineManagerTest {
     @Test
     fun `should start pipeline immediately when added`() {
         val pipeline = TestPipeline()
-        val manager = PipelineManager()
+        val manager = createManager()
 
         manager.addPipeline(pipeline)
 
@@ -25,7 +26,7 @@ internal class PipelineManagerTest {
     @Test
     fun `should stop all pipelines when manager is stopped`() {
         val pipeline = TestPipeline()
-        val manager = PipelineManager()
+        val manager = createManager()
 
         manager.addPipeline(pipeline)
         manager.stop()
@@ -34,12 +35,13 @@ internal class PipelineManagerTest {
         then(pipeline.stopCallCount).isEqualTo(1)
     }
 
+    private fun createManager() = PipelineManager(mock<TaskScheduler>(), mock<DataSender>())
 
-    private class TestPipeline : Pipeline("test", Duration.ofSeconds(1), mock(), mock<TaskScheduler>()) {
+    private class TestPipeline : Pipeline("test", Duration.ofSeconds(1)) {
         var startCallCount = 0
         var stopCallCount = 0
 
-        override fun start() {
+        override fun start(scheduler: TaskScheduler, dataSender: DataSender) {
             startCallCount++
         }
 

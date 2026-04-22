@@ -26,9 +26,9 @@ internal class FixedRateDataSourceTest {
     @Test
     fun `should start data source`() {
         val interval = Duration.ofSeconds(10L)
-        val dataSource = FixedRateDataSource("test", interval, scheduler, collector, TestDecoder())
+        val dataSource = FixedRateDataSource("test", interval, collector, TestDecoder())
 
-        dataSource.start()
+        dataSource.start(scheduler)
 
         verify(scheduler).schedule(argThat { endsWith("test") }, eq(interval), any())
     }
@@ -36,8 +36,9 @@ internal class FixedRateDataSourceTest {
     @Test
     fun `should stop data source`() {
         val interval = Duration.ofSeconds(10L)
-        val dataSource = FixedRateDataSource("test", interval, scheduler, collector, TestDecoder())
+        val dataSource = FixedRateDataSource("test", interval, collector, TestDecoder())
 
+        dataSource.start(scheduler)
         dataSource.stop()
 
         verify(scheduler).cancel(argThat { endsWith("test") })
@@ -45,8 +46,8 @@ internal class FixedRateDataSourceTest {
 
     @Test
     fun `should decode and forward data`() = runBlockingTest {
-        val dataSource = FixedRateDataSource("test", Duration.ofSeconds(1), scheduler, collector, TestDecoder())
-        dataSource.start()
+        val dataSource = FixedRateDataSource("test", Duration.ofSeconds(1), collector, TestDecoder())
+        dataSource.start(scheduler)
 
         var receiverCalled = false
         dataSource.receiver = object : DataReceiver {

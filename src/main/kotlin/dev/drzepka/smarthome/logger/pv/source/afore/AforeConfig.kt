@@ -1,10 +1,11 @@
 package dev.drzepka.smarthome.logger.pv.source.afore
 
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
-import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
-import dev.drzepka.smarthome.logger.pvstats.model.config.source.SourceConfig
 
-class AforeConfig(name: String, source: ConfigPropertySource) : SourceConfig(SourceType.AFORE_T6, name, source) {
-    val url: String = loadProperty("url")
-    val sn: Long? = loadOptionalProperty("sn")
+class AforeConfig(val name: String, source: ConfigPropertySource) {
+    val host: String = source.getString("host")
+    val port: Int = source.getInt("port", 8899)
+    val sn: Long = source.getLong("sn")
+    val slaveAddress: Int = source.getInt("slaveAddress", 1)
+    val measurementInterval: Int? = source.getOptionalInt("measurementInterval")
 }

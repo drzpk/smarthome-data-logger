@@ -35,7 +35,7 @@ internal class PipelineTest {
     private val taskCaptor = argumentCaptor<suspend () -> Unit>()
     private val queueItemsCaptor = argumentCaptor<Collection<QueueItem>>()
 
-    private val queue = spy<LoggerQueue>(LoggerQueue(5, Duration.ofHours(1)))
+    private val queue = spy(LoggerQueue(5, Duration.ofHours(1)))
 
     @Test
     fun `should add data source to pipeline, set its receiver, and forward start-stop events`() {
@@ -43,7 +43,7 @@ internal class PipelineTest {
         val source = TestDataSource()
 
         pipeline.addDataSource(source)
-        pipeline.start()
+        pipeline.start(scheduler, dataSender)
         pipeline.stop()
 
         then(source.startCallCount).isEqualTo(1)
@@ -54,7 +54,9 @@ internal class PipelineTest {
     @Test
     fun `should prevent from adding data source when pipeline is running`() {
         val pipeline = getPipeline()
-        pipeline.start()
+        pipeline.start(scheduler, dataSender)
+
+        pipeline.start(scheduler, dataSender)
 
         assertThatIllegalStateException()
             .isThrownBy { pipeline.addDataSource(TestDataSource()) }
@@ -65,14 +67,14 @@ internal class PipelineTest {
     fun `should add filter to pipeline`() {
         val pipeline = getPipeline()
         pipeline.addFilter(TestFilter())
-        pipeline.start()
+        pipeline.start(scheduler, dataSender)
         pipeline.stop()
     }
 
     @Test
     fun `should prevent from adding filter when pipeline is running`() {
         val pipeline = getPipeline()
-        pipeline.start()
+        pipeline.start(scheduler, dataSender)
 
         assertThatIllegalStateException()
             .isThrownBy { pipeline.addFilter(object : DataFilter {
@@ -87,7 +89,7 @@ internal class PipelineTest {
         val source = TestDataSource()
 
         pipeline.addDataSource(source)
-        pipeline.start()
+        pipeline.start(scheduler, dataSender)
 
         val m1 = createMeasurement("1")
         val m2 = createMeasurement("2")
@@ -116,7 +118,7 @@ internal class PipelineTest {
 
         pipeline.addDataSource(source)
         pipeline.addFilter(filter)
-        pipeline.start()
+        pipeline.start(scheduler, dataSender)
 
         val pass1 = createMeasurement("pass1")
         val pass2 = createMeasurement("pass2")
@@ -152,7 +154,7 @@ internal class PipelineTest {
         }
 
         val pipeline = getPipeline()
-        pipeline.start()
+        pipeline.start(scheduler, dataSender)
 
         verify(scheduler).schedule(any(), any(), taskCaptor.capture())
         taskCaptor.firstValue.invoke()
@@ -171,7 +173,7 @@ internal class PipelineTest {
         whenever(queue.size()).thenReturn(1)
 
         val pipeline = getPipeline()
-        pipeline.start()
+        pipeline.start(scheduler, dataSender)
 
         verify(scheduler).schedule(any(), any(), taskCaptor.capture())
         taskCaptor.firstValue.invoke()
@@ -190,7 +192,7 @@ internal class PipelineTest {
         whenever(queue.size()).thenReturn(1)
 
         val pipeline = getPipeline()
-        pipeline.start()
+        pipeline.start(scheduler, dataSender)
 
         verify(scheduler).schedule(any(), any(), taskCaptor.capture())
         taskCaptor.firstValue.invoke()
@@ -198,7 +200,7 @@ internal class PipelineTest {
         verify(queue).removeBatch(same(batch))
     }
 
-    private fun getPipeline(): Pipeline = Pipeline("TestPipeline", sendInterval, dataSender, scheduler, queue)
+    private fun getPipeline(): Pipeline = Pipeline("TestPipeline", sendInterval, queue)
 
     private fun createMeasurement(mac: String = "test"): Measurement =
         TemperatureMeasurement(mac = mac, temperature = BigDecimal.ZERO)
@@ -207,8 +209,8 @@ internal class PipelineTest {
         var startCallCount = 0
         var stopCallCount = 0
 
-        override fun start() {
-            super.start()
+        override fun start(scheduler: TaskScheduler) {
+            super.start(scheduler)
             startCallCount++
         }
 
