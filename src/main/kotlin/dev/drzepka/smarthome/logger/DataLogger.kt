@@ -1,6 +1,7 @@
 package dev.drzepka.smarthome.logger
 
 import dev.drzepka.smarthome.common.util.Logger
+import dev.drzepka.smarthome.logger.core.coreModule
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
 import dev.drzepka.smarthome.logger.pv.pvModule
 import dev.drzepka.smarthome.logger.pvstats.pvStatsModule
@@ -19,7 +20,7 @@ object DataLogger {
     @JvmStatic
     fun main(args: Array<String>) = runBlocking {
         val koin = startKoin {
-            modules(appModule, pvStatsModule, sensorsModule, pvModule)
+            modules(coreModule, pvStatsModule, sensorsModule, pvModule)
         }.koin
 
         val allModules = koin.getAll<DataLoggerModule>()

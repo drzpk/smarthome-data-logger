@@ -24,6 +24,7 @@ object SourceConfigFactory {
             SourceType.SOFAR_WIFI -> SofarWifiConfig(sourceName, source)
             SourceType.SOFAR_MODBUS -> SofarModbusConfig(sourceName, source)
             SourceType.AFORE_T6 -> AforeConfig(sourceName, source)
+            else -> {}
         } as SourceConfig // temporary casting, this module will be absorbed by PV
     }
 }

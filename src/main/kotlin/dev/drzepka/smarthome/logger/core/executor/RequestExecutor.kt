@@ -10,8 +10,9 @@ import io.ktor.http.*
 import java.net.ConnectException
 import java.nio.charset.StandardCharsets
 import java.util.*
+import kotlin.time.Duration
 
-abstract class RequestExecutor(val baseUrl: String, private val timeoutSeconds: Int = 3) {
+abstract class RequestExecutor(val baseUrl: String, private val timeout: Duration) {
     protected val client = HttpClient(Apache) {
         install(JsonFeature) {
             serializer = JacksonSerializer {
@@ -20,8 +21,8 @@ abstract class RequestExecutor(val baseUrl: String, private val timeoutSeconds: 
         }
 
         engine {
-            connectTimeout = timeoutSeconds * 1000
-            socketTimeout = timeoutSeconds * 1000
+            connectTimeout = timeout.inWholeMilliseconds.toInt()
+            socketTimeout = timeout.inWholeMilliseconds.toInt()
         }
     }
 

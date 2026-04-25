@@ -3,7 +3,7 @@ package dev.drzepka.smarthome.logger.pv.source.afore
 import dev.drzepka.smarthome.logger.core.frame.Frame
 import dev.drzepka.smarthome.logger.core.frame.modbus.IntModbusRegister
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
-import dev.drzepka.smarthome.logger.pv.client.SocketClient
+import dev.drzepka.smarthome.logger.core.transport.SocketClient
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach

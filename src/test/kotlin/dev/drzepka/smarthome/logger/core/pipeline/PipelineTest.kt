@@ -6,8 +6,8 @@ import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.model.measurement.TemperatureMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataFilter
-import dev.drzepka.smarthome.logger.core.pipeline.component.DataSender
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataSource
+import dev.drzepka.smarthome.logger.core.pipeline.component.sender.DataSender
 import dev.drzepka.smarthome.logger.core.queue.LoggerQueue
 import dev.drzepka.smarthome.logger.core.queue.QueueBatch
 import dev.drzepka.smarthome.logger.core.queue.QueueItem

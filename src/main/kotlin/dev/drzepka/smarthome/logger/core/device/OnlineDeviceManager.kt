@@ -4,7 +4,7 @@ import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.model.Device
 import dev.drzepka.smarthome.logger.core.model.MacAddress
-import dev.drzepka.smarthome.logger.core.network.SensorsRequestExecutor
+import dev.drzepka.smarthome.logger.core.transport.ServerRequestExecutor
 import dev.drzepka.smarthome.logger.core.util.ExceptionTracker
 import dev.drzepka.smarthome.logger.core.util.suspendRunCatching
 import kotlinx.coroutines.delay
@@ -12,7 +12,7 @@ import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 
 class OnlineDeviceManager(
-    private val executor: SensorsRequestExecutor,
+    private val executor: ServerRequestExecutor,
     private val scheduler: TaskScheduler
 ) : DeviceManager {
     private val log by Logger()

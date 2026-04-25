@@ -4,7 +4,7 @@ import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.pipeline.Pipeline
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineFactory
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.FixedRateDataSource
-import dev.drzepka.smarthome.logger.pv.client.SocketClient
+import dev.drzepka.smarthome.logger.core.transport.SocketClient
 import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
 import java.time.Duration
 

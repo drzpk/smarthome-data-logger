@@ -2,7 +2,7 @@ package dev.drzepka.smarthome.logger.core.pipeline
 
 import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
-import dev.drzepka.smarthome.logger.core.pipeline.component.DataSender
+import dev.drzepka.smarthome.logger.core.pipeline.component.sender.DataSender
 
 class PipelineManager(
     private val scheduler: TaskScheduler,

@@ -6,9 +6,9 @@ import dev.drzepka.smarthome.common.util.Mockable
 import dev.drzepka.smarthome.logger.core.executor.ConnectionException
 import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataFilter
-import dev.drzepka.smarthome.logger.core.pipeline.component.DataSender
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataReceiver
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataSource
+import dev.drzepka.smarthome.logger.core.pipeline.component.sender.DataSender
 import dev.drzepka.smarthome.logger.core.queue.LoggerQueue
 import dev.drzepka.smarthome.logger.core.queue.QueueBatch
 import dev.drzepka.smarthome.logger.core.util.ExceptionTracker
