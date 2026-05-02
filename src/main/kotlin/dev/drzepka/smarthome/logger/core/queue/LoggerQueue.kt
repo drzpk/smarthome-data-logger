@@ -8,7 +8,7 @@ import java.time.Instant
 import java.util.concurrent.ConcurrentLinkedQueue
 
 @Mockable
-class LoggerQueue(private val maxBatchSize: Int, private val maxAge: Duration, private val maxSize: Int = 15_000) {
+class LoggerQueue(private val maxBatchSize: Int, private val maxAge: Duration, private val maxSize: Int) {
     private val log by Logger()
     private val queue = ConcurrentLinkedQueue<QueueItem>()
 

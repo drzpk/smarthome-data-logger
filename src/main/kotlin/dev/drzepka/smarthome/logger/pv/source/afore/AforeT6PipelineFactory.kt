@@ -21,7 +21,7 @@ class AforeT6PipelineFactory : PipelineFactory {
             collector = collector,
             decoder = AforeT6Decoder
         )
-        return Pipeline(name, Duration.ofSeconds(10)).also {
+        return Pipeline(name).also {
             it.addDataSource(dataSource)
         }
     }

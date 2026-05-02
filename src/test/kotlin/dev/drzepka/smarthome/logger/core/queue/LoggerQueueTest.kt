@@ -13,7 +13,7 @@ internal class LoggerQueueTest {
 
     @Test
     fun `should process queue`() = runBlocking {
-        val queue = LoggerQueue(3, Duration.ofMinutes(5))
+        val queue = LoggerQueue(3, Duration.ofMinutes(5), 1000)
         val first = measurement("first")
         val second = measurement("second")
         val third = measurement("third")
@@ -58,7 +58,7 @@ internal class LoggerQueueTest {
 
     @Test
     fun `should not process expired elements`() = runBlocking {
-        val queue = LoggerQueue(1, Duration.ofMillis(300))
+        val queue = LoggerQueue(1, Duration.ofMillis(300), 1000)
         val first = measurement("first")
         val second = measurement("second")
         queue.enqueue(first)

@@ -3,6 +3,7 @@ package dev.drzepka.smarthome.logger.core
 import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
+import dev.drzepka.smarthome.logger.core.config.ServerDataSenderProperties
 import dev.drzepka.smarthome.logger.core.config.ServerProperties
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineFactory
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
@@ -17,6 +18,7 @@ import org.koin.dsl.module
 val coreModule = module {
     single<ConfigPropertySource> { ConfigurationLoader().loadSource() }
     singleOf(::ServerProperties)
+    singleOf(::ServerDataSenderProperties)
 
     single { TaskScheduler(8) }
     single { PipelineManager(get(), get<DataSender>()) }
@@ -26,7 +28,7 @@ val coreModule = module {
     single<DataSender> {
         val props = get<ServerProperties>()
         if (!props.mock)
-            ServerDataSender(get())
+            ServerDataSender(get(), get(), get())
         else
             MockLoggingSender()
     }

@@ -31,7 +31,7 @@ class SHTC3PipelineFactory : PipelineFactory {
             FixedRateDataSource(name, interval, SHTC3DataCollector(device, mac), SHTC3Decoder)
         }
 
-        return Pipeline(name, Duration.ofSeconds(30)).also {
+        return Pipeline(name).also {
             it.addDataSource(dataSource)
         }
     }

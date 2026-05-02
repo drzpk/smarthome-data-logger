@@ -6,7 +6,6 @@ import dev.drzepka.smarthome.logger.core.pipeline.PipelineFactory
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.ListenerDataSource
 import dev.drzepka.smarthome.logger.core.transport.bluetooth.BluetoothCtlBluetoothListener
 import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
-import java.time.Duration
 
 class XiaomiMijiaPipelineFactory : PipelineFactory {
     override val sourceType = SourceType.XIAOMI_MIJIA
@@ -15,7 +14,7 @@ class XiaomiMijiaPipelineFactory : PipelineFactory {
         val mock = properties.getBoolean("mock", false)
         val listener = if (mock) XiaomiMijiaMockBluetoothListener() else BluetoothCtlBluetoothListener()
         val dataSource = ListenerDataSource(name, listener, BluetoothServiceDataDecoder)
-        return Pipeline(name, Duration.ofSeconds(30)).also {
+        return Pipeline(name).also {
             it.addDataSource(dataSource)
         }
     }

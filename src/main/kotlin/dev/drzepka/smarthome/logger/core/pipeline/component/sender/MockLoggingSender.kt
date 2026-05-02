@@ -1,7 +1,7 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.sender
 
 import dev.drzepka.smarthome.common.util.Logger
-import dev.drzepka.smarthome.logger.core.queue.QueueItem
+import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 
 class MockLoggingSender : DataSender {
 
@@ -9,10 +9,17 @@ class MockLoggingSender : DataSender {
         logger.warn("Mock logging sender is enabled. Data will only be logged and not sent to the server. Configure ")
     }
 
-    override suspend fun send(items: Collection<QueueItem>) {
+    override fun queue(items: Collection<Measurement>) {
+        logger.info("###  Queueing ${items.size} items ###")
+        items.forEachIndexed { index, item ->
+            logger.info("Item #{}: {}", index + 1, item)
+        }
+    }
+
+    override suspend fun send(items: Collection<Measurement>) {
         logger.info("###  Sending ${items.size} items ###")
         items.forEachIndexed { index, item ->
-            logger.info("Item #{}: {}", index + 1, item.content)
+            logger.info("Item #{}: {}", index + 1, item)
         }
     }
 

@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
-import java.time.Duration
-
 @ExtendWith(MockitoExtension::class)
 internal class PipelineManagerTest {
 
@@ -37,7 +35,7 @@ internal class PipelineManagerTest {
 
     private fun createManager() = PipelineManager(mock<TaskScheduler>(), mock<DataSender>())
 
-    private class TestPipeline : Pipeline("test", Duration.ofSeconds(1)) {
+    private class TestPipeline : Pipeline("test") {
         var startCallCount = 0
         var stopCallCount = 0
 

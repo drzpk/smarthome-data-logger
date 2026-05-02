@@ -1,7 +1,8 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.sender
 
-import dev.drzepka.smarthome.logger.core.queue.QueueItem
+import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 
 interface DataSender {
-    suspend fun send(items: Collection<QueueItem>)
+    fun queue(items: Collection<Measurement>)
+    suspend fun send(items: Collection<Measurement>)
 }
