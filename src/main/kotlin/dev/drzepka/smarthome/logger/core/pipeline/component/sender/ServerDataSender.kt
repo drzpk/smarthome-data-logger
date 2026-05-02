@@ -17,6 +17,10 @@ class ServerDataSender(
 ) : DataSender {
     private val log by Logger()
     private val queue = LoggerQueue(properties.maxBatchSize, properties.maxAge, properties.maxSize)
+    private val errorTracker = ConnectionErrorTracker(
+        "server", properties.errorThreshold, properties.throttleSkipCount,
+        properties.throttleBackoffFactor, properties.maxThrottleSkipCount
+    )
 
     init {
         scheduler.schedule("serverDataSender_send", properties.sendInterval) {
@@ -40,6 +44,8 @@ class ServerDataSender(
     }
 
     private suspend fun sendQueued() {
+        if (errorTracker.shouldSkip()) return
+
         try {
             while (queue.size() > 0) {
                 val batch = queue.getBatch()
@@ -49,9 +55,11 @@ class ServerDataSender(
                 try {
                     doSend(batch.items)
                     log.debug("Successfully sent queued batch of {} measurements", batch.size)
+                    errorTracker.recordSuccess()
                     queue.removeBatch(batch)
                 } catch (_: ConnectionException) {
-                    log.debug("Cannot send batch of {} measurements due to connection failure, will retry later", batch.size)
+                    if (errorTracker.recordConnectionFailure())
+                        log.debug("Cannot send batch of {} measurements due to connection failure, will retry later", batch.size)
                     break
                 } catch (e: Exception) {
                     log.debug("Dropping batch of {} measurements due to error: {}", batch.size, e.message)
