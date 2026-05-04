@@ -1,11 +1,11 @@
 package dev.drzepka.smarthome.logger.sensors.source.xiaomimijia
 
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
+import dev.drzepka.smarthome.logger.core.model.SourceType
 import dev.drzepka.smarthome.logger.core.pipeline.Pipeline
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineFactory
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.ListenerDataSource
 import dev.drzepka.smarthome.logger.core.transport.bluetooth.BluetoothCtlBluetoothListener
-import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
 
 class XiaomiMijiaPipelineFactory : PipelineFactory {
     override val sourceType = SourceType.XIAOMI_MIJIA

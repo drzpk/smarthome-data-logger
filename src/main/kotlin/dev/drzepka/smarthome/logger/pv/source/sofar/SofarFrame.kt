@@ -94,7 +94,7 @@ class SofarFrame : Frame<SofarData> {
         private const val INVERTER_INNER_TEMPERATURE = 57
         private const val INVERTER_BUS_VOLTAGE = 59
         private const val PV1_VOLTAGE_SAMPLE_BY_SLAVE_CPU = 61 // Unit: 0.1V
-        private const val PV1_VOLGATE_SAMPLE_BY_SLAVE_CPU = 63 // Unit: 0.01A
+        private const val PV1_CURRENT_SAMPLE_BY_SLAVE_CPU = 63 // Unit: 0.01A
         private const val COUNTDOWN_TIME = 65
         private const val ALERT_MESSAGE = 67
         private const val INPUT_MODE = 69 // 0x00 - in parallel, 0x01 - independent

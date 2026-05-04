@@ -2,7 +2,7 @@ package dev.drzepka.smarthome.logger.core.pipeline
 
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.config.PropertiesConfigPropertySource
-import dev.drzepka.smarthome.logger.pvstats.model.config.SourceType
+import dev.drzepka.smarthome.logger.core.model.SourceType
 import org.assertj.core.api.BDDAssertions.then
 import org.assertj.core.api.BDDAssertions.thenThrownBy
 import org.junit.jupiter.api.Test

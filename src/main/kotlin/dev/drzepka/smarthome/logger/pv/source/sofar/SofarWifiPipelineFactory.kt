@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.logger.pv.source.afore
+package dev.drzepka.smarthome.logger.pv.source.sofar
 
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.model.SourceType
@@ -8,21 +8,19 @@ import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.FixedRate
 import dev.drzepka.smarthome.logger.core.transport.SocketClient
 import java.time.Duration
 
-class AforeT6PipelineFactory : PipelineFactory {
-    override val sourceType = SourceType.AFORE_T6
+class SofarWifiPipelineFactory : PipelineFactory {
+    override val sourceType = SourceType.SOFAR_WIFI
 
     override fun create(name: String, properties: ConfigPropertySource): Pipeline {
-        val config = AforeConfig(name, properties)
-        val socketClient = SocketClient(config.host, config.port, Duration.ofSeconds(3))
-        val collector = AforeDataCollector(socketClient, config.slaveAddress, config.sn)
+        val config = SofarWifiConfig(name, properties)
+        val client = SocketClient(config.host, config.port, Duration.ofSeconds(10))
+        val collector = SofarWifiDataCollector(client, config.sn)
         val dataSource = FixedRateDataSource(
             name = name,
-            interval = Duration.ofSeconds(config.measurementInterval?.toLong() ?: 60),
+            interval = Duration.ofSeconds(config.metricsInterval.toLong()),
             collector = collector,
-            decoder = AforeT6Decoder
+            decoder = SofarDecoder(config.sn.toString())
         )
-        return Pipeline(name).also {
-            it.addDataSource(dataSource)
-        }
+        return Pipeline(name).also { it.addDataSource(dataSource) }
     }
 }
