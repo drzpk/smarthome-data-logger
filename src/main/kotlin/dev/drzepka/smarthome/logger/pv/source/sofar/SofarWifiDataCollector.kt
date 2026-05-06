@@ -1,19 +1,19 @@
 package dev.drzepka.smarthome.logger.pv.source.sofar
 
-import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
+import dev.drzepka.smarthome.logger.core.frame.Frame
+import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusDataFrameFactory
+import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusFrame
+import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
 import dev.drzepka.smarthome.logger.core.transport.SocketClient
-import dev.drzepka.smarthome.logger.pv.vendor.SolarmanV5Frame
+import dev.drzepka.smarthome.logger.pv.common.SocketDataCollector
 
 class SofarWifiDataCollector(
-    private val client: SocketClient,
-    private val deviceSn: Long
-) : DataCollector<SofarData> {
+    client: SocketClient,
+    deviceSn: Long
+) : SocketDataCollector(client, deviceSn) {
 
-    private var requestEcho = Byte.MIN_VALUE
+    private val dataFrames = ModbusDataFrameFactory(SofarRegisters.registers).createDataFrames()
 
-    override suspend fun getData(): Collection<SofarData> {
-        val frame = SolarmanV5Frame(requestEcho++, deviceSn, SofarWifiFrame())
-        val data = client.send(frame) ?: return emptyList()
-        return listOf(data)
-    }
+    override fun createModbusFrames(): List<Frame<ModbusRegisterData>> =
+        dataFrames.map { ModbusFrame.readHoldingRegisters(1, it) }
 }

@@ -5,6 +5,7 @@ import dev.drzepka.smarthome.logger.core.frame.modbus.IntModbusRegister
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
 import dev.drzepka.smarthome.logger.core.transport.SocketClient
 import kotlinx.coroutines.runBlocking
+import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -12,10 +13,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.any
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 
 @ExtendWith(MockitoExtension::class)
 internal class AforeDataCollectorTest {
@@ -52,7 +50,7 @@ internal class AforeDataCollectorTest {
         val result = collector.getData().toList()
 
         Assertions.assertEquals(1, result.size)
-        Assertions.assertEquals(123456789L, result[0].sn)
+        Assertions.assertEquals("123456789", result[0].deviceId)
         Assertions.assertEquals(10, result[0].registerData[register1])
         Assertions.assertEquals(20, result[0].registerData[register2])
     }
@@ -72,5 +70,21 @@ internal class AforeDataCollectorTest {
 
         val ex = assertThrows<IllegalStateException> { collector.getData() }
         Assertions.assertEquals("Error while sending frame 1/2", ex.message)
+    }
+
+    @Test
+    fun `should use input register function code`(): Unit = runBlocking {
+        whenever(client.send(any<Frame<ModbusRegisterData>>())).thenReturn(mapOf())
+        val captor = argumentCaptor<Frame<ModbusRegisterData>>()
+
+        collector.getData()
+        verify(client, times(2)).send(captor.capture())
+
+        // SolarmanV5Frame layout: 11 bytes header + 15 bytes payload header + modbus frame
+        // ModbusFrame: byte 0 = slave address, byte 1 = function code
+        captor.allValues.forEach { frame ->
+            val encoded = frame.encodeRequest()
+            then(encoded[27].toInt() and 0xFF).isEqualTo(4) // 4 = read input registers
+        }
     }
 }

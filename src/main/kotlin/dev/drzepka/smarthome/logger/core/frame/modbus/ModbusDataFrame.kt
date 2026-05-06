@@ -41,3 +41,6 @@ class ModbusDataFrame(
 }
 
 typealias ModbusRegisterData = Map<ModbusRegister<*>, Any>
+
+@Suppress("UNCHECKED_CAST")
+fun <T : Any> ModbusRegisterData.getTyped(register: ModbusRegister<T>): T = this[register] as T

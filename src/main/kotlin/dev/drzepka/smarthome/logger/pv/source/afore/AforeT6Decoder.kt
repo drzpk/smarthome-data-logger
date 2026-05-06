@@ -2,16 +2,18 @@ package dev.drzepka.smarthome.logger.pv.source.afore
 
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegister
+import dev.drzepka.smarthome.logger.core.frame.modbus.getTyped
 import dev.drzepka.smarthome.logger.core.model.measurement.Phase
 import dev.drzepka.smarthome.logger.core.model.measurement.Pv
 import dev.drzepka.smarthome.logger.core.model.measurement.PvMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
+import dev.drzepka.smarthome.logger.pv.common.PvData
 import java.time.Instant
 
-object AforeT6Decoder : DataDecoder<AforeData> {
+object AforeT6Decoder : DataDecoder<PvData> {
     private val log by Logger()
 
-    override fun decode(item: AforeData): Collection<PvMeasurement> {
+    override fun decode(item: PvData): Collection<PvMeasurement> {
         val r = AforeT6Registers
         val required = listOf(
             r.gridVoltageA, r.gridCurrentA, r.gridFrequencyA, r.activePowerA,
@@ -28,11 +30,10 @@ object AforeT6Decoder : DataDecoder<AforeData> {
             return emptyList()
         }
 
-        @Suppress("UNCHECKED_CAST")
-        fun <T : Any> get(register: ModbusRegister<T>): T = item.registerData[register] as T
+        fun <T : Any> get(register: ModbusRegister<T>): T = item.registerData.getTyped(register)
 
         val measurement = PvMeasurement(
-            mac = item.sn.toString(),
+            mac = item.deviceId,
             time = Instant.now(),
             totalPower = get(r.totalActivePower),
             energyToday = get(r.energyToday),

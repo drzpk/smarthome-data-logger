@@ -1,6 +1,7 @@
 package dev.drzepka.smarthome.logger.pv.source.afore
 
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
+import dev.drzepka.smarthome.logger.pv.common.PvData
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -11,7 +12,7 @@ internal class AforeT6DecoderTest {
 
     @Test
     fun `should decode all registers into PvMeasurement`() {
-        val result = AforeT6Decoder.decode(AforeData(0L, fullRegisterData())).toList()
+        val result = AforeT6Decoder.decode(PvData("0", fullRegisterData())).toList()
 
         Assertions.assertEquals(1, result.size)
         val m = result[0]
@@ -52,14 +53,14 @@ internal class AforeT6DecoderTest {
     fun `should return empty collection when registers are missing`() {
         val incomplete: ModbusRegisterData = mapOf(r.gridVoltageA to 230.0f)
 
-        val result = AforeT6Decoder.decode(AforeData(0L, incomplete))
+        val result = AforeT6Decoder.decode(PvData("0", incomplete))
 
         Assertions.assertTrue(result.isEmpty())
     }
 
     @Test
     fun `should return empty collection when input is empty`() {
-        val result = AforeT6Decoder.decode(AforeData(0L, emptyMap()))
+        val result = AforeT6Decoder.decode(PvData("0", emptyMap()))
 
         Assertions.assertTrue(result.isEmpty())
     }
