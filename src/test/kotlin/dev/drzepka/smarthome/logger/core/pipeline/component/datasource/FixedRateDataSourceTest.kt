@@ -1,10 +1,10 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.model.measurement.TemperatureMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
+import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.BDDAssertions.then

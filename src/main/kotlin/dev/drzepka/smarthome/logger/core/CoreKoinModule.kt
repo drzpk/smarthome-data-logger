@@ -1,6 +1,5 @@
 package dev.drzepka.smarthome.logger.core
 
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
 import dev.drzepka.smarthome.logger.core.config.ServerDataSenderProperties
@@ -11,6 +10,7 @@ import dev.drzepka.smarthome.logger.core.pipeline.PipelineRegistrar
 import dev.drzepka.smarthome.logger.core.pipeline.component.sender.DataSender
 import dev.drzepka.smarthome.logger.core.pipeline.component.sender.MockLoggingSender
 import dev.drzepka.smarthome.logger.core.pipeline.component.sender.ServerDataSender
+import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import dev.drzepka.smarthome.logger.core.transport.ServerRequestExecutor
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module

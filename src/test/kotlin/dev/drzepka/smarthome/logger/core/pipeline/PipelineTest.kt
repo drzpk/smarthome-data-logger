@@ -1,12 +1,12 @@
 package dev.drzepka.smarthome.logger.core.pipeline
 
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.model.measurement.TemperatureMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataFilter
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.DataSource
 import dev.drzepka.smarthome.logger.core.pipeline.component.sender.DataSender
+import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import org.assertj.core.api.BDDAssertions.assertThatIllegalStateException
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
@@ -143,6 +143,6 @@ internal class PipelineTest {
     }
 
     private class TestFilter : DataFilter {
-        override fun filter(data: Measurement): Measurement? = data
+        override fun filter(data: Measurement): Measurement = data
     }
 }

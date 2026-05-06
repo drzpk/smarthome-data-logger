@@ -1,9 +1,9 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.datasource
 
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
+import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import java.time.Duration
 
 open class FixedRateDataSource<I>(

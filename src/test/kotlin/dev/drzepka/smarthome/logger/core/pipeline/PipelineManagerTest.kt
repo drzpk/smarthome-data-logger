@@ -1,12 +1,13 @@
 package dev.drzepka.smarthome.logger.core.pipeline
 
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.pipeline.component.sender.DataSender
+import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
+
 @ExtendWith(MockitoExtension::class)
 internal class PipelineManagerTest {
 

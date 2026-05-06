@@ -1,12 +1,12 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.sender
 
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.config.PropertiesConfigPropertySource
 import dev.drzepka.smarthome.logger.core.config.ServerDataSenderProperties
 import dev.drzepka.smarthome.logger.core.executor.ConnectionException
 import dev.drzepka.smarthome.logger.core.model.measurement.CreateMeasurementsRequest
 import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.model.measurement.TemperatureMeasurement
+import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import dev.drzepka.smarthome.logger.core.transport.ServerRequestExecutor
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.BDDAssertions.then

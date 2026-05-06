@@ -1,8 +1,8 @@
 package dev.drzepka.smarthome.logger.core.device
 
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.logger.core.model.Device
 import dev.drzepka.smarthome.logger.core.model.MacAddress
+import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import dev.drzepka.smarthome.logger.core.transport.ServerRequestExecutor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest

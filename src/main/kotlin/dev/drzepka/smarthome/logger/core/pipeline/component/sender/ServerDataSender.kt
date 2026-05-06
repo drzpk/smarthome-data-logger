@@ -1,6 +1,5 @@
 package dev.drzepka.smarthome.logger.core.pipeline.component.sender
 
-import dev.drzepka.smarthome.common.TaskScheduler
 import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.config.ServerDataSenderProperties
 import dev.drzepka.smarthome.logger.core.executor.ConnectionException
@@ -8,6 +7,7 @@ import dev.drzepka.smarthome.logger.core.model.measurement.CreateMeasurementsReq
 import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.queue.LoggerQueue
 import dev.drzepka.smarthome.logger.core.queue.QueueItem
+import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import dev.drzepka.smarthome.logger.core.transport.ServerRequestExecutor
 import dev.drzepka.smarthome.logger.core.util.ErrorTracker
 
