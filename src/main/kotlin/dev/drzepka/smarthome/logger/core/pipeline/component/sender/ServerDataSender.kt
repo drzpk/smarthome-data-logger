@@ -9,6 +9,7 @@ import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.queue.LoggerQueue
 import dev.drzepka.smarthome.logger.core.queue.QueueItem
 import dev.drzepka.smarthome.logger.core.transport.ServerRequestExecutor
+import dev.drzepka.smarthome.logger.core.util.ErrorTracker
 
 class ServerDataSender(
     properties: ServerDataSenderProperties,
@@ -17,7 +18,7 @@ class ServerDataSender(
 ) : DataSender {
     private val log by Logger()
     private val queue = LoggerQueue(properties.maxBatchSize, properties.maxAge, properties.maxSize)
-    private val errorTracker = ConnectionErrorTracker(
+    private val errorTracker = ErrorTracker(
         "server", properties.errorThreshold, properties.throttleSkipCount,
         properties.throttleBackoffFactor, properties.maxThrottleSkipCount
     )
@@ -58,7 +59,7 @@ class ServerDataSender(
                     errorTracker.recordSuccess()
                     queue.removeBatch(batch)
                 } catch (_: ConnectionException) {
-                    if (errorTracker.recordConnectionFailure())
+                    if (errorTracker.recordFailure())
                         log.debug("Cannot send batch of {} measurements due to connection failure, will retry later", batch.size)
                     break
                 } catch (e: Exception) {

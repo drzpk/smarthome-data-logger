@@ -5,7 +5,7 @@ import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.model.Device
 import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.core.transport.ServerRequestExecutor
-import dev.drzepka.smarthome.logger.core.util.ExceptionTracker
+import dev.drzepka.smarthome.logger.core.util.ErrorTracker
 import dev.drzepka.smarthome.logger.core.util.suspendRunCatching
 import kotlinx.coroutines.delay
 import java.time.Duration
@@ -18,7 +18,7 @@ class OnlineDeviceManager(
     private val log by Logger()
     private val devices = ConcurrentHashMap<MacAddress, Device>()
 
-    private var tracker = ExceptionTracker("OnlineDeviceManager")
+    private var tracker = ErrorTracker("OnlineDeviceManager", errorThreshold = 3)
     private var initialized = false
 
     override suspend fun initialize() {
@@ -63,7 +63,7 @@ class OnlineDeviceManager(
     }
 
     private suspend fun refreshDevices(): Boolean {
-        return tracker.suspendRunCatching(log, "Error while refreshing devices", 3) {
+        return tracker.suspendRunCatching(log, "Error while refreshing devices") {
             doRefreshDevices()
         }
     }

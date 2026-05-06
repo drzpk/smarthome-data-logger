@@ -3,7 +3,7 @@ package dev.drzepka.smarthome.logger.core.util
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 
-internal class ExceptionTrackerTest {
+internal class ErrorTrackerTest {
     @Test
     fun `should track exception - different messages`() {
         val cause1 = NullPointerException("null1")
@@ -11,19 +11,19 @@ internal class ExceptionTrackerTest {
         val cause2 = NullPointerException("null2")
         val exception2 = IllegalArgumentException("message1", cause2)
 
-        val tracker = ExceptionTracker("test")
+        val tracker = ErrorTracker("test")
 
-        tracker.setLastException(exception1)
-        tracker.setLastException(exception1)
-        then(tracker.exceptionCount).isEqualTo(2)
+        tracker.recordFailure(exception1)
+        tracker.recordFailure(exception1)
+        then(tracker.consecutiveErrors).isEqualTo(2)
         then(tracker.exceptionChanged).isFalse
 
-        tracker.setLastException(exception2)
-        then(tracker.exceptionCount).isEqualTo(1)
+        tracker.recordFailure(exception2)
+        then(tracker.consecutiveErrors).isEqualTo(3)
         then(tracker.exceptionChanged).isTrue
 
-        tracker.reset()
-        then(tracker.exceptionCount).isEqualTo(0)
+        tracker.recordSuccess()
+        then(tracker.consecutiveErrors).isEqualTo(0)
         then(tracker.exceptionChanged).isFalse
     }
 
@@ -34,15 +34,15 @@ internal class ExceptionTrackerTest {
         val cause2 = IllegalStateException("cause")
         val exception2 = IllegalArgumentException("argument", cause2)
 
-        val tracker = ExceptionTracker("test")
+        val tracker = ErrorTracker("test")
 
-        tracker.setLastException(exception1)
-        tracker.setLastException(exception1)
-        then(tracker.exceptionCount).isEqualTo(2)
+        tracker.recordFailure(exception1)
+        tracker.recordFailure(exception1)
+        then(tracker.consecutiveErrors).isEqualTo(2)
         then(tracker.exceptionChanged).isFalse
 
-        tracker.setLastException(exception2)
-        then(tracker.exceptionCount).isEqualTo(1)
+        tracker.recordFailure(exception2)
+        then(tracker.consecutiveErrors).isEqualTo(3)
         then(tracker.exceptionChanged).isTrue
     }
 }
