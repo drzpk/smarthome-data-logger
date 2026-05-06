@@ -13,13 +13,10 @@ internal class ErrorTracker(
 
     var consecutiveErrors = 0
         private set
-    var exceptionChanged = false
-        private set
 
     private var throttled = false
     private var skipCountdown = 0
     private var currentSkipCount = throttleSkipCount
-    private var lastSignature: String? = null
 
     fun shouldSkip(): Boolean {
         if (skipCountdown > 0) {
@@ -32,10 +29,7 @@ internal class ErrorTracker(
     }
 
     // Returns true if the error should be logged with full stacktrace
-    fun recordFailure(exception: Exception? = null): Boolean {
-        if (exception != null)
-            trackException(exception)
-
+    fun recordFailure(): Boolean {
         consecutiveErrors++
         if (consecutiveErrors == errorThreshold) {
             log.warn("{}: {} errors in a row, throttling", name, errorThreshold)
@@ -57,30 +51,9 @@ internal class ErrorTracker(
             log.info("{}: recovered after {} errors", name, consecutiveErrors)
         }
         consecutiveErrors = 0
-        exceptionChanged = false
-        lastSignature = null
         throttled = false
         skipCountdown = 0
         currentSkipCount = throttleSkipCount
-    }
-
-    private fun trackException(exception: Exception) {
-        val currentSignature = getExceptionSignature(exception)
-        exceptionChanged = lastSignature != null && currentSignature != lastSignature
-        lastSignature = currentSignature
-    }
-
-    private fun getExceptionSignature(exception: Exception): String {
-        val builder = StringBuilder()
-        var current: Throwable? = exception
-        while (current != null) {
-            builder.append(current.javaClass.canonicalName)
-            builder.append('=')
-            builder.append(current.message)
-            builder.appendLine()
-            current = current.cause
-        }
-        return builder.toString()
     }
 }
 
@@ -94,7 +67,7 @@ internal suspend fun ErrorTracker.suspendRunCatching(
         recordSuccess()
         true
     } catch (e: Exception) {
-        if (recordFailure(e))
+        if (recordFailure())
             log.error("{}", errorMessage, e)
         else
             log.error("{}: {}", errorMessage, e.message)

@@ -1,9 +1,6 @@
 package dev.drzepka.smarthome.logger.core
 
-import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
-import dev.drzepka.smarthome.logger.core.config.ConfigurationLoader
-import dev.drzepka.smarthome.logger.core.config.ServerDataSenderProperties
-import dev.drzepka.smarthome.logger.core.config.ServerProperties
+import dev.drzepka.smarthome.logger.core.config.*
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineFactory
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineRegistrar
@@ -19,8 +16,9 @@ val coreModule = module {
     single<ConfigPropertySource> { ConfigurationLoader().loadSource() }
     singleOf(::ServerProperties)
     singleOf(::ServerDataSenderProperties)
+    singleOf(::SchedulerProperties)
 
-    single { TaskScheduler(8) }
+    single { TaskScheduler(8, get()) }
     single { PipelineManager(get(), get<DataSender>()) }
     single { PipelineRegistrar(get(), getAll<PipelineFactory>(), get()) }
     single { ServerRequestExecutor(get<ServerProperties>()) }

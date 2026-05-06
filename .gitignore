@@ -10,3 +10,4 @@ out
 /*.log
 
 /.claude/settings.local.json
+*.local.md

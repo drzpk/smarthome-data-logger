@@ -1,6 +1,9 @@
 package dev.drzepka.smarthome.logger.core.scheduler
 
 import dev.drzepka.smarthome.common.util.Logger
+import dev.drzepka.smarthome.logger.core.config.SchedulerProperties
+import dev.drzepka.smarthome.logger.core.util.ErrorTracker
+import dev.drzepka.smarthome.logger.core.util.suspendRunCatching
 import kotlinx.coroutines.*
 import java.time.Duration
 import java.time.Instant
@@ -9,9 +12,10 @@ import java.util.concurrent.Executors
 import kotlin.math.abs
 import kotlin.math.ceil
 
-class TaskScheduler(threadPoolSize: Int = 8) {
+class TaskScheduler(threadPoolSize: Int = 8, private val schedulerProperties: SchedulerProperties) {
     private val log by Logger()
     private val activeTasks = ConcurrentHashMap.newKeySet<String>()
+    private val trackers = ConcurrentHashMap<String, ErrorTracker>()
     private val scope = CoroutineScope(Executors.newFixedThreadPool(threadPoolSize).asCoroutineDispatcher() + SupervisorJob() + createExceptionHandler())
 
     @Synchronized
@@ -21,7 +25,17 @@ class TaskScheduler(threadPoolSize: Int = 8) {
 
         log.info("Scheduling task '{}'", name)
         activeTasks.add(name)
-        startTask(name, interval, task)
+
+        val tracker = ErrorTracker(
+            name,
+            schedulerProperties.errorThreshold,
+            schedulerProperties.throttleSkipCount,
+            schedulerProperties.backoffFactor,
+            schedulerProperties.maxSkipCount
+        )
+        trackers[name] = tracker
+
+        startTask(name, interval, task, tracker)
     }
 
     @Synchronized
@@ -30,13 +44,14 @@ class TaskScheduler(threadPoolSize: Int = 8) {
         val removed = activeTasks.remove(name)
         if (!removed)
             log.warn("No scheduled task '{}' was found", name)
+        trackers.remove(name)
     }
 
     private fun createExceptionHandler(): CoroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         log.error("Uncaught task scheduler exception", throwable)
     }
 
-    private fun startTask(name: String, interval: Duration, task: (suspend () -> Unit)) {
+    private fun startTask(name: String, interval: Duration, task: (suspend () -> Unit), tracker: ErrorTracker) {
         scope.launch {
             delay(getInitialDelay(interval))
 
@@ -44,7 +59,11 @@ class TaskScheduler(threadPoolSize: Int = 8) {
             while (isActive(name)) {
                 log.info("Executing task '{}'", name)
 
-                execute(name, task)
+                if (!tracker.shouldSkip()) {
+                    tracker.suspendRunCatching(log, "Error while executing task '$name'") {
+                        task.invoke()
+                    }
+                }
 
                 nextPlannedExecution = nextPlannedExecution.plus(interval)
                 val now = Instant.now()
@@ -72,13 +91,5 @@ class TaskScheduler(threadPoolSize: Int = 8) {
         val intervalMillis = interval.toMillis()
         val now = Instant.now().toEpochMilli()
         return intervalMillis - (now % intervalMillis)
-    }
-
-    private suspend fun execute(name: String, task: (suspend () -> Unit)) {
-        try {
-            task.invoke()
-        } catch (e: Exception) {
-            log.error("Error while executing task '{}'", name, e)
-        }
     }
 }
