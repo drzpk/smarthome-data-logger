@@ -60,12 +60,12 @@ internal class SofarDecoderTest {
 
         val result = SofarDecoder.decode(data).first() as PvMeasurement
 
-        then(result.phaseA.voltage).isEqualTo(230.1f)
-        then(result.phaseA.current).isEqualTo(5.2f)
-        then(result.phaseA.power).isEqualTo((230.1f * 5.2f).toInt())
-        then(result.phaseB.voltage).isEqualTo(231.0f)
-        then(result.phaseC.current).isEqualTo(4.8f)
-        then(result.phaseC.power).isEqualTo((229.5f * 4.8f).toInt())
+        then(result.phaseA?.voltage).isEqualTo(230.1f)
+        then(result.phaseA?.current).isEqualTo(5.2f)
+        then(result.phaseA?.power).isEqualTo((230.1f * 5.2f).toInt())
+        then(result.phaseB?.voltage).isEqualTo(231.0f)
+        then(result.phaseC?.current).isEqualTo(4.8f)
+        then(result.phaseC?.power).isEqualTo((229.5f * 4.8f).toInt())
     }
 
     @Test
@@ -74,9 +74,9 @@ internal class SofarDecoderTest {
 
         val result = SofarDecoder.decode(data).first() as PvMeasurement
 
-        then(result.phaseA.frequency).isEqualTo(50.01f)
-        then(result.phaseB.frequency).isEqualTo(50.01f)
-        then(result.phaseC.frequency).isEqualTo(50.01f)
+        then(result.phaseA?.frequency).isEqualTo(50.01f)
+        then(result.phaseB?.frequency).isEqualTo(50.01f)
+        then(result.phaseC?.frequency).isEqualTo(50.01f)
     }
 
     @Test
@@ -88,11 +88,11 @@ internal class SofarDecoderTest {
 
         val result = SofarDecoder.decode(data).first() as PvMeasurement
 
-        then(result.pv1!!.voltage).isEqualTo(380.5f)
-        then(result.pv1!!.current).isEqualTo(9.1f)
-        then(result.pv1!!.power).isEqualTo(3460)
-        then(result.pv2!!.voltage).isEqualTo(375.0f)
-        then(result.pv2!!.power).isEqualTo(3337)
+        then(result.pv1?.voltage).isEqualTo(380.5f)
+        then(result.pv1?.current).isEqualTo(9.1f)
+        then(result.pv1?.power).isEqualTo(3460)
+        then(result.pv2?.voltage).isEqualTo(375.0f)
+        then(result.pv2?.power).isEqualTo(3337)
     }
 
     @Test

@@ -50,6 +50,15 @@ internal class SmaDecoderTest {
     }
 
     @Test
+    fun `should set phases to null when phase fields are absent`() {
+        val result = decoder.decode(data()).first() as PvMeasurement
+
+        then(result.phaseA).isNull()
+        then(result.phaseB).isNull()
+        then(result.phaseC).isNull()
+    }
+
+    @Test
     fun `should map phase voltage current power and frequency`() {
         val result = decoder.decode(data(
             SmaFields.voltageL1 to 235.5, SmaFields.currentL1 to 3.2, SmaFields.powerL1 to 753.0,
@@ -58,13 +67,13 @@ internal class SmaDecoderTest {
             SmaFields.frequency to 50.0
         )).first() as PvMeasurement
 
-        then(result.phaseA.voltage).isEqualTo(235.5f)
-        then(result.phaseA.current).isEqualTo(3.2f)
-        then(result.phaseA.power).isEqualTo(753)
-        then(result.phaseA.frequency).isEqualTo(50.0f)
+        then(result.phaseA?.voltage).isEqualTo(235.5f)
+        then(result.phaseA?.current).isEqualTo(3.2f)
+        then(result.phaseA?.power).isEqualTo(753)
+        then(result.phaseA?.frequency).isEqualTo(50.0f)
 
-        then(result.phaseB.power).isEqualTo(725)
-        then(result.phaseC.power).isEqualTo(708)
+        then(result.phaseB?.power).isEqualTo(725)
+        then(result.phaseC?.power).isEqualTo(708)
     }
 
     @Test

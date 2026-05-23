@@ -21,20 +21,20 @@ internal class AforeT6DecoderTest {
         Assertions.assertEquals(BigDecimal(100), m.energyToday)
         Assertions.assertEquals(BigDecimal(10000), m.energyTotal)
 
-        Assertions.assertEquals(230.0f, m.phaseA.voltage)
-        Assertions.assertEquals(10.0f, m.phaseA.current)
-        Assertions.assertEquals(50.0f, m.phaseA.frequency)
-        Assertions.assertEquals(2300, m.phaseA.power)
+        Assertions.assertEquals(230.0f, m.phaseA?.voltage)
+        Assertions.assertEquals(10.0f, m.phaseA?.current)
+        Assertions.assertEquals(50.0f, m.phaseA?.frequency)
+        Assertions.assertEquals(2300, m.phaseA?.power)
 
-        Assertions.assertEquals(231.0f, m.phaseB.voltage)
-        Assertions.assertEquals(10.1f, m.phaseB.current)
-        Assertions.assertEquals(50.1f, m.phaseB.frequency)
-        Assertions.assertEquals(2310, m.phaseB.power)
+        Assertions.assertEquals(231.0f, m.phaseB?.voltage)
+        Assertions.assertEquals(10.1f, m.phaseB?.current)
+        Assertions.assertEquals(50.1f, m.phaseB?.frequency)
+        Assertions.assertEquals(2310, m.phaseB?.power)
 
-        Assertions.assertEquals(232.0f, m.phaseC.voltage)
-        Assertions.assertEquals(10.2f, m.phaseC.current)
-        Assertions.assertEquals(50.2f, m.phaseC.frequency)
-        Assertions.assertEquals(2320, m.phaseC.power)
+        Assertions.assertEquals(232.0f, m.phaseC?.voltage)
+        Assertions.assertEquals(10.2f, m.phaseC?.current)
+        Assertions.assertEquals(50.2f, m.phaseC?.frequency)
+        Assertions.assertEquals(2320, m.phaseC?.power)
 
         val pv1 = m.pv1!!
         Assertions.assertEquals(350.0f, pv1.voltage)

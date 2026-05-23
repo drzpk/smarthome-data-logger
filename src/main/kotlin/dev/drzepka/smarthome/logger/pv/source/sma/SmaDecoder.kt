@@ -16,30 +16,24 @@ class SmaDecoder(private val mac: String) : DataDecoder<SmaData> {
 
         val f = SmaFields
         val frequency = float(f.frequency) ?: 0f
+        fun phase(voltage: SmaField, current: SmaField, power: SmaField): Phase? {
+            if (double(voltage) == null && double(current) == null && double(power) == null) return null
+            return Phase(
+                voltage = float(voltage) ?: 0f,
+                current = float(current) ?: 0f,
+                power = int(power),
+                frequency = frequency
+            )
+        }
         val measurement = PvMeasurement(
             mac = mac,
             time = item.time,
             totalPower = int(f.gridPower) ?: 0,
             energyToday = BigDecimal(int(f.dailyYield) ?: 0).divide(BigDecimal(1000)),
             energyTotal = BigDecimal.valueOf(double(f.totalYield) ?: 0.0),
-            phaseA = Phase(
-                voltage = float(f.voltageL1) ?: 0f,
-                current = float(f.currentL1) ?: 0f,
-                power = int(f.powerL1),
-                frequency = frequency
-            ),
-            phaseB = Phase(
-                voltage = float(f.voltageL2) ?: 0f,
-                current = float(f.currentL2) ?: 0f,
-                power = int(f.powerL2),
-                frequency = frequency
-            ),
-            phaseC = Phase(
-                voltage = float(f.voltageL3) ?: 0f,
-                current = float(f.currentL3) ?: 0f,
-                power = int(f.powerL3),
-                frequency = frequency
-            ),
+            phaseA = phase(f.voltageL1, f.currentL1, f.powerL1),
+            phaseB = phase(f.voltageL2, f.currentL2, f.powerL2),
+            phaseC = phase(f.voltageL3, f.currentL3, f.powerL3),
             pv1 = int(f.pvPowerA)?.let {
                 Pv(
                     voltage = float(f.pvVoltageA) ?: 0f,
