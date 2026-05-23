@@ -1,9 +1,9 @@
 package dev.drzepka.smarthome.logger.core.transport.bluetooth
 
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.model.bluetooth.BluetoothData
 import dev.drzepka.smarthome.logger.core.model.bluetooth.BluetoothServiceData
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataListener
+import dev.drzepka.smarthome.logger.core.util.Logger
 import java.util.concurrent.atomic.AtomicBoolean
 
 class BluetoothCtlBluetoothListener : DataListener<BluetoothServiceData>() {

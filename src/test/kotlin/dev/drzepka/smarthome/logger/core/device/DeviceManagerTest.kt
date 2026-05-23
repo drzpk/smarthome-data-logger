@@ -5,7 +5,7 @@ import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import dev.drzepka.smarthome.logger.core.transport.ServerRequestExecutor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.BDDAssertions
 import org.junit.jupiter.api.Test
@@ -33,7 +33,7 @@ internal class DeviceManagerTest {
     }
 
     @Test
-    fun `should refresh devices when initializing`() = runBlockingTest {
+    fun `should refresh devices when initializing`() = runTest {
         val device = Device(id = 192, mac = "aa:bb:cc")
         whenever(executor.getDevices()).thenReturn(listOf(device))
 
@@ -45,7 +45,7 @@ internal class DeviceManagerTest {
     }
 
     @Test
-    fun `should refresh devices during initialization until a successful response is returned`() = runBlockingTest {
+    fun `should refresh devices during initialization until a successful response is returned`() = runTest {
         val device = Device(id = 1234, mac = "aa:bb:cc")
 
         val exception = RuntimeException("no network")
@@ -60,7 +60,7 @@ internal class DeviceManagerTest {
     }
 
     @Test
-    fun `should schedule device refresh when starting`() = runBlockingTest {
+    fun `should schedule device refresh when starting`() = runTest {
         whenever(executor.getDevices()).thenReturn(emptyList())
 
         val manager = OnlineDeviceManager(executor, scheduler)
@@ -71,7 +71,7 @@ internal class DeviceManagerTest {
     }
 
     @Test
-    fun `should refresh devices with scheduler`() = runBlockingTest {
+    fun `should refresh devices with scheduler`() = runTest {
         val device = Device(id = 1234, mac = "aa:bb:cc")
 
         whenever(executor.getDevices()).thenReturn(emptyList(), listOf(device))
@@ -90,7 +90,7 @@ internal class DeviceManagerTest {
     }
 
     @Test
-    fun `should cancel task when stopping the manager`() = runBlockingTest {
+    fun `should cancel task when stopping the manager`() = runTest {
         whenever(executor.getDevices()).thenReturn(emptyList())
 
         val manager = OnlineDeviceManager(executor, scheduler)

@@ -1,10 +1,10 @@
 package dev.drzepka.smarthome.logger.pv.common
 
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.frame.Frame
 import dev.drzepka.smarthome.logger.core.frame.modbus.ModbusRegisterData
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
 import dev.drzepka.smarthome.logger.core.transport.SocketClient
+import dev.drzepka.smarthome.logger.core.util.Logger
 import dev.drzepka.smarthome.logger.pv.vendor.SolarmanV5Frame
 
 abstract class SocketDataCollector(

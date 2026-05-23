@@ -1,11 +1,11 @@
 package dev.drzepka.smarthome.logger.core.device
 
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.model.Device
 import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import dev.drzepka.smarthome.logger.core.transport.ServerRequestExecutor
 import dev.drzepka.smarthome.logger.core.util.ErrorTracker
+import dev.drzepka.smarthome.logger.core.util.Logger
 import dev.drzepka.smarthome.logger.core.util.suspendRunCatching
 import kotlinx.coroutines.delay
 import java.time.Duration

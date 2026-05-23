@@ -3,25 +3,27 @@ package dev.drzepka.smarthome.logger.core.executor
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.*
-import io.ktor.client.engine.apache.*
-import io.ktor.client.features.json.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.apache5.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.serialization.jackson.*
 import java.net.ConnectException
 import java.nio.charset.StandardCharsets
 import java.util.*
 import kotlin.time.Duration
 
 abstract class RequestExecutor(val baseUrl: String, private val timeout: Duration) {
-    protected val client = HttpClient(Apache) {
-        install(JsonFeature) {
-            serializer = JacksonSerializer {
+    protected val client = HttpClient(Apache5) {
+        install(ContentNegotiation) {
+            jackson {
                 disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             }
         }
 
         engine {
-            connectTimeout = timeout.inWholeMilliseconds.toInt()
+            connectTimeout = timeout.inWholeMilliseconds
             socketTimeout = timeout.inWholeMilliseconds.toInt()
         }
     }
@@ -40,7 +42,7 @@ abstract class RequestExecutor(val baseUrl: String, private val timeout: Duratio
         authorization = "Basic ${encoded.toString(StandardCharsets.UTF_8)}"
     }
 
-    protected suspend inline fun <Req : Any, reified Res> executeRequest(
+    protected suspend inline fun <reified Req : Any, reified Res> executeRequest(
         method: String,
         url: String,
         requestBody: Req?
@@ -54,19 +56,18 @@ abstract class RequestExecutor(val baseUrl: String, private val timeout: Duratio
         }
     }
 
-    protected suspend inline fun <Req : Any, reified Res> doExecuteRequest(
+    protected suspend inline fun <reified Req : Any, reified Res> doExecuteRequest(
         method: String,
         url: String,
         requestBody: Req?
-    ): Res {
-        return client.request(baseUrl + url) {
-            this.method = HttpMethod(method)
+    ): Res =
+        client.request(baseUrl + url) {
+            this.method = HttpMethod.parse(method)
             authorization?.let { header("Authorization", it) }
 
             requestBody?.let {
                 contentType(ContentType.Application.Json)
-                this.body = it
+                setBody(it)
             }
-        }
-    }
+        }.body()
 }

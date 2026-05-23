@@ -2,7 +2,6 @@ package dev.drzepka.smarthome.logger.sensors.source.shtc3
 
 import com.diozero.api.I2CDevice
 import com.diozero.api.I2CDeviceInterface
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.core.model.SourceType
@@ -11,6 +10,7 @@ import dev.drzepka.smarthome.logger.core.pipeline.Pipeline
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineFactory
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.pipeline.component.datasource.FixedRateDataSource
+import dev.drzepka.smarthome.logger.core.util.Logger
 import java.time.Duration
 import java.util.regex.Pattern
 

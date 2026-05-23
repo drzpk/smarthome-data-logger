@@ -1,6 +1,6 @@
 package dev.drzepka.smarthome.logger.core.transport.bluetooth
 
-import dev.drzepka.smarthome.common.util.Logger
+import dev.drzepka.smarthome.logger.core.util.Logger
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.nio.charset.StandardCharsets

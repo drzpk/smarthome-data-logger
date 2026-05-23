@@ -1,10 +1,10 @@
 package dev.drzepka.smarthome.logger.sensors.source.xiaomimijia
 
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.core.model.bluetooth.BluetoothServiceData
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataListener
 import dev.drzepka.smarthome.logger.core.util.LittleEndianHexConverter
+import dev.drzepka.smarthome.logger.core.util.Logger
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random

@@ -1,6 +1,6 @@
 package dev.drzepka.smarthome.logger.core.config
 
-import dev.drzepka.smarthome.common.util.Logger
+import dev.drzepka.smarthome.logger.core.util.Logger
 import java.io.File
 import java.io.InputStream
 

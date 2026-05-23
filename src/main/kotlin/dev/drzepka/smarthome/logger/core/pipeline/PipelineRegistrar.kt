@@ -1,8 +1,8 @@
 package dev.drzepka.smarthome.logger.core.pipeline
 
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.config.ConfigPropertySource
 import dev.drzepka.smarthome.logger.core.model.SourceType
+import dev.drzepka.smarthome.logger.core.util.Logger
 
 class PipelineRegistrar(
     private val config: ConfigPropertySource,

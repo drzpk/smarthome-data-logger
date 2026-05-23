@@ -1,8 +1,8 @@
 package dev.drzepka.smarthome.logger
 
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.coreModule
 import dev.drzepka.smarthome.logger.core.pipeline.PipelineManager
+import dev.drzepka.smarthome.logger.core.util.Logger
 import dev.drzepka.smarthome.logger.pv.pvModule
 import dev.drzepka.smarthome.logger.sensors.sensorsModule
 import kotlinx.coroutines.CompletableDeferred

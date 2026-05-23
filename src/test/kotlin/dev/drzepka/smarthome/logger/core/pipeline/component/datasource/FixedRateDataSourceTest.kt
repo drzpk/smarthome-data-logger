@@ -6,7 +6,7 @@ import dev.drzepka.smarthome.logger.core.pipeline.component.DataCollector
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import dev.drzepka.smarthome.logger.core.scheduler.TaskScheduler
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -45,7 +45,7 @@ internal class FixedRateDataSourceTest {
     }
 
     @Test
-    fun `should decode and forward data`() = runBlockingTest {
+    fun `should decode and forward data`() = runTest {
         val dataSource = FixedRateDataSource("test", Duration.ofSeconds(1), collector, TestDecoder())
         dataSource.start(scheduler)
 

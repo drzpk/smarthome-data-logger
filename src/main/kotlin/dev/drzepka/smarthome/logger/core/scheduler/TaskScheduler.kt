@@ -1,8 +1,8 @@
 package dev.drzepka.smarthome.logger.core.scheduler
 
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.config.SchedulerProperties
 import dev.drzepka.smarthome.logger.core.util.ErrorTracker
+import dev.drzepka.smarthome.logger.core.util.Logger
 import dev.drzepka.smarthome.logger.core.util.suspendRunCatching
 import kotlinx.coroutines.*
 import java.time.Duration

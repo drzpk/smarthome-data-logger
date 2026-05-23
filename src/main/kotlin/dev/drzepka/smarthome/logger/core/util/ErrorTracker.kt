@@ -1,7 +1,5 @@
 package dev.drzepka.smarthome.logger.core.util
 
-import dev.drzepka.smarthome.common.util.Logger
-
 internal class ErrorTracker(
     private val name: String,
     private val errorThreshold: Int = Int.MAX_VALUE,

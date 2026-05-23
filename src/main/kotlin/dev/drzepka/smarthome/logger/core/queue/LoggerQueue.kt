@@ -1,8 +1,8 @@
 package dev.drzepka.smarthome.logger.core.queue
 
-import dev.drzepka.smarthome.common.util.Logger
-import dev.drzepka.smarthome.common.util.Mockable
 import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
+import dev.drzepka.smarthome.logger.core.util.Logger
+import dev.drzepka.smarthome.logger.core.util.Mockable
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentLinkedQueue

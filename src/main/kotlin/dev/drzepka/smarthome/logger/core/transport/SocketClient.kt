@@ -1,8 +1,8 @@
 package dev.drzepka.smarthome.logger.core.transport
 
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.frame.Frame
 import dev.drzepka.smarthome.logger.core.util.HexUtils
+import dev.drzepka.smarthome.logger.core.util.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext

@@ -10,7 +10,7 @@ class ServerRequestExecutor(properties: ServerProperties) :
     RequestExecutor(properties.serverUrl, properties.timeout) {
 
     init {
-        basicAuthorization(properties.loggerId.toString(), properties.loggerSecret)
+        basicAuthorization(properties.loggerId, properties.loggerSecret)
     }
 
     suspend fun getDevices(): List<Device> {

@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.1.21"
-    kotlin("plugin.allopen") version "2.1.21"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.allopen)
     id("java-library")
     id("maven-publish")
 }
@@ -25,34 +25,33 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation("dev.drzepka.smarthome:common:1.1.2-SNAPSHOT")
-    implementation(kotlin("reflect"))
+    implementation(libs.kotlin.reflect)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
-    implementation("io.ktor:ktor-client-core:1.4.3")
-    implementation("io.ktor:ktor-client-apache:1.4.3")
-    implementation("io.ktor:ktor-client-jackson:1.4.3")
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.apache)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.jackson)
 
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
-    implementation("org.apache.httpcomponents:httpclient:4.5.12")
-    implementation("com.intelligt.modbus:jlibmodbus:1.2.9.11")
-    implementation("com.diozero:diozero-core:1.3.2")
-    implementation("ch.qos.logback:logback-classic:1.2.11")
-    implementation("io.insert-koin:koin-core:3.5.6")
+    implementation(libs.jackson.datatype.jsr310)
+    implementation(libs.httpclient)
+    implementation(libs.jlibmodbus)
+    implementation(libs.diozero.core)
+    implementation(libs.logback.classic)
+    implementation(libs.koin.core)
 
-    testImplementation("org.junit.platform:junit-platform-launcher:1.11.4")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.4")
-    testImplementation("org.assertj:assertj-core:3.27.3")
-    testImplementation("org.mockito:mockito-core:5.11.0")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.11.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+    testImplementation(libs.junit.platform.launcher)
+    testImplementation(libs.junit.jupiter.engine)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.junit.jupiter)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testRuntimeOnly(libs.junit.jupiter.engine)
 }
 
 allOpen {
-    annotation("dev.drzepka.smarthome.common.util.Mockable")
+    annotation("dev.drzepka.smarthome.logger.core.util.Mockable")
 }
 
 tasks.withType<Test> {

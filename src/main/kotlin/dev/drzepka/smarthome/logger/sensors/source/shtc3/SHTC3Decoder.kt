@@ -1,10 +1,10 @@
 package dev.drzepka.smarthome.logger.sensors.source.shtc3
 
-import dev.drzepka.smarthome.common.util.Logger
 import dev.drzepka.smarthome.logger.core.model.MacAddress
 import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.model.measurement.TemperatureMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
+import dev.drzepka.smarthome.logger.core.util.Logger
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.nio.ByteBuffer
