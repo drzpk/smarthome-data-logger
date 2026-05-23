@@ -65,13 +65,13 @@ object SofarDecoder : DataDecoder<PvData> {
                 voltage = get(r.pv1Voltage),
                 current = get(r.pv1Current),
                 power = get(r.pv1Power),
-                energyToday = BigDecimal.ZERO // TODO: per-string energy today not provided by Sofar
+                energyToday = BigDecimal.ZERO
             ),
             pv2 = Pv(
                 voltage = get(r.pv2Voltage),
                 current = get(r.pv2Current),
                 power = get(r.pv2Power),
-                energyToday = BigDecimal.ZERO // TODO: per-string energy today not provided by Sofar
+                energyToday = BigDecimal.ZERO
             )
         )
         return listOf(measurement)

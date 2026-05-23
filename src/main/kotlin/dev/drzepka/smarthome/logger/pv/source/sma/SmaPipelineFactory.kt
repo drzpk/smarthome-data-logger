@@ -17,30 +17,18 @@ class SmaPipelineFactory : PipelineFactory {
     override fun create(name: String, properties: ConfigPropertySource): Pipeline {
         val config = SmaConfig(name, properties)
         val httpClient = createHttpClient()
+        val collector = SmaDataCollector(config.url, config.timeout, httpClient)
         val decoder = SmaDecoder(config.host)
         val pipeline = Pipeline(name)
 
-        val metricsCollector = SmaMetricsCollector(config.url, config.timeout, httpClient)
         pipeline.addDataSource(
             FixedRateDataSource(
-                name = "$name-metrics",
-                interval = Duration.ofSeconds(config.metricsInterval.toLong()),
-                collector = metricsCollector,
+                name = name,
+                interval = Duration.ofSeconds(config.interval.toLong()),
+                collector = collector,
                 decoder = decoder
             )
         )
-
-        config.measurementInterval?.let { interval ->
-            val measurementCollector = SmaMeasurementCollector(config.url, config.timeout, httpClient)
-            pipeline.addDataSource(
-                FixedRateDataSource(
-                    name = "$name-measurement",
-                    interval = Duration.ofSeconds(interval.toLong()),
-                    collector = measurementCollector,
-                    decoder = decoder
-                )
-            )
-        }
 
         return pipeline
     }

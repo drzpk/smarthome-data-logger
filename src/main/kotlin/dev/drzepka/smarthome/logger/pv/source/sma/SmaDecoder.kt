@@ -2,6 +2,7 @@ package dev.drzepka.smarthome.logger.pv.source.sma
 
 import dev.drzepka.smarthome.logger.core.model.measurement.Measurement
 import dev.drzepka.smarthome.logger.core.model.measurement.Phase
+import dev.drzepka.smarthome.logger.core.model.measurement.Pv
 import dev.drzepka.smarthome.logger.core.model.measurement.PvMeasurement
 import dev.drzepka.smarthome.logger.core.pipeline.component.DataDecoder
 import java.math.BigDecimal
@@ -9,36 +10,53 @@ import java.math.BigDecimal
 class SmaDecoder(private val mac: String) : DataDecoder<SmaData> {
 
     override fun decode(item: SmaData): Collection<Measurement> {
-        val measurement = when (item) {
-            is SmaData.Metrics -> PvMeasurement(
-                mac = mac,
-                time = item.time,
-                totalPower = item.power,
-                energyToday = BigDecimal.ZERO, // TODO: energy today not available from metrics endpoint
-                energyTotal = BigDecimal.ZERO, // TODO: total energy not available from metrics endpoint
-                phaseA = DUMMY_PHASE, // TODO: phase data not available from SMA basic API
-                phaseB = DUMMY_PHASE,
-                phaseC = DUMMY_PHASE,
-                pv1 = null, // TODO: PV string data not available from SMA basic API
-                pv2 = null
-            )
-            is SmaData.Measurement -> PvMeasurement(
-                mac = mac,
-                time = item.time,
-                totalPower = 0, // TODO: power not available per measurement entry
-                energyToday = BigDecimal(item.energyWh).divide(BigDecimal(1000)),
-                energyTotal = BigDecimal.ZERO, // TODO: lifetime total energy not available
-                phaseA = DUMMY_PHASE, // TODO: phase data not available from SMA basic API
-                phaseB = DUMMY_PHASE,
-                phaseC = DUMMY_PHASE,
-                pv1 = null,
-                pv2 = null
-            )
-        }
-        return listOf(measurement)
-    }
+        fun double(field: SmaField) = item.values[field]
+        fun int(field: SmaField) = double(field)?.toInt()
+        fun float(field: SmaField) = double(field)?.toFloat()
 
-    companion object {
-        private val DUMMY_PHASE = Phase(voltage = 0f, current = 0f, power = null, frequency = 0f)
+        val f = SmaFields
+        val frequency = float(f.frequency) ?: 0f
+        val measurement = PvMeasurement(
+            mac = mac,
+            time = item.time,
+            totalPower = int(f.gridPower) ?: 0,
+            energyToday = BigDecimal(int(f.dailyYield) ?: 0).divide(BigDecimal(1000)),
+            energyTotal = BigDecimal.valueOf(double(f.totalYield) ?: 0.0),
+            phaseA = Phase(
+                voltage = float(f.voltageL1) ?: 0f,
+                current = float(f.currentL1) ?: 0f,
+                power = int(f.powerL1),
+                frequency = frequency
+            ),
+            phaseB = Phase(
+                voltage = float(f.voltageL2) ?: 0f,
+                current = float(f.currentL2) ?: 0f,
+                power = int(f.powerL2),
+                frequency = frequency
+            ),
+            phaseC = Phase(
+                voltage = float(f.voltageL3) ?: 0f,
+                current = float(f.currentL3) ?: 0f,
+                power = int(f.powerL3),
+                frequency = frequency
+            ),
+            pv1 = int(f.pvPowerA)?.let {
+                Pv(
+                    voltage = float(f.pvVoltageA) ?: 0f,
+                    current = float(f.pvCurrentA) ?: 0f,
+                    power = it,
+                    energyToday = BigDecimal.ZERO
+                )
+            },
+            pv2 = int(f.pvPowerB)?.let {
+                Pv(
+                    voltage = float(f.pvVoltageB) ?: 0f,
+                    current = float(f.pvCurrentB) ?: 0f,
+                    power = it,
+                    energyToday = BigDecimal.ZERO
+                )
+            }
+        )
+        return listOf(measurement)
     }
 }

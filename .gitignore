@@ -11,3 +11,5 @@ out
 
 /.claude/settings.local.json
 *.local.md
+
+local
